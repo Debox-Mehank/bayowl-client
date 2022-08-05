@@ -1,26 +1,66 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@layer utilities {
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+html {
+    scroll-behavior: smooth;
 }
 
+:root {
+    --pink: #DC2751;
+    --navyBlue: #192b54;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
 * {
-  box-sizing: border-box;
+    scrollbar-width: auto;
+    scrollbar-color: #ff6b35 #0b0b1d;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 7px;
+    height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #0b0b1d;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #ff6b35;
+    border-radius: 15px;
+    border: 0px none #ffffff;
+}
+
+
+.border-gradient-btn {
+    background: linear-gradient(to right, #18181B, #18181B),
+        linear-gradient(to bottom right, #f09402, #ed4731);
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+}
+
+.hover\:border-gradient-btn:hover {
+    background: linear-gradient(to right, #18181B, #18181B),
+        linear-gradient(to bottom right, #f09402, #f09402, #f09402, #f09402, #c5c5c5);
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+}
+
+.gradient-border-3 {
+    border: 3px solid transparent;
 }

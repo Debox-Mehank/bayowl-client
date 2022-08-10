@@ -42,11 +42,11 @@ function Navbar() {
     }, []);
 
     return (
-        <div className="z-50 ">
-            <div className="absolute h-40" />
+        <div className="z-50">
+            <div className=" h-full" />
             <nav
                 style={{ transition: "0.4s" }}
-                className={` text-white fixed top-0 left-0 right-0  transition-all shadow-md bg-gradient-to-r from-darkBlue/70 filter backdrop-blur-xl to-blueGradient-2/70
+                className={` text-white fixed top-0 left-0 right-0 transition-all shadow-md bg-gradient-to-r from-darkBlue/70 filter backdrop-blur-xl to-blueGradient-2/70
                 ${scrolled ? "p-0" : " p-2"}`}
                 role="navigation"
             >
@@ -77,54 +77,48 @@ function Navbar() {
 
                     </ul>
 
-                    {/* For Mobile */}
+
                     <ul
                         id="mobile_nav"
-                        className={`transition-all duration-300 absolute bg-darkBlue/90 flex  ${isOpen ? "visible opacity-1 translate-y-0" : "invisible opacity-0 translate-y-10"} flex-col ${scrolled ? "top-16" : "top-20"
+                        className={`transition-all duration-300 absolute  bg-darkBlue/90 flex  ${isOpen ? "visible opacity-1 translate-y-0" : "invisible opacity-0 translate-y-10"} flex-col ${scrolled ? "top-16" : "top-20"
                             } md:top-24 w-full lg:hidden shadow-md left-0 py-3 `}
                     >
                         <div className="w-11/12 mx-auto">
                             <hr className="my-2" />
                             <span className="transition-colors duration-300 hover:text-primary cursor-pointer">
 
-                                <a href="https://bayowl.studio/"
+                                <Link href="/login"
                                     className={`py-2 font-bold items-center justify-center transition-colors duration-300 hover:text-primary text-sm md:text-base }`}>
-                                    {"Login"}
-                                </a>
+                                    {"Online Studio"}
+                                </Link>
                             </span>
                             <hr className="my-2" />
-                            {/* Mumbai Studio -> Studio Services, Facilities, Pricing, Virtual Tour, Gear List */}
-                            <ul className="px-4 py-2 font-bold text-sm md:text-base flex flex-col">
-                                <li>
-                                    <Link href="/login"
-                                        className={`border-gradient-br-blue-green-gray-900 gradient-border-2 rounded-lg px-4 py-2 font-bold items-center justify-center transition-colors duration-300 hover:text-primary  text-sm md:text-base }`}>
-                                        {"Login"}
-                                    </Link>
 
-                                </li>
-
-                            </ul>
-
-                            <button
-                                onClick={() => setIsOpen((prev) => !isOpen)}
-                                className="inline-flex p-3 lg:hidden text-black ml-auto"
-                                aria-label="Menu Mobile Button"
-                            >
-                                <svg
-                                    className="w-8 h-8 fill-white stroke-white"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                </svg>
-                            </button>
                         </div>
+                        {/* <NavItem title="Home" link="/" active={router.pathname === "/"} /> */}
+
                     </ul>
+
+                    <button
+                        onClick={() => setIsOpen((prev) => !isOpen)}
+                        className="inline-flex p-3 lg:hidden text-black ml-auto"
+                        aria-label="Menu Mobile Button"
+                    >
+                        <svg
+                            className="w-8 h-8 fill-white stroke-white"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 6h16M4 12h16M4 18h16"
+                            />
+                        </svg>
+                    </button>
+
+
                 </div>
             </nav>
         </div>

@@ -64,3 +64,7 @@ html {
 .gradient-border-3 {
     border: 3px solid transparent;
 }
+
+.bg-homepage {
+    background-image: url("/homepage.jpg");
+}

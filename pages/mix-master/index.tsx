@@ -2,13 +2,13 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useState } from 'react'
-import Navbar from '../components/Navbar'
+import Navbar from '../../components/Navbar'
 import Link from 'next/link'
-import onlineServicesData from "../data/data"
+import onlineServicesData from "../../data/data"
 
-const Home: NextPage = () => {
+const MixMaster: NextPage = () => {
 
-    const [activeService, setactiveService] = useState<string | null>(null)
+    const [activeService, setactiveService] = useState<string | null>("Mix & Master")
     const [activeCat, setactiveCat] = useState<string | null>(null)
 
     return (
@@ -22,46 +22,44 @@ const Home: NextPage = () => {
                 <div className='flex flex-col gap-8'>
                     {/* Core Services (4 buttons) */}
                     <div className='flex justify-center items-center gap-8 flex-wrap'>
-                        {onlineServicesData.map(service => (
 
-                            <Link href={service.route}>
-                                <button
-                                    data-aos="fade-up"
-                                    key={service.category}
-                                    onClick={() => {
-                                        setactiveService(service.category)
-                                        setactiveCat(null)
-                                    }}
-                                    className='h-40 w-40 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg'>
-                                    {service.category}
-                                </button>
-                            </Link>
-
-                        ))}
+                        <p className='text-3xl font-bold'>
+                            {"Mix & Master Services"}
+                        </p>
+                        {/* <Link href={onlineServicesData[0].route}>
+                            <button
+                                data-aos="fade-up"
+                                key={onlineServicesData[0].category}
+                                onClick={() => {
+                                    setactiveService(onlineServicesData[0].category)
+                                    setactiveCat(null)
+                                }}
+                                className='h-40 w-40 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg'>
+                                {onlineServicesData[0].category}
+                            </button>
+                        </Link> */}
                     </div>
                     {/* Categories */}
-                    {/* <div className='flex justify-center items-center gap-8'>
+                    <div className='flex justify-center items-center gap-8'>
 
-            {
-              activeService && onlineServicesData.filter(service => service.category === activeService)[0].services?.map(category => (
-                <div
-                  data-aos="fade-up"
-                  key={category.name}
-                  className="h-40 w-40 cursor-pointer bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md grid place-items-center p-4 text-center filter backdrop-blur-lg"
-                  onClick={() => {
-                    setactiveCat(category.name)
-                  }}
-                >
-                  {category.subCategories ?
-                    <div>
-                      {category.name}
+                        {
+                            activeService && onlineServicesData.filter(service => service.category === activeService)[0].services?.map(category => (
+                                <Link href={category.route}>
+                                    <div
+                                        data-aos="fade-up"
+                                        key={category.name}
+                                        className="h-40 w-40 cursor-pointer bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md grid place-items-center p-4 text-center filter backdrop-blur-lg"
+                                        onClick={() => {
+                                            setactiveCat(category.name)
+                                        }}
+                                    >
+
+                                        {category.name}
+
+                                    </div>
+                                </Link>
+                            ))}
                     </div>
-                    : <Link href={category.route}>
-                      {category.name}
-                    </Link>}
-                </div>
-              ))}
-          </div> */}
                     {/* Sub-Categories (if they exist) */}
                     {/* <div className='flex justify-center items-center gap-8'>
             {
@@ -86,4 +84,4 @@ const Home: NextPage = () => {
     )
 }
 
-export default Home
+export default MixMaster

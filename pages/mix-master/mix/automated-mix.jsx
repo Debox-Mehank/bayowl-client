@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment } from 'react'
 import { CheckIcon, MinusIcon } from '@heroicons/react/solid'
 import Navbar from '../../../components/Navbar'
-
+import { useState } from 'react'
 
 const tiers = [
     {
@@ -23,26 +23,6 @@ const tiers = [
 ]
 
 
-const addOnPrices = [
-    {
-        name: 'Extra Revision',
-        tiers: {
-            "Commercial Rate**": "₹500",
-            "Independent Artist Rate*": "₹250"
-        }
-    },
-    { name: '10 Tracks (Adds 1 day to delivery per add on)', tiers: { "Commercial Rate**": "₹1,000", "Independent Artist Rate*": "₹500" } },
-    { name: '30s Duration (Adds 1 day to delivery per add on)', tiers: { "Commercial Rate**": "₹1,000", "Independent Artist Rate*": "₹500" } },
-    // Initially below will be free promo, then 75% off.
-    { name: 'Mastering (Same category mix)', tiers: { "Commercial Rate**": "75% Off", "Independent Artist Rate*": "75% Off" } },
-    { name: 'Mastering (Higher mastering category than mix category)', tiers: { "Commercial Rate**": "50% Off", "Independent Artist Rate*": "50% Off" } },
-    // { name: 'Add on: Expedited Delivery - 5 Days', tiers: { "Commercial Rate**": false, "Independent Artist Rate*": false } },
-    // { name: 'Add on: Expedited Delivery - 3 Days', tiers: { "Commercial Rate**": false, "Independent Artist Rate*": false } },
-    // { name: 'Add on: Expedited Delivery - 2 Days', tiers: { "Commercial Rate**": false, "Independent Artist Rate*": false } },
-    { name: 'Expedited Delivery - 1 Day', tiers: { "Commercial Rate**": "₹2,500", "Independent Artist Rate*": "₹1,250" } },
-    { name: 'Bus Stems Export', tiers: { "Commercial Rate**": `₹500`, "Independent Artist Rate*": "₹250" } },
-    { name: 'Multitrack Export', tiers: { "Commercial Rate**": "₹1000", "Independent Artist Rate*": "₹500" } },
-]
 
 const sections = [
     {
@@ -143,6 +123,33 @@ function classNames(...classes) {
 }
 
 function pricing() {
+
+    // Grabbing the AddOn Section
+    const prevAddOnArr = sections.filter(section => section.name === "Add Ons")[0]
+    // Mapping it with a "isAdded" boolean for handling cart addition
+    const newAddOnArray = prevAddOnArr.features.map(addOn => {
+        return {
+            ...addOn,
+            tiers: {
+                "Commercial Rate**": {
+                    ...addOn.tiers["Commercial Rate**"],
+                    isAdded: false,
+                },
+                "Independent Artist Rate*": {
+                    ...addOn.tiers["Independent Artist Rate*"],
+                    isAdded: false,
+                }
+            }
+        }
+    })
+
+    const [addOnList, setAddOnList] = useState(newAddOnArray)
+    const [totalPrice, setTotalPrice] = useState(0)
+
+    useEffect(() => {
+
+    }, [])
+
     return (
         <div className='bg-darkBlue'>
             <div className="bg-darkBlue text-white relative">
@@ -267,24 +274,26 @@ function pricing() {
                                                 {section.name}
                                             </th>
                                         </tr>
-                                        {section.features.map((feature) => (
+                                        {section.features.map((feature, addOnidx) => (
                                             <tr className='text-center' key={feature.name}>
                                                 <th className="py-5 px-6 text-sm font-normal text-white text-left" scope="row">
                                                     {feature.name}
                                                 </th>
-                                                {tiers.map((tier) => (
+                                                {tiers.map((tier, tierIdx) => (
                                                     <td key={tier.name} className="py-5 px-6">
                                                         {
                                                             section.name === 'Add Ons' && typeof feature.tiers[tier.name] === 'object' ? (
                                                                 <div className='space-y-4'>
                                                                     <span className="block text-sm text-white">
-                                                                        {feature.tiers[tier.name].strPrice}
+                                                                        {addOnList[addOnidx]?.tiers[tier.name].strPrice}
+                                                                        {/* {feature.tiers[tier.name].strPrice} */}
                                                                     </span>
                                                                     <button
                                                                         onClick={() => console.log(feature.tiers[tier.name].price)}
                                                                         className='px-3 py-1 transition-colors duration-300 bg-gradient1/80 rounded-md hover:bg-gradient1'>
                                                                         {"Add"}
                                                                     </button>
+
                                                                 </div>
                                                             )
                                                                 :

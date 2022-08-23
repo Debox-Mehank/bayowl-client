@@ -122,7 +122,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-function pricing() {
+function Pricing() {
 
     // Grabbing the AddOn Section
     const prevAddOnArr = sections.filter(section => section.name === "Add Ons")[0]
@@ -351,4 +351,4 @@ function pricing() {
     )
 }
 
-export default pricing
+export default Pricing

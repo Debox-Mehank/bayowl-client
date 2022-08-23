@@ -44,7 +44,7 @@ const MixMaster: NextPage = () => {
 
                         {
                             activeService && onlineServicesData.filter(service => service.category === activeService)[0].services?.map(category => (
-                                <Link href={category.route}>
+                                <Link key={category.name} href={category.route}>
                                     <div
                                         data-aos="fade-up"
                                         key={category.name}

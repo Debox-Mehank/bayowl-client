@@ -47,10 +47,7 @@ module.exports = {
         'primary': "#f07202",
         'accent': "#192b54",
         'darkBlue': "#0B0B1D",
-        'blueGradient': ['#1f3b83', '#192A55', '#331265'],
-        'gradient1': "#1f3b83",
-        'gradient2': "#192A55", // given by varun
-        'gradient3': "#331265",
+        'blueGradient': ['#1f3b83', '#192A55', '#331265', '#D7263D'],
         'orange1': "#f09402",
         'orange2': "#f07202",
         'orange3': "#ed4731",

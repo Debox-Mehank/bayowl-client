@@ -288,10 +288,31 @@ function pricing() {
                                                                         {addOnList[addOnidx]?.tiers[tier.name].strPrice}
                                                                         {/* {feature.tiers[tier.name].strPrice} */}
                                                                     </span>
+
                                                                     <button
-                                                                        onClick={() => console.log(feature.tiers[tier.name].price)}
+                                                                        id={`${tier.name}`}
+                                                                        onClick={(e) => {
+
+                                                                            const updated = addOnList.map(addOn => {
+                                                                                return {
+                                                                                    ...addOn,
+                                                                                    tiers: {
+                                                                                        "Commercial Rate**": {
+                                                                                            ...addOn.tiers["Commercial Rate**"],
+                                                                                            isAdded: !addOn.tiers["Commercial Rate**"].isAdded,
+                                                                                        },
+                                                                                        "Independent Artist Rate*": {
+                                                                                            ...addOn.tiers["Independent Artist Rate*"],
+                                                                                            isAdded: !addOn.tiers["Independent Artist Rate*"].isAdded,
+                                                                                        }
+                                                                                    },
+                                                                                }
+                                                                            })
+                                                                            setAddOnList(updated)
+                                                                            console.log(addOnList[0].tiers)
+                                                                        }}
                                                                         className='px-3 py-1 transition-colors duration-300 bg-gradient1/80 rounded-md hover:bg-gradient1'>
-                                                                        {"Add"}
+                                                                        {addOnList[addOnidx]?.tiers[tier.name].isAdded ? "Remove" : "Add"}
                                                                     </button>
 
                                                                 </div>

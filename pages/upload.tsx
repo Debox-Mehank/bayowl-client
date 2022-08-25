@@ -35,39 +35,43 @@ function Upload() {
         console.log(Array.from(file))
     };
     return (
-        <div className='min-h-screen bg-darkBlue text-white flex'>
+        <div className='min-h-screen bg-darkBlue text-white flex relative'>
+            <div className='absolute animation-delay-2000 top-[45%] left-[15%] w-36 md:w-96 h-96 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[60px] animate-blob overflow-hidden' />
+            <div className='absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden' />
+            <div className='absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden' />
+            <div className='absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' />
             <DashNav />
-            <div className='px-8 py-10 relative mt-24 w-full flex gap-5'>
-                <div className='flex flex-col justify-center gap-4 w-1/6'>
+            <div className='px-8 py-10 relative mt-24 w-full flex justify-center gap-3'>
+                <div className='flex flex-col justify-center gap-6 w-1/6'>
                     <div>
-                        <span className='text-2xl font-bold'>{service.projName}</span>
+                        <span className='text-4xl font-bold'>{service.projName}</span>
                         <div className='text-xl font-bold'>{service.name}</div>
                     </div>
-                    <div className='rounded-lg text-center py-5 px-10 bg-white/20 inline'>
+                    <div className='rounded-lg text-center py-3 px-6 bg-white/20 inline'>
                         Estimated Time
                         <span className='block text-xl'>
                             {service.serviceDetails.estimatedTime}
                         </span>
                     </div>
-                    <div className='rounded-lg text-center py-5 px-10 bg-white/20 inline'>
+                    <div className='rounded-lg text-center py-3 px-6 bg-white/20 inline'>
                         Input Track Limit
                         <span className='block text-xl'>
                             {service.serviceDetails.inputTrackLimit}
                         </span>
                     </div>
-                    <div className='rounded-lg text-center py-5 px-10 bg-white/20 inline'>
+                    <div className='rounded-lg text-center py-3 px-6 bg-white/20 inline'>
                         No. of Reference Files
                         <span className='block text-xl'>
                             {service.serviceDetails.refFile}
                         </span>
                     </div>
-                    <div className='rounded-lg text-center py-5 px-10 bg-white/20 inline'>
+                    <div className='rounded-lg text-center py-3 px-6 bg-white/20 inline'>
                         Delivery Format
                         <span className='block text-xl'>
                             {service.serviceDetails.deliveryFormat}
                         </span>
                     </div>
-                    <div className='rounded-lg text-center py-5 px-10 bg-white/20 inline'>
+                    <div className='rounded-lg text-center py-3 px-6 bg-white/20 inline'>
                         Revision Delivery Days
                         <span className='block text-xl'>
                             {service.serviceDetails.deliveryDays}
@@ -75,7 +79,7 @@ function Upload() {
                     </div>
 
                 </div>
-                <div className='w-5/6'>
+                <div className='mx-auto w-4/6'>
                     <FileUploader
                         multiple={true}
                         handleChange={handleChange}
@@ -87,16 +91,16 @@ function Upload() {
                                     <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
                                 </svg>
                             </div>
-                            <div>
+                            <div className='text-center'>
+                                {/* @ts-ignore */}
+                                <p>{file ? `File names: ${Array.from(file).map(file => file.name)}` : "No files uploaded yet."}</p>
                                 <div>Drag your files here, or click to upload!</div>
                             </div>
                         </div>
 
                     </FileUploader>
                 </div>
-                <div>
-                    {/* {file && Array.from(file.map(file => console.log(file)))} */}
-                </div>
+
             </div>
         </div>
     )

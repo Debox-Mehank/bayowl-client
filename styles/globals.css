@@ -82,3 +82,8 @@ html {
 .bg-loginImg {
     background-image: url("/loginImg.jpg");
 }
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+    z-index: 80;
+}

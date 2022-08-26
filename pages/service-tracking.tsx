@@ -1,136 +1,250 @@
 import React from 'react'
+import DashNav from "../components/DashNav"
+import Button from '../components/reusable/Button'
 const transactions = [
     {
-        id: 'AAPS0L',
-        company: 'Chase & Co.',
-        share: 'CAC',
-        commission: '+$4.37',
-        price: '$3,509.00',
-        quantity: '12.00',
-        netAmount: '$4,397.00',
+        id: '001',
+        projName: 'Dream',
+        serviceName: "Mix & Master - Pro Mix",
+        notes: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ',
+        dateSubmitted: "12-Aug-2022",
+        estimatedDelivery: "14-Aug-2022",
+        status: [
+            { name: 'Submitted', href: '#', status: 'complete' },
+            { name: 'Under Review', href: '#', status: 'complete' },
+            { name: 'Work In Progress', href: '#', status: 'complete' },
+            { name: 'Delivered', href: '#', status: 'complete' },
+            { name: 'Revision Request', href: '#', status: 'complete' },
+            { name: 'Revision Delivered', href: '#', status: 'complete' },
+        ],
+        downloads: [
+            { name: 'Download', href: '#', status: 'complete', link: "/download1" },
+            { name: 'Revision 1', href: '#', status: 'complete', link: "/revision1" },
+            { name: 'Revision 2', href: '#', status: 'complete', link: "/revision2" },
+            { name: 'Revision 3', href: '#', status: 'complete', link: "/revision3" },
+        ],
+        revisionsRequested: 0,
     },
     {
-        id: 'AAPS0L',
-        company: 'Chase & Co.',
-        share: 'CAC',
-        commission: '+$4.37',
-        price: '$3,509.00',
-        quantity: '12.00',
-        netAmount: '$4,397.00',
+        id: '002',
+        projName: 'Dreaming',
+        serviceName: "Mix & Master - Pro Mix",
+        notes: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ',
+        dateSubmitted: "12-Aug-2022",
+        estimatedDelivery: "14-Aug-2022",
+        status: [
+            { name: 'Submitted', href: '#', status: 'complete' },
+            { name: 'Under Review', href: '#', status: 'complete' },
+            { name: 'Work In Progress', href: '#', status: 'complete' },
+            { name: 'Delivered', href: '#', status: 'complete' },
+            { name: 'Revision Request', href: '#', status: 'complete' },
+            { name: 'Revision Delivered', href: '#', status: 'complete' },
+        ],
+        downloads: [
+            { name: 'Download', href: '#', status: 'complete', link: "/download1" },
+            { name: 'Revision 1', href: '#', status: 'complete', link: "/revision1" },
+            { name: 'Revision 2', href: '#', status: 'complete', link: "/revision2" },
+            { name: 'Revision 3', href: '#', status: 'complete', link: "/revision3" },
+        ],
+        revisionsRequested: 0,
     },
     {
-        id: 'AAPS0L',
-        company: 'Chase & Co.',
-        share: 'CAC',
-        commission: '+$4.37',
-        price: '$3,509.00',
-        quantity: '12.00',
-        netAmount: '$4,397.00',
-    },
-    // More
+        id: '002',
+        projName: 'Sleep',
+        serviceName: "Mix & Master - Pro Mix",
+        notes: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ',
+        dateSubmitted: "12-Aug-2022",
+        estimatedDelivery: "14-Aug-2022",
+        status: [
+            { name: 'Submitted', href: '#', status: 'complete' },
+            { name: 'Under Review', href: '#', status: 'complete' },
+            { name: 'Work In Progress', href: '#', status: 'complete' },
+            { name: 'Delivered', href: '#', status: 'complete' },
+            { name: 'Revision Request', href: '#', status: 'complete' },
+            { name: 'Revision Delivered', href: '#', status: 'complete' },
+        ],
+        downloads: [
+            { name: 'Download', href: '#', status: 'complete', link: "/download1" },
+            { name: 'Revision 1', href: '#', status: 'complete', link: "/revision1" },
+            { name: 'Revision 2', href: '#', status: 'complete', link: "/revision2" },
+            { name: 'Revision 3', href: '#', status: 'complete', link: "/revision3" },
+        ],
+        revisionsRequested: 0,
+    }
 ]
 
 function ServiceTracking() {
     return (
-        <div className="px-4 sm:px-6 lg:px-8">
-            <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto">
-                    <h1 className="text-xl font-semibold text-gray-900">Transactions</h1>
-                    <p className="mt-2 text-sm text-gray-700">
-                        A table of placeholder stock market data that does not make any sense.
-                    </p>
-                </div>
-                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                    <button
-                        type="button"
-                        className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                    >
-                        Export
-                    </button>
-                </div>
-            </div>
-            <div className="mt-8 flex flex-col">
-                <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                        <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-300">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                                        >
-                                            Transaction ID
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                        >
-                                            Company
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                        >
-                                            Share
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                        >
-                                            Commision
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                        >
-                                            Price
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                        >
-                                            Quantity
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                        >
-                                            Net amount
-                                        </th>
-                                        <th scope="col" className="relative whitespace-nowrap py-3.5 pl-3 pr-4 sm:pr-6">
-                                            <span className="sr-only">Edit</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200 bg-white">
-                                    {transactions.map((transaction) => (
-                                        <tr key={transaction.id}>
-                                            <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6">
-                                                {transaction.id}
-                                            </td>
-                                            <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                {transaction.company}
-                                            </td>
-                                            <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">{transaction.share}</td>
-                                            <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{transaction.commission}</td>
-                                            <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{transaction.price}</td>
-                                            <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{transaction.quantity}</td>
-                                            <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{transaction.netAmount}</td>
-                                            <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                                    Edit<span className="sr-only">, {transaction.id}</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+        <div className='min-h-screen bg-darkBlue text-white flex relative'>
+            <div className='absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden' />
+            <div className='absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden' />
+            <div className='absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' />
+            <DashNav />
+            <div className='py-10 relative mt-24 w-full flex justify-center gap-3'>
+                {/* Scrollable Div Below */}
+                <div className="px-2 sm:px-6 lg:px-8 w-full overflow-x-auto whitespace-nowrap">
+                    <div className="sm:flex sm:items-center">
+                        <div className="sm:flex-auto space-y-3">
+                            <h1 className="text-xl font-semibold text-white">Service Tracking</h1>
+                            <input className='bg-white/20 w-[60rem] rounded-md px-2 py-2' type="search" placeholder='Search by Brief ID, Project Name, Service Name or Date' name="" id="" />
+                        </div>
+                    </div>
+                    <div className="mt-8 flex flex-col">
+                        <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                                    <table className="min-w-full divide-y divide-gray-300">
+                                        <thead className="bg-white/20">
+                                            <tr>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6"
+                                                >
+                                                    Brief ID
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Project Name
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Service Name
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Note to Engineer
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Date of Submission
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Current Status
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Est. Delivery Date
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Re-Upload
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Download
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Request Revision
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Mark Completed
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                                                >
+                                                    Add a Service
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-200 bg-white/5">
+                                            {transactions.map((transaction) => (
+                                                <tr key={transaction.id}>
+                                                    <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-white sm:pl-6">
+                                                        {transaction.id}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-white">
+                                                        {transaction.projName}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm text-white">{transaction.serviceName}</td>
+                                                    <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">{transaction.notes}</td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm text-white">{transaction.dateSubmitted}</td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
+                                                        <Button>
+                                                            <div className='text-xs'>
+                                                                {transaction.status.find(stat => stat.status === "current")?.name || "Completed"}
+                                                            </div>
+                                                        </Button>
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
+                                                        {transaction.estimatedDelivery}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                                                        <Button>
+                                                            <div className='text-xs'>
+                                                                Reupload
+                                                            </div>
+                                                        </Button>
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                                                        <Button>
+                                                            <div className='text-xs'>
+                                                                Download
+                                                            </div>
+                                                        </Button>
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                                                        <Button>
+                                                            <div className='text-xs'>
+                                                                Request Revision
+                                                            </div>
+                                                        </Button>
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                                                        <Button>
+                                                            <div className='text-xs'>
+                                                                Mark Completed
+                                                            </div>
+                                                        </Button>
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                                                        <Button>
+                                                            <div className='text-xs'>
+                                                                Add Service
+                                                            </div>
+                                                        </Button>
+                                                    </td>
+                                                    {/* <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                                            Edit<span className="sr-only">, {transaction.id}</span>
+                                                        </a>
+                                                    </td> */}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
+
     )
 }
 

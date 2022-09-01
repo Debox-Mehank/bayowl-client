@@ -149,7 +149,7 @@ function Pricing() {
                                     // setAddOns(null)
                                     router.back()
                                 }} xmlns="http://www.w3.org/2000/svg" width="27" height="30" className='fill-white hover:fill-primary duration-300 transition-colors cursor-pointer' viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                                    <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                                 </svg>
                                 <h1 className='text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r py-5 from-pink-600 to-primary'>Automated Mix Plans</h1>
                                 <p>For entry level musicians on a budget.
@@ -344,7 +344,7 @@ function Pricing() {
                                         setSelectedPlan(null)
                                         // setAddOns(null)
                                     }} xmlns="http://www.w3.org/2000/svg" width="27" height="30" className='fill-white hover:fill-primary duration-300 transition-colors cursor-pointer' viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                                        <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                                     </svg>
                                 </div>
                                 <div className='mx-auto w-full space-y-16 rounded-lg py-20 bg-blueGradient-2/30 backdrop-blur-lg'>
@@ -369,7 +369,7 @@ function Pricing() {
                                             <div className="space-y-3 md:max-h-96 overflow-auto border-none w-11/12 mx-auto md:pr-3">
                                                 {
                                                     addOns.map(addOn => (
-                                                        <div>
+                                                        <div key={addOn.name}>
                                                             <label htmlFor={addOn.name} className=" font-medium text-white ">
                                                                 <div className='border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center'>
                                                                     <div className="min-w-0 flex-1 text-md">

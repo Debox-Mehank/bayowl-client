@@ -41,7 +41,10 @@ function Upload() {
             <div className='absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden' />
             <div className='absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' />
             <DashNav />
-            <div className='px-8 py-10 relative mt-24 w-full flex justify-center gap-3'>
+            <div className='md:hidden grid place-items-center text-center mx-auto w-11/12'>
+                <h3 className='text-xl'>Please continue with the uploading process with a computer.</h3>
+            </div>
+            <div className='hidden md:flex px-8 py-10 relative mt-24 w-full justify-center gap-3'>
                 <div className='flex flex-col justify-center gap-6 w-1/6'>
                     <div>
                         <span className='text-4xl font-bold'>{service.projName}</span>

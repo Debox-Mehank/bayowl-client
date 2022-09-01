@@ -42,8 +42,6 @@ module.exports = {
         }
       },
       "colors": {
-        // 'primary': "#FBB13C",
-        // 'primary': "#FF6B35",
         'primary': "#f07202",
         'accent': "#192b54",
         'darkBlue': "#0B0B1D",
@@ -64,5 +62,6 @@ module.exports = {
   plugins: [
     require('@tailwindcss/aspect-ratio'),
     require('tailwindcss-border-gradient-radius'),
+    require('@tailwindcss/forms')
   ],
 }

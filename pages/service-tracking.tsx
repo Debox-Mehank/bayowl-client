@@ -75,21 +75,15 @@ const transactions = [
 
 function ServiceTracking() {
     return (
-        <div className='min-h-screen bg-darkBlue text-white flex relative'>
+        <div className='min-h-screen bg-darkBlue text-white flex relative '>
             <div className='absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden' />
             <div className='absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden' />
             <div className='absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' />
             <DashNav />
-            <div className='py-10 relative w-full flex justify-center gap-3'>
+            <div className='py-10 relative w-full flex justify-center gap-3 overflow-hidden'>
                 {/* Scrollable Div Below */}
-                <div className="px-2 sm:px-6 lg:px-8 w-full overflow-x-auto whitespace-nowrap no-scrollbar">
-                    <div className="sm:flex sm:items-center">
-                        {/* <div className="sm:flex-auto space-y-3">
-                            <h1 className="text-xl font-semibold text-white">Service Tracking</h1>
-                            <input className='bg-white/20 w-[60rem] rounded-md px-2 py-2' type="search" placeholder='Search by Brief ID, Project Name, Service Name or Date' name="" id="" />
-                        </div> */}
-                    </div>
-                    <div className=' text-center text-xl sm:max-w-3xl text-white bg-white/10 rounded-md py-1 md:py-3 px-3 md:px-6 flex items-center gap-2'>
+                <div className="px-2 sm:px-3 lg:px-4 w-screen overflow-x-auto whitespace-nowrap relative">
+                    <div className='w-full text-center text-xl sm:max-w-3xl text-white bg-white/10 rounded-md py-1 md:py-2 px-3 md:px-2 flex items-center gap-2 fixed top-10'>
                         <input name='search' id='search' type={'search'} placeholder="Search by Brief ID, Project Name, Service Name or Date." className="w-full py-1 px-2 rounded-md border-none bg-transparent" />
                         <div className="inline group">
                             <span className="cursor-pointer flex gap-2 items-center md:mr-3 text-sm md:text-md">
@@ -101,11 +95,18 @@ function ServiceTracking() {
                             </span>
                         </div>
                     </div>
-                    <div className="mt-8 flex flex-col">
-                        <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    {/* <div className="sm:flex sm:items-center">
+                        <div className="sm:flex-auto space-y-3">
+                            <h1 className="text-xl font-semibold text-white">Service Tracking</h1>
+                            <input className='bg-white/20 w-[60rem] rounded-md px-2 py-2' type="search" placeholder='Search by Brief ID, Project Name, Service Name or Date' name="" id="" />
+                        </div>
+                    </div> */}
+
+                    <div className="mt-16 flex flex-col">
+                        <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
                             <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                    <table className="min-w-full  ">
+                                <div className=" shadow ring-1 ring-black ring-opacity-5 md:rounded-lg block">
+                                    <table className="min-w-full">
                                         <thead className="bg-white/10">
                                             <tr>
                                                 <th

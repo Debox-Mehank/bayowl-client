@@ -6,6 +6,8 @@ import Navbar from '../../../components/Navbar'
 import { useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import { useRouter } from 'next/router'
+import onlineServicesData from '../../../data/data'
+
 
 const addOns = [
     {
@@ -129,7 +131,8 @@ function Pricing() {
     // const [selected, setSelected] = useState(plans[0])
 
     useEffect(() => {
-
+        const arr = router.pathname.split("/")
+        console.log(arr.slice(1))
     }, [])
 
     return (

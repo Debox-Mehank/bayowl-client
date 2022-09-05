@@ -4,19 +4,19 @@ const offlineServicesData = [
         hasCategories: true,
         services: [
             {
-                hassubCategories: false,
+                hassubServices: false,
                 name: "Mix & Master",
                 route: "/mix-master,",
             },
             {
-                hassubCategories: false,
+                hassubServices: false,
                 name: "Vocals (Singing)",
                 route: "/vocals,",
             },
             {
-                hassubCategories: true,
+                hassubServices: true,
                 name: "Instrument Processing",
-                subCategories: [
+                subServices: [
                     {
                         name: "Guitars",
                         route: "/instrument-processing-guitars"
@@ -44,19 +44,19 @@ const offlineServicesData = [
         hasCategories: true,
         services: [
             {
-                hassubCategories: false,
+                hassubServices: false,
                 name: "Commercials",
                 route: "/commercials,",
             },
             {
-                hassubCategories: false,
+                hassubServices: false,
                 name: "Short Films, Episodes & Features",
                 route: "/short-films-episodes-features,",
             },
             {
-                hassubCategories: true,
+                hassubServices: true,
                 name: "Instrument Processing",
-                subCategories: [
+                subServices: [
                     {
                         name: "Guitars",
                         route: "/instrument-processing-guitars"
@@ -89,7 +89,7 @@ const onlineServicesData = [
             {
                 name: "Mix",
                 route: '/mix-master/mix',
-                subCategories: [
+                subServices: [
                     {
                         name: "Automated Mix",
                         route: "/mix-master/mix/automated-mix"
@@ -106,13 +106,16 @@ const onlineServicesData = [
                         name: "Industry Mix",
                         route: "/mix-master/mix/industry-mix"
                     },
-
+                    {
+                        name: "Pro Mix - Indie Special Rate!",
+                        route: "/mix-master/mix/pro-mix"
+                    },
                 ]
             },
             {
                 name: "Master",
                 route: '/mix-master/master',
-                subCategories: [
+                subServices: [
                     {
                         name: "Automated Master",
                         route: "/mix-master/master/automated-master"
@@ -128,13 +131,17 @@ const onlineServicesData = [
                     {
                         name: "Industry Master",
                         route: "/mix-master/master/industry-master"
+                    },
+                    {
+                        name: "Pro Master  Indie Special Rate!",
+                        route: "/mix-master/master/pro-master"
                     }
                 ]
             },
             {
                 name: "Stem Master",
                 route: "/mix-master/stem-master",
-                subCategories: [
+                subServices: [
                     {
                         name: "Automated Stem Master",
                         route: "/mix-master/stem-master/automated-stem-master"
@@ -150,6 +157,10 @@ const onlineServicesData = [
                     {
                         name: "Commercial Stem Master",
                         route: "/mix-master/stem-master/commercial-stem-master"
+                    },
+                    {
+                        name: "Pro Stem Master  Indie Special Rate!",
+                        route: "/pro-stem-master"
                     }
                 ]
             },
@@ -162,7 +173,7 @@ const onlineServicesData = [
             {
                 name: "Guitars",
                 route: "/instrument-processing/guitars",
-                subCategories: [
+                subServices: [
                     {
                         name: "String Noise",
                         route: "/instrument-processing/guitars/string-noise"
@@ -180,7 +191,7 @@ const onlineServicesData = [
             {
                 name: "Drums",
                 route: "/instrument-processing/drums",
-                subCategories: [
+                subServices: [
                     {
                         name: "Re-Sample",
                         route: "/instrument-processing/drums/re-sample"
@@ -198,7 +209,7 @@ const onlineServicesData = [
             {
                 name: "All Instruments",
                 route: "/instrument-processing/all",
-                subCategories: [
+                subServices: [
                     {
                         name: "Instrument Cleanup",
                         route: "/instrument-processing/all/instrument-cleanup"
@@ -229,22 +240,22 @@ const onlineServicesData = [
         services: [
             {
                 name: "Basic Tuning",
-                subCategories: null,
+                subServices: null,
                 route: "/vocals/basic-tuning"
             },
             {
                 name: "Advanced Tuning",
-                subCategories: null,
+                subServices: null,
                 route: "/vocals/advanced-tuning"
             },
             {
                 name: "Vocals Cleanup",
-                subCategories: null,
+                subServices: null,
                 route: "/vocals/vocals-cleanup"
             },
             {
                 name: "Vocal Mix",
-                subCategories: null,
+                subServices: null,
                 route: "/vocals/vocal-mix"
             },
 
@@ -256,23 +267,23 @@ const onlineServicesData = [
         services: [
             {
                 name: "Basic Cleanup",
-                subCategories: null,
+                subServices: null,
                 route: "/voiceovers/basic-cleanup"
             },
             {
                 name: "Advanced Cleanup",
-                subCategories: null,
+                subServices: null,
                 route: "/voiceovers/advanced-cleanup"
             },
             {
                 name: "Dialogue Restoration",
-                subCategories: null,
+                subServices: null,
                 route: "/voiceovers/dialogue-restoration"
             },
             {
-                name: "Vocal Processing",
-                subCategories: null,
-                route: "/voiceovers/vocal-processing"
+                name: "Voice Processing",
+                subServices: null,
+                route: "/voiceovers/voice-processing"
             },
 
         ]

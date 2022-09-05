@@ -67,7 +67,7 @@ const Mix: NextPage = () => {
                             activeService && activeCat && onlineServicesData.filter(service => service.category === activeService)[0].services?.filter(service => service.name === activeCat).map(subCat => (
                                 <>
                                     {/* @ts-ignore */}
-                                    {subCat.subCategories?.map(subCategory => (
+                                    {subCat.subServices?.map(subCategory => (
                                         <div key={subCategory.name} className='h-auto w-auto cursor-pointer' data-aos="fade-up">
                                             <Link href={subCategory.route}>
                                                 <div className='h-40 w-40 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md grid place-items-center text-center p-4 filter backdrop-blur-lg'>

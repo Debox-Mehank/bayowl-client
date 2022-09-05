@@ -18,7 +18,7 @@ function DashNav() {
 
     return (
         <div className='z-50 fixed top-0 left-0 lg:static'>
-            <span onClick={() => setIsOpen(prev => !prev)} className='fixed z-50 top-6 right-6 text-white lg:hidden'>
+            <span onClick={() => setIsOpen(prev => !prev)} className='fixed z-50 top-6 right-8 text-white lg:hidden'>
                 <div id="nav-icon3" className={`${isOpen ? "open" : ""}`}>
                     <span></span>
                     <span></span>

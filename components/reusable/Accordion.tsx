@@ -5,11 +5,12 @@ import Button from '../../components/reusable/Button'
 import Image from 'next/image'
 
 interface Props {
-    service: service
+    service: service,
+    modalTrigger: Function
 }
 
 interface service {
-    projName: string,
+    projName: string | null,
     name: string,
     status: status[],
     serviceDetails: serviceDetails
@@ -34,26 +35,33 @@ function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ')
 }
 
-function Accordion({ service }: Props) {
+function Accordion({ service, modalTrigger }: Props) {
 
     const [isOpen, setIsOpen] = useState(false)
 
     return (
         <div
-            // Flipping State for the particular div
-            onClick={() => setIsOpen(prev => !prev)}
-            className=' bg-white/5 rounded-lg p-2 sm:p-3 lg:p-4 xl:p-6 cursor-pointer h-full' key={service.projName}>
-            <div className='flex gap-4 items-center'>
-                <Image className={`inline duration-300 transition-transform ${isOpen ? "rotate-180" : null}`} height={30} width={30} src={down} />
-                {isOpen}
-                <span className='text-md md:text-2xl'>
-                    {service.projName} - {service.name}
+
+            className=' bg-white/5 rounded-lg p-2 sm:p-3 lg:p-4 xl:p-6' key={service.projName}>
+            <div
+                className='flex gap-4 items-center z-50'>
+                <span className='gap-4 flex items-center cursor-pointer' onClick={() => setIsOpen(prev => !prev)}>
+                    <Image className={`inline duration-300 transition-transform ${isOpen ? "rotate-180" : null}`} height={30} width={30} src={down} />
+                    <span className='text-md md:text-2xl'>
+                        {(service.projName ? service.projName : "Untitled Project") + " - " + service.name}
+                    </span>
                 </span>
 
-                <span className={`ml-auto ${isOpen ? "hidden md:block" : null}`}>
+                <span
+                    onClick={() => {
+                        !service.projName && modalTrigger(true)
+                    }}
+                    className={`ml-auto ${isOpen ? "hidden md:block" : null}`}>
                     <Button>
                         <>
-                            {service.status.filter(service => service.status === "current")[0]?.name || "Completed"}
+                            {service.status.find(service => service.status === "current")?.name ?
+                                service.status.find(service => service.status === "current")?.name
+                                : service.status.every(service => service.status === "complete") ? "Completed" : "Get Started"}
                         </>
                     </Button>
                 </span>
@@ -110,7 +118,7 @@ function Accordion({ service }: Props) {
                                     {step.status === 'complete' ? (
                                         <>
                                             {stepIdx !== service.status.length - 1 ? (
-                                                <div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-primary" aria-hidden="true" />
+                                                <div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-primary" aria-hidden="true" />
                                             ) : null}
                                             <a href={step.href} className="relative flex items-start group">
                                                 <span className="h-9 flex items-center">
@@ -127,7 +135,7 @@ function Accordion({ service }: Props) {
                                     ) : step.status === 'current' ? (
                                         <>
                                             {stepIdx !== service.status.length - 1 ? (
-                                                <div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true" />
+                                                <div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-gray-300" aria-hidden="true" />
                                             ) : null}
                                             <a href={step.href} className="relative flex items-start group" aria-current="step">
                                                 <span className="h-9 flex items-center" aria-hidden="true">
@@ -144,7 +152,7 @@ function Accordion({ service }: Props) {
                                     ) : (
                                         <>
                                             {stepIdx !== service.status.length - 1 ? (
-                                                <div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true" />
+                                                <div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-gray-300" aria-hidden="true" />
                                             ) : null}
                                             <a href={step.href} className="relative flex items-start group">
                                                 <span className="h-9 flex items-center" aria-hidden="true">

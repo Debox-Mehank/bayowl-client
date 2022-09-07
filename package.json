@@ -16,11 +16,13 @@
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/forms": "^0.5.2",
     "@types/aos": "^3.0.4",
+    "@types/react-modal": "^3.13.1",
     "aos": "^2.3.4",
     "next": "12.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-drag-drop-files": "^2.3.7",
+    "react-modal": "^3.15.1",
     "tailwindcss-border-gradient-radius": "^3.0.1"
   },
   "devDependencies": {

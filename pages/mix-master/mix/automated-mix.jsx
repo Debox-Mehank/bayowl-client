@@ -142,7 +142,7 @@ function Pricing() {
                 <div className='absolute animation-delay-2000 top-[35%] left-[35%] w-36 md:w-96 h-56 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' />
                 {/* <div className='absolute animation-delay-4000 top-[45%] right-[18%] w-36 md:w-96 h-56 bg-blueGradient-2 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' /> */}
                 <div className='absolute top-[42%] right-[34%] w-36 md:w-80 h-72 bg-orange3 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' />
-                <div className="max-w-7xl mx-auto py-16 sm:py-24 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
 
                     {
                         !selectedPlan && (
@@ -242,7 +242,7 @@ function Pricing() {
                     {
                         !selectedPlan && (
                             <div className="hidden lg:block">
-                                <table className="w-full h-px table-fixed">
+                                <table className="w-full table-fixed">
                                     <caption className="sr-only">Pricing plan comparison</caption>
                                     <thead className='sticky top-[14.6rem] left-0 z-20 backdrop-blur-xl bg-darkBlue/30 divide-y divide-blueGradient-2'>
                                         <tr>

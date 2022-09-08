@@ -6,13 +6,13 @@ import Link from "next/link";
 
 const Home: NextPage = () => {
   return (
-    <div className="flex flex-col md:flex-row w-full h-screen text-white overflow-hidden">
-      <div className="w-full h-1/3 md:h-full md:w-1/2 grid place-items-center bg-loginImg bg-cover"></div>
-      <div className="w-full min-h-2/3 md:h-full md:w-1/2 grid place-items-center bg-darkBlue relative md:p-0">
+    <div className="flex flex-col lg:flex-row w-full h-screen text-white">
+      <div className="w-full h-1/3 lg:h-full lg:w-1/2 grid place-items-center bg-loginImg bg-cover"></div>
+      <div className="w-full min-h-2/3 lg:h-full lg:w-1/2 grid place-items-center bg-darkBlue relative md:p-0">
         <div className="-z-0 absolute animation-delay-2000 top-0 md:top-[30%] left-[0%] lg:left-[11%] w-32 md:w-96 h-96 bg-blueGradient-2 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="-z-0 hidden lg:block absolute animation-delay-4000 top-1/3 right-[24%] w-32 md:w-80 h-80 bg-orange3 rounded-full mix-blend-screen filter blur-[100px] opacity-90 animate-blob overflow-hidden" />
         <div className="-z-0 hidden lg:block absolute top-[48%] left-[20%] w-32 md:w-96 h-96 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-        <div className="space-y-3.5 text-center z-10 px-4 relative py-8">
+        <div className="space-y-3.5 text-center z-10 px-4 relative py-8 md:w-4/6">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 504.04 517.13"
@@ -142,14 +142,14 @@ const Home: NextPage = () => {
           <div className="space-y-6">
             {/* <input className='w-full py-2 rounded-xl bg-white/10 px-4' placeholder='Name' type="text" name="Name" /> */}
             <input
-              className="w-full py-2 rounded-xl bg-white/10 px-4"
+              className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40"
               placeholder="Email"
               type="email"
               name="Email"
             />
             {/* <input className='w-full py-2 rounded-xl bg-white/10 px-4' placeholder='Number' type="tel" name="" id="" /> */}
             <input
-              className="w-full py-2 rounded-xl bg-white/10 px-4"
+              className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40"
               placeholder="Password"
               type={"password"}
               name="Password"
@@ -160,7 +160,7 @@ const Home: NextPage = () => {
                             Login
                         </div>
                     </SmallBtn> */}
-          <div className="w-full bg-black/40 font-bold text-lg rounded-xl px-4 py-3 cursor-pointer transition-all hover:scale-105 hover:bg-black/60 duration-300">
+          <div className="w-full bg-white/10 filter backdrop-blur-3xl font-bold text-lg rounded-xl px-4 py-3 cursor-pointer transition-all hover:scale-105 hover:bg-black/60 duration-300">
             Login
           </div>
           <div className="flex justify-between">

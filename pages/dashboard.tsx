@@ -2,22 +2,42 @@ import React from 'react'
 import DashNav from "../components/DashNav"
 import Image from 'next/image'
 import PromoImg from '../public/dash1.jpg'
-import up from "../public/up.svg"
-import down from "../public/down.svg"
-import Button from '../components/reusable/Button'
-import { useState } from 'react'
-import { CheckIcon } from '@heroicons/react/solid'
 import Link from 'next/link'
 import Accordion from '../components/reusable/Accordion'
+import Modal from '../components/reusable/Modal'
 
-
-
+/* This example requires Tailwind CSS v2.0+ */
+import { Fragment, useRef, useState } from 'react'
+import { Dialog, Transition } from '@headlessui/react'
+import { CheckIcon } from '@heroicons/react/outline'
 
 function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ')
 }
 
 const dummyServ = [
+    {
+        projName: null,
+        name: "Mix & Master (Pro Mix)",
+        // Submitted / Under Review / Work In Progress / Delivered / Revision Request Under Review / Revision Delivered
+        status: [
+            { name: 'Submitted', href: '#', status: 'upcoming' },
+            { name: 'Under Review', href: '#', status: 'upcoming' },
+            { name: 'Work In Progress', href: '#', status: 'upcoming' },
+            { name: 'Delivered', href: '#', status: 'upcoming' },
+            { name: 'Revision Request', href: '#', status: 'upcoming' },
+            { name: 'Revision Delivered', href: '#', status: 'upcoming' },
+        ],
+        isExpanded: false,
+        serviceDetails: {
+            estimatedTime: "16 Hours",
+            inputTrackLimit: 30,
+            refFile: 3,
+            deliveryFormat: "48/24 .wav mix file + Instrument bus stems",
+            deliveryDays: 7,
+            revisionDays: 3,
+        }
+    },
     {
         projName: "Dream",
         name: "Mix & Master (Pro Mix)",
@@ -60,13 +80,18 @@ const dummyServ = [
             deliveryDays: 7,
             revisionDays: 3,
         }
-    }
+    },
 ]
+
 
 function Dashboard() {
 
     const date = new Date();
     const hours = date.getHours();
+    const [open, setOpen] = useState(false)
+
+
+
 
     return (
         <div className='bg-darkBlue text-white flex'>
@@ -77,7 +102,21 @@ function Dashboard() {
                 <div className='mt-28'>
                     <Image objectFit='cover' height={900} className='rounded-xl' src={PromoImg} />
                 </div>
-
+                {/* Modal Start */}
+                <Modal open={open} setOpen={setOpen}>
+                    <div className="space-y-4 text-center">
+                        <p className='text-center font-bold'>Name your Project</p>
+                        <input className='w-full rounded-xl bg-white/20' type="text" name="" id="" />
+                        <button
+                            type="button"
+                            className="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary/80 text-base font-medium text-white hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:text-sm"
+                            onClick={() => setOpen(false)}
+                        >
+                            Proceed to upload
+                        </button>
+                    </div>
+                </Modal>
+                {/* Modal End */}
                 <div className='py-4 space-y-3'>
                     <span className='text-2xl md:text-4xl font-bold'>
                         Good {hours < 12 ? "Morning" : hours >= 12 && hours < 17 ? "Afternoon" : "Evening"}, {"John"}.
@@ -94,7 +133,7 @@ function Dashboard() {
                 <div className='py-6 md:px-4 space-y-10 z-50'>
                     {
                         dummyServ.map((service, index) => (
-                            <Accordion service={service} key={service.name} />
+                            <Accordion modalTrigger={setOpen} service={service} key={service.name} />
                         ))
                     }
                 </div>

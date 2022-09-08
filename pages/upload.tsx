@@ -36,18 +36,16 @@ const service = {
 
 function Upload() {
     const [file, setFile] = useState(null);
-    const [filesArray, setFilesArray] = useState<any>(null);
+    const [filesArray, setFilesArray] = useState<File[]>([]);
     const router = useRouter()
 
     const handleChange = (file: any) => {
         setFile(file);
+        setFilesArray(file && Array.from(file))
         console.log(file)
         console.log(Array.from(file))
     };
 
-    useEffect(() => {
-        setFilesArray(file && Array.from(file))
-    }, [file])
 
     return (
         <div className='min-h-screen bg-darkBlue text-white flex relative max-w-7xl mx-auto'>
@@ -65,7 +63,7 @@ function Upload() {
 
                 </h3>
             </div>
-            <div className='hidden md:flex px-8 py-10 relative w-full justify-center gap-10'>
+            <div className='hidden md:flex px-8 py-10 relative w-full justify-center items-center gap-10'>
                 <svg onClick={() => {
                     // setAddOns(null)
                     router.back()
@@ -109,81 +107,87 @@ function Upload() {
                     </div>
 
                 </div>
-                <div className='mx-auto w-4/6 py-24'>
+                <div className='mx-auto w-4/6 bg-white/10 rounded-2xl h-full'>
                     <form className='w-full h-full' name='files' action="">
-                        <FileUploader
-                            multiple={true}
-                            handleChange={handleChange}
-                            name="files"
-                            types={fileTypes}
+                        {
+                            (!file || filesArray.length <= 0) &&
+                            <FileUploader
+                                multiple={true}
+                                handleChange={handleChange}
+                                name="files"
+                                types={fileTypes}
+                                disabled={false}
+                                className=""
+                            >
+                                <div className={`w-full h-full cursor-pointer bg-white/10 flex flex-col gap-8 py-10 rounded-xl ${(!file || filesArray.length <= 0) ? "justify-center items-center" : ""}`}>
+                                    {
+                                        (!file || filesArray.length <= 0) &&
+                                        <>
+                                            <div className='h-48 w-48 bg-white/10 hover:bg-white/20 transition-colors duration-100 rounded-full cursor-pointer mx-auto grid place-items-center z-10'>
+                                                <svg className='z-0 fill-primary' xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 16 16">
+                                                    <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
+                                                </svg>
+                                            </div>
+                                            <div className='text-center'>Drag your files here, or click to upload!</div>
+                                        </>
+                                    }
 
-                        >
-                            <div className={`w-full h-full bg-white/10 flex flex-col gap-8 py-4 rounded-xl ${!file ? "justify-center items-center" : ""}`}>
-                                {
-                                    !file &&
-                                    <>
-                                        <div className='h-48 w-48 bg-white/10 hover:bg-white/20 transition-colors duration-100 rounded-full cursor-pointer mx-auto grid place-items-center z-10'>
-                                            <svg className='z-0 fill-primary' xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 16 16">
-                                                <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
-                                            </svg>
-                                        </div>
-                                        <div className='text-center'>Drag your files here, or click to upload!</div>
-                                    </>
-                                }
 
 
-                                {file &&
-                                    <div className='w-full h-full'>
-                                        <div className='flex flex-col justify-start w-full divide-y-2 divide-purple-500/20 px-4 h-3/4 overflow-auto'>
-                                            {filesArray &&
-                                                filesArray.map((file, index) => (
-                                                    // @ts-ignore
-                                                    <div key={file.name} className='w-full py-3 px-4 flex items-center gap-4' >
-                                                        <div className='bg-white/10 py-3 px-3 rounded-md'>
-                                                            <MusicNoteIcon className='h-10 w-10 fill-transparent stroke-white stroke-[0.4]' />
-                                                        </div>
-                                                        <div>
-                                                            {/*@ts-ignore */}
-                                                            {file.name}
-                                                        </div>
-                                                        <div className='ml-auto'>
-                                                            <TrashIcon
-                                                                onClick={() => {
-                                                                    setFilesArray(prev => prev.slice(index))
-                                                                }}
-                                                                className='h-5 w-5 hover:fill-primary cursor-pointer' />
-                                                        </div>
-                                                    </div>
-                                                ))
-                                            }
-                                        </div>
-                                        <div className='h-1/4 px-8 space-y-3'>
-                                            <textarea className='bg-darkBlue/20 rounded-xl w-full h-28' name="" id="remarks" placeholder='Please mention any preferences or special requests here.' />
-                                            <div className='flex justify-between'>
-                                                <div>
-                                                    <SmallBtn classNames='bg-black/80' isWFull={false}>
-                                                        <>
-                                                            Upload References
-                                                        </>
-                                                    </SmallBtn>
+                                </div>
+
+                            </FileUploader>
+                        }
+
+
+
+                        {file && filesArray.length > 0 &&
+                            <div className='w-full h-full py-10'>
+                                <div className='flex flex-col justify-start w-full divide-y-2 divide-purple-500/20 px-4 h-3/4 overflow-auto'>
+                                    {filesArray &&
+                                        filesArray.map((file, index) => (
+                                            // @ts-ignore
+                                            <div key={file.name} className='w-full py-3 px-4 flex items-center gap-4' >
+                                                <div className='bg-white/10 py-3 px-3 rounded-md'>
+                                                    <MusicNoteIcon className='h-10 w-10 fill-transparent stroke-white stroke-[0.4]' />
                                                 </div>
                                                 <div>
-                                                    <SmallBtn classNames='bg-black/80' isWFull={false}>
-                                                        <>
-                                                            Submit
-                                                        </>
-                                                    </SmallBtn>
+                                                    {/*@ts-ignore */}
+                                                    {file.name}
+                                                </div>
+                                                <div className='ml-auto'>
+                                                    <TrashIcon
+                                                        onClick={() => {
+                                                            setFilesArray(prev => prev.slice(index))
+                                                        }}
+                                                        className='h-5 w-5 hover:fill-primary cursor-pointer' />
                                                 </div>
                                             </div>
-
+                                        ))
+                                    }
+                                </div>
+                                <div className='h-1/4 px-8 space-y-3'>
+                                    <textarea className='bg-darkBlue/20 rounded-xl w-full h-20' name="" id="remarks" placeholder='Please mention any preferences or special requests here.' />
+                                    <div className='flex justify-between '>
+                                        <div>
+                                            <SmallBtn classNames='bg-black/80' isWFull={false}>
+                                                <>
+                                                    Upload References
+                                                </>
+                                            </SmallBtn>
+                                        </div>
+                                        <div>
+                                            <SmallBtn classNames='bg-black/80' isWFull={false}>
+                                                <>
+                                                    Submit
+                                                </>
+                                            </SmallBtn>
                                         </div>
                                     </div>
-                                }
 
-
+                                </div>
                             </div>
-
-                        </FileUploader>
+                        }
                     </form>
                 </div>
 

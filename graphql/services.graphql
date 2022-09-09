@@ -1,0 +1,32 @@
+query GetServiceDetails($input: ServicesDetailInput!) {
+  getServiceDetails(input: $input) {
+    _id
+    mainCategory
+    subCategory
+    serviceName
+    subService
+    subService2
+    for
+    description
+    estimatedTime
+    price
+    inputTrackLimit
+    uploadFileFormat
+    deliveryFileFormat
+    deliveryDays
+    maxFileDuration
+    numberOfReferenceFileUploads
+    setOfRevisions
+    revisionsDelivery
+    mixVocalTuning
+    mixProcessingReverbs
+    mixProcessingDelays
+    mixProcessingOtherFx
+    addOn {
+      type
+      value
+    }
+    createdAt
+    updatedAt
+  }
+}

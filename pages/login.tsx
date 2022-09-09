@@ -1,12 +1,130 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import GoogleIcon from "../public/googleIcon.png";
 import Image from "next/image";
 import SmallBtn from "../components/reusable/SmallBtn";
 import Link from "next/link";
+import { addApolloState, initializeApollo } from "../lib/apolloClient";
+import {
+  MeDocument,
+  MeQuery,
+  useLoginLazyQuery,
+} from "../graphql/generated/graphql";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
+import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
 
 const Home: NextPage = () => {
+  const router = useRouter();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [loginQuery] = useLoginLazyQuery();
+
+  const handleSubmit = async () => {
+    if (loading) {
+      return;
+    }
+
+    if (!email || !password) {
+      toast.error("Please provide all the details");
+      return;
+    }
+
+    if (
+      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.toString())
+    ) {
+      toast.error("Please provide valid email id");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { data, error } = await loginQuery({
+        variables: {
+          email: email.toString().trim(),
+          password: password.toString().trim(),
+        },
+      });
+
+      if (error) {
+        setLoading(false);
+        toast.error(error.message);
+        return;
+      }
+
+      if (!data || !data.login) {
+        setLoading(false);
+        toast.error("Something went wrong, try again later.");
+        return;
+      }
+
+      setLoading(false);
+      router.replace("/dashboard");
+    } catch (error: any) {
+      console.log("login error : " + error.toString());
+      toast.error("Something went wrong, try again later.");
+      return;
+    }
+  };
+
+  const handleSuccess = async (
+    response: Omit<TokenResponse, "error" | "error_description" | "error_uri">
+  ) => {
+    const token = response.access_token;
+
+    try {
+      setLoading(true);
+      const { data, error } = await loginQuery({
+        variables: {
+          email: email.toString().trim(),
+          password: password.toString().trim(),
+          token: token,
+        },
+      });
+
+      if (error) {
+        setLoading(false);
+        toast.error(error.message);
+        return;
+      }
+
+      if (!data || !data.login) {
+        setLoading(false);
+        toast.error("Something went wrong, try again later.");
+        return;
+      }
+
+      setLoading(false);
+      router.replace("/dashboard");
+    } catch (error: any) {
+      console.log("gmail login error : " + error.toString());
+      toast.error("Something went wrong, try again later.");
+      return;
+    }
+  };
+
+  const handleError = async (
+    errorResponse: Pick<
+      TokenResponse,
+      "error" | "error_description" | "error_uri"
+    >
+  ) => {
+    console.log(
+      "gmail login error : " + errorResponse.error_description?.toString()
+    );
+    toast.error("Something went wrong, try again later.");
+  };
+
+  const login = useGoogleLogin({
+    onSuccess: handleSuccess,
+    onError: handleError,
+  });
+
   return (
-    <div className="flex flex-col lg:flex-row w-full h-screen text-white">
+    <div className="flex flex-col lg:flex-row w-full h-screen text-white overflow-hidden">
       <div className="w-full h-1/3 lg:h-full lg:w-1/2 grid place-items-center bg-loginImg bg-cover"></div>
       <div className="w-full min-h-2/3 lg:h-full lg:w-1/2 grid place-items-center bg-darkBlue relative md:p-0">
         <div className="-z-0 absolute animation-delay-2000 top-0 md:top-[30%] left-[0%] lg:left-[11%] w-32 md:w-96 h-96 bg-blueGradient-2 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
@@ -113,21 +231,10 @@ const Home: NextPage = () => {
             </g>
           </svg>
 
-          <button className="bg-white/90 hover:scale-105 hover:bg-white duration-300 transition-all text-black w-full py-2 md:py-3 rounded-xl font-bold flex items-center justify-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              className=""
-              viewBox="0 0 16 16"
-            >
-              <path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516.024.034 1.52.087 2.475-1.258.955-1.345.762-2.391.728-2.43Zm3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422.212-2.189 1.675-2.789 1.698-2.854.023-.065-.597-.79-1.254-1.157a3.692 3.692 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56.244.729.625 1.924 1.273 2.796.576.984 1.34 1.667 1.659 1.899.319.232 1.219.386 1.843.067.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758.347-.79.505-1.217.473-1.282Z" />
-              <path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516.024.034 1.52.087 2.475-1.258.955-1.345.762-2.391.728-2.43Zm3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422.212-2.189 1.675-2.789 1.698-2.854.023-.065-.597-.79-1.254-1.157a3.692 3.692 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56.244.729.625 1.924 1.273 2.796.576.984 1.34 1.667 1.659 1.899.319.232 1.219.386 1.843.067.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758.347-.79.505-1.217.473-1.282Z" />
-            </svg>
-            <span>Continue with Apple</span>
-          </button>
-          <button className="bg-white/90 hover:scale-105 hover:bg-white duration-300 transition-all text-black w-full py-2 md:py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+          <button
+            onClick={() => login()}
+            className="bg-white/90 hover:scale-105 hover:bg-white duration-300 transition-all text-black w-full py-2 md:py-3 rounded-xl font-bold flex items-center justify-center gap-2"
+          >
             <Image height={20} width={20} src={GoogleIcon} />
             <span>Continue with Google</span>
           </button>
@@ -140,28 +247,53 @@ const Home: NextPage = () => {
             or login with email
           </div>
           <div className="space-y-6">
-            {/* <input className='w-full py-2 rounded-xl bg-white/10 px-4' placeholder='Name' type="text" name="Name" /> */}
             <input
+              autoComplete="off"
               className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40"
               placeholder="Email"
               type="email"
               name="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            {/* <input className='w-full py-2 rounded-xl bg-white/10 px-4' placeholder='Number' type="tel" name="" id="" /> */}
             <input
+              autoComplete="off"
               className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40"
               placeholder="Password"
               type={"password"}
               name="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          {/* <SmallBtn isWFull={true} classNames='w-full bg-black/0'>
-                        <div className='bg-black/0 w-full text-lg'>
-                            Login
-                        </div>
-                    </SmallBtn> */}
-          <div className="w-full bg-white/10 filter backdrop-blur-3xl font-bold text-lg rounded-xl px-4 py-3 cursor-pointer transition-all hover:scale-105 hover:bg-black/60 duration-300">
-            Login
+          <div
+            onClick={handleSubmit}
+            className="w-full bg-black/70 filter backdrop-blur-3xl font-bold text-lg rounded-xl px-4 py-3 cursor-pointer flex justify-center items-center transition-all hover:scale-105 hover:bg-black/90 duration-300"
+          >
+            {loading ? (
+              <svg
+                className="animate-spin h-8 w-8 text-primary"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            ) : (
+              "Login"
+            )}
           </div>
           <div className="flex justify-between">
             <Link href={"/sign-up"}>
@@ -180,3 +312,30 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const apolloClient = initializeApollo(null, context);
+
+  try {
+    const meQueryData = await apolloClient.query<MeQuery>({
+      query: MeDocument,
+    });
+
+    if (meQueryData.error || meQueryData.errors) {
+      return addApolloState(apolloClient, {
+        props: {},
+      });
+    }
+
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  } catch (error: any) {
+    return addApolloState(apolloClient, {
+      props: {},
+    });
+  }
+};

@@ -1,0 +1,67 @@
+query Login($password: String!, $email: String!, $token: String) {
+  login(password: $password, email: $email, token: $token)
+}
+
+query Register(
+  $password: String!
+  $email: String!
+  $number: String!
+  $name: String!
+  $token: String
+) {
+  register(
+    password: $password
+    email: $email
+    number: $number
+    name: $name
+    token: $token
+  )
+}
+
+query Me {
+  me {
+    _id
+    name
+    email
+    number
+    services {
+      projectName
+      _id
+      mainCategory
+      subCategory
+      serviceName
+      subService
+      subService2
+      for
+      description
+      estimatedTime
+      price
+      inputTrackLimit
+      uploadFileFormat
+      deliveryFileFormat
+      deliveryDays
+      maxFileDuration
+      numberOfReferenceFileUploads
+      setOfRevisions
+      revisionsDelivery
+      mixVocalTuning
+      mixProcessingReverbs
+      mixProcessingDelays
+      mixProcessingOtherFx
+      addOn {
+        type
+        value
+      }
+      paid
+    }
+    lastLoggedIn
+    lastLoggedOut
+    accountVerified
+    createdAt
+    updatedAt
+  }
+}
+
+query Logout {
+  logout
+}

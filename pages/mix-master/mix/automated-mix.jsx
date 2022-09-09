@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-
+import Button from '../../../components/reusable/Button'
 import { Fragment } from 'react'
 import { CheckIcon, MinusIcon } from '@heroicons/react/solid'
 import Navbar from '../../../components/Navbar'
@@ -7,44 +7,60 @@ import { useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import { useRouter } from 'next/router'
 import onlineServicesData from '../../../data/data'
-
+const fmt = require('indian-number-format')
 
 const addOns = [
     {
-        name: "Extra Revision",
-        price: 250,
-        strPrice: "₹250",
+        category: "Delivery Add Ons",
+        addons: [
+            {
+                name: "Expedited Delivery - 5 Day",
+                price: 5000,
+                strPrice: "₹5000",
+            },
+            {
+                name: "Expedited Delivery - 3 Day",
+                price: 7500,
+                strPrice: "₹10000",
+            },
+            {
+                name: "Expedited Delivery - 2 Day",
+                price: 12500,
+                strPrice: "₹12500",
+            },
+            {
+                name: "Expedited Delivery - 1 Day",
+                price: 25000,
+                strPrice: "₹25000",
+            },
+        ]
     },
     {
-        name: "Expedited Delivery - 5 Day",
-        price: 5000,
-        strPrice: "₹5000",
+        category: "Track Exports",
+        addons: [
+            {
+                name: "Bus Stems Export",
+                price: 500,
+                strPrice: "₹500",
+            },
+            {
+                name: "Multitrack Export",
+                price: 500,
+                strPrice: "₹500",
+            },
+        ]
     },
     {
-        name: "Expedited Delivery - 3 Day",
-        price: 7500,
-        strPrice: "₹10000",
-    },
-    {
-        name: "Expedited Delivery - 2 Day",
-        price: 12500,
-        strPrice: "₹12500",
-    },
-    {
-        name: "Expedited Delivery - 1 Day",
-        price: 25000,
-        strPrice: "₹25000",
-    },
-    {
-        name: "Bus Stems Export",
-        price: 500,
-        strPrice: "₹500",
-    },
-    {
-        name: "Multitrack Export",
-        price: 500,
-        strPrice: "₹500",
-    },
+        category: "Revisions",
+        addons: [
+            {
+                name: "Extra Revision",
+                price: 250,
+                strPrice: "₹250",
+            },
+        ]
+    }
+
 
 ]
 
@@ -138,7 +154,6 @@ function Pricing() {
     return (
         <div className=''>
             <div className="text-white relative">
-
                 <div className='absolute animation-delay-2000 top-[35%] left-[35%] w-36 md:w-96 h-56 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' />
                 {/* <div className='absolute animation-delay-4000 top-[45%] right-[18%] w-36 md:w-96 h-56 bg-blueGradient-2 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' /> */}
                 <div className='absolute top-[42%] right-[34%] w-36 md:w-80 h-72 bg-orange3 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden' />
@@ -171,17 +186,19 @@ function Pricing() {
                         <div className="max-w-2xl mx-auto space-y-16 lg:hidden">
                             {tiers.map((tier, tierIdx) => (
                                 <section key={tier.name}>
-                                    <div className="px-4 mb-8 sticky top-0 left-0 backdrop-blur-md">
+                                    <div className="px-4 mb-8 sticky top-0 left-0 backdrop-blur-md text-center">
                                         <h2 className="text-lg leading-6 font-medium">{tier.name} - {tier.priceString}</h2>
                                         <p className="mt-4 text-sm text-white">{tier.description}</p>
+                                        <div className=''>
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedPlan(true)
+                                                }}
+                                                className='mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg'>
+                                                Buy now
+                                            </button>
+                                        </div>
 
-                                        <button
-                                            onClick={() => {
-                                                setSelectedPlan(true)
-                                            }}
-                                            className='mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg'>
-                                            Buy now
-                                        </button>
                                     </div>
                                     {sections.map((section) => (
                                         <table key={section.features[0].name} className="w-full">
@@ -340,8 +357,37 @@ function Pricing() {
 
                     {
                         selectedPlan && (
-                            <div className='relative text-center flex w-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 py-20'>
-
+                            <div className='relative text-center flex w-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 pt-10 md:pb-16'>
+                                {/* Bottom Bar */}
+                                <div className='fixed z-50 bottom-0 p-4 bg-gradient-to-r from-blueGradient-2/60 to-blueGradient-2/70 filter md:flex w-full flex-1 items-center backdrop-blur-xl'>
+                                    <div className='md:w-1/2 text-md pb-4  md:text-xl'>
+                                        Estimated Delivery: 5 Days
+                                    </div>
+                                    <div className='md:w-1/2 text-left space-y-3'>
+                                        <div className="md:flex items-center gap-8">
+                                            <input className='rounded-lg bg-white/10 h-9 w-60 placeholder:text-white/40' placeholder='Email' type="email" name="" id="" />
+                                            <div className='hidden md:block'>
+                                                <Button>
+                                                    <div>
+                                                        Proceed to Payment
+                                                    </div>
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <div className='font-bold flex items-center justify-between text-xl md:text-2xl'>
+                                            <span>
+                                                ₹2,500
+                                            </span>
+                                            <div className='md:hidden'>
+                                                <Button>
+                                                    <div>
+                                                        Proceed to Payment
+                                                    </div>
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className='absolute -top-5 left-4 md:-left-1'>
                                     <svg onClick={() => {
                                         setSelectedPlan(null)
@@ -350,10 +396,10 @@ function Pricing() {
                                         <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                                     </svg>
                                 </div>
-                                <div className='mx-auto w-full space-y-16 rounded-lg py-20 bg-blueGradient-2/30 backdrop-blur-lg'>
+                                <div className='mx-auto w-full space-y-16 rounded-lg py-16 bg-blueGradient-2/30 backdrop-blur-lg'>
                                     <div className='text-2xl space-y-3  font-bold'>
                                         <span className='text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r py-5 from-pink-600 to-primary'>Automated Mix Plan</span>
-                                        <span className='block'>Independent Artist - ₹2,500</span>
+                                        <span className='block'>Independent Artist</span>
                                     </div>
                                     <div className='text-xl space-y-3'>
                                         <div>Estimated Time Given(Hours) : 2</div>
@@ -370,28 +416,35 @@ function Pricing() {
                                         <div className="">
 
                                             <div className="space-y-3 md:max-h-96 overflow-auto border-none w-11/12 mx-auto md:pr-3">
+                                                {/* Mapping Through Categories */}
                                                 {
                                                     addOns.map(addOn => (
-                                                        <div key={addOn.name}>
-                                                            <label htmlFor={addOn.name} className=" font-medium text-white ">
-                                                                <div className='border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center'>
-                                                                    <div className="min-w-0 flex-1 text-md">
-                                                                        <p id="comments-description" className="text-gray-200">
-                                                                            <span className='font-bold'>{addOn.name}</span> - {addOn.strPrice}
-                                                                        </p>
-                                                                    </div>
-                                                                    <div className="flex justify-center items-center my-auto">
-                                                                        <input
-                                                                            id={addOn.name}
-                                                                            aria-describedby="comments-description"
-                                                                            name={addOn.name}
-                                                                            type="checkbox"
-                                                                            className="focus:ring-indigo-500 h-4 w-4 text-primary border-gray-300 rounded"
-                                                                        />
-                                                                    </div>
-                                                                </div>
+                                                        <div className='space-y-4' key={addOn.category}>
+                                                            <h4 className='font-bold md:text-lg'>{addOn.category}</h4>
+                                                            {/* Mapping through add ons */}
+                                                            {addOn.addons.map(addOn => (
+                                                                <div>
+                                                                    <label htmlFor={addOn.name} className=" font-medium text-white ">
+                                                                        <div className='border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center'>
+                                                                            <div className="min-w-0 flex-1 text-md">
+                                                                                <p id="comments-description" className="text-gray-200">
+                                                                                    <span className='font-bold'>{addOn.name}</span> - ₹{fmt.format(addOn.price)}
+                                                                                </p>
+                                                                            </div>
+                                                                            <div className="flex justify-center items-center my-auto">
+                                                                                <input
+                                                                                    id={addOn.name}
+                                                                                    aria-describedby="comments-description"
+                                                                                    name={addOn.name}
+                                                                                    type="checkbox"
+                                                                                    className="focus:ring-indigo-500 h-4 w-4 text-primary border-gray-300 rounded"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
 
-                                                            </label>
+                                                                    </label>
+                                                                </div>
+                                                            ))}
                                                         </div>
                                                     ))
                                                 }
@@ -401,10 +454,6 @@ function Pricing() {
 
                                         </div>
                                     </fieldset>
-
-                                    <button className='mt-12 lg:mt-8 flex mx-auto justify-center items-center gap-2.5 text-gray-100 bg-white/20 text-xl font-bold py-3 px-5 rounded-2xl  hover:-translate-y-1 duration-300 transition-all hover:shadow-2xl hover:bg-primary hover:text-white '>
-                                        Buy Now
-                                    </button>
 
                                 </div>
                             </div>

@@ -8,8 +8,9 @@ import Button from '../components/reusable/Button';
 import SmallBtn from '../components/reusable/SmallBtn';
 import CTAButton from '../components/reusable/CTAButton';
 import { MusicNoteIcon, TrashIcon } from '@heroicons/react/solid/'
+import Modal from '../components/reusable/Modal';
 
-const fileTypes = ["JPEG", "PNG", "GIF", "JPG"];
+const fileTypes = ["WAV", "JPEG", "PNG", "GIF", "JPG"];
 const service = {
     projName: "Dream",
     name: "Mix & Master (Pro Mix)",
@@ -25,7 +26,9 @@ const service = {
     isExpanded: false,
     serviceDetails: {
         estimatedTime: "16 Hours",
-        inputTrackLimit: 30,
+        inputTrackLimit: 10,
+        refTrackLimit: 3,
+        uploadTime: 60,
         refFile: 3,
         deliveryFormat: "48/24 .wav mix file + Instrument bus stems",
         deliveryDays: 7,
@@ -34,21 +37,98 @@ const service = {
 }
 
 
+async function getDuration(file: File) {
+    const url = URL.createObjectURL(file);
+
+    return new Promise((resolve) => {
+        const audio = document.createElement("audio");
+        audio.muted = true;
+        const source = document.createElement("source");
+        source.src = url; //--> blob URL
+        audio.preload = "metadata";
+        audio.appendChild(source);
+        audio.onloadedmetadata = function () {
+            resolve(audio.duration)
+        };
+    });
+}
+
+
 function Upload() {
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState<Boolean>(false)
+    const [isRefModalOpen, setIsRefModalOpen] = useState<Boolean>(false)
+    // const [refFileList, setRefFileList] = useState<Object[]>([])
     const [file, setFile] = useState(null);
     const [filesArray, setFilesArray] = useState<File[]>([]);
+
+    const [refFile, setRefFile] = useState(null);
+    const [refFileArray, setRefFileArray] = useState<refTrack[]>([]);
+
+    interface refTrack {
+        type: string,
+        file: File | null,
+        link: string | null
+    }
+
     const router = useRouter()
 
-    const handleChange = (file: any) => {
-        setFile(file);
-        setFilesArray(file && Array.from(file))
-        console.log(file)
-        console.log(Array.from(file))
+    const handleRefFileChange = (file: any) => {
+
+        // Skipping the process if user tries uploading tracks more than limit.
+        if (Array.from(file).length > service.serviceDetails.refTrackLimit) {
+            setRefFile(null)
+            setRefFileArray([])
+            console.log("Tracks more than the limit.")
+            // To show Modal with Track Limit Error
+        } else {
+            setFile(file);
+            setFilesArray(file && Array.from(file))
+            console.log(filesArray)
+        }
+
     };
+
+    const handleChange = (file: any) => {
+        // Skipping the process if user tries uploading tracks more than limit.
+        if (Array.from(file).length > service.serviceDetails.inputTrackLimit) {
+            setFile(null)
+            setFilesArray([])
+            console.log("Tracks more than the limit.")
+            // To show Modal with Track Limit Error
+        } else {
+            setFile(file);
+            setFilesArray(file && Array.from(file))
+            console.log(filesArray)
+        }
+
+    };
+
+    useEffect(() => {
+        filesArray &&
+            filesArray.forEach(async (file, index) => {
+                // Check duration for each file, if it's higher than the track limit, throw error in modal and remove that file from the array.
+                const duration = await getDuration(file);
+                // @ts-ignore
+                if (duration > service.serviceDetails.uploadTime) {
+                    console.log(`Track length more than expected. ${file.name} will not be uploaded.`)
+                    setFilesArray(prev => prev.filter((file, idx) => idx !== index))
+                    // Show Modal
+                }
+                // Check file size for each file, if it's higher than (100mb), throw error in modal and remove that file from array. To get confirmation from Varun on max size.
+                // https://www.gbmb.org/mb-to-bytes
+                if (file.size > 5000000) {
+                    console.log(`File size more than expected. ${file.name} will not be uploaded.`)
+                    setFilesArray(prev => prev.filter((file, idx) => idx !== index))
+                    // Show Modal
+                }
+
+            })
+
+    }, [filesArray])
 
 
     return (
-        <div className='min-h-screen bg-darkBlue text-white flex relative max-w-7xl mx-auto'>
+        <div className='h-screen bg-darkBlue text-white flex relative max-w-7xl mx-auto'>
 
             <div className='absolute animation-delay-2000 top-[45%] left-[15%] w-36 md:w-96 h-96 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[60px] animate-blob overflow-hidden' />
             <div className='absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden' />
@@ -158,7 +238,9 @@ function Upload() {
                                                 <div className='ml-auto'>
                                                     <TrashIcon
                                                         onClick={() => {
-                                                            setFilesArray(prev => prev.slice(index))
+                                                            setFilesArray(prev => prev.filter((file, idx) => idx !== index))
+                                                            console.log(filesArray)
+
                                                         }}
                                                         className='h-5 w-5 hover:fill-primary cursor-pointer' />
                                                 </div>
@@ -166,13 +248,46 @@ function Upload() {
                                         ))
                                     }
                                 </div>
-                                <div className='h-1/4 px-8 space-y-3'>
-                                    <textarea className='bg-darkBlue/20 rounded-xl w-full h-20' name="" id="remarks" placeholder='Please mention any preferences or special requests here.' />
-                                    <div className='flex justify-between '>
-                                        <div>
+                                <div className='h-1/4 px-8 flex flex-col justify-around'>
+                                    <Modal setOpen={setIsRefModalOpen} open={isRefModalOpen}>
+                                        <div className='text-center space-y-4'>
+                                            <h3 className='text-lg font-bold'>Upload References</h3>
+                                            <div className='flex justify-between'>
+                                                <div>
+                                                    <FileUploader
+                                                        multiple={true}
+                                                        handleChange={handleRefFileChange}
+                                                        name="refFiles"
+                                                        types={fileTypes}
+                                                        className=""
+                                                    >
+                                                        <div className='space-x-4'>
+                                                            <SmallBtn classNames='bg-black/80' isWFull={false}>
+                                                                <>
+                                                                    Upload References
+                                                                </>
+                                                            </SmallBtn>
+                                                            <span>or</span>
+                                                        </div>
+                                                    </FileUploader>
+                                                </div>
+                                                <div className='mx-auto space-x-4'>
+                                                    <input placeholder='Enter URL' className='bg-white/20 rounded-xl' type="url" name="" id="" />
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Modal>
+                                    <textarea className='bg-darkBlue/20 rounded-xl w-full h-full my-10' name="" id="remarks" placeholder='Please mention any preferences or special requests here.' />
+                                    <div className='flex justify-between z-50'>
+                                        <div
+                                            onClick={() => setIsRefModalOpen(true)}
+                                        >
                                             <SmallBtn classNames='bg-black/80' isWFull={false}>
                                                 <>
-                                                    Upload References
+                                                    Add References
                                                 </>
                                             </SmallBtn>
                                         </div>

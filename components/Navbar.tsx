@@ -53,7 +53,7 @@ function Navbar({
       <div className=" h-full" />
       <nav
         style={{ transition: "0.4s" }}
-        className={` text-white fixed top-0 left-0 right-0 transition-all shadow-md bg-gradient-to-r from-darkBlue/70 filter backdrop-blur-xl to-blueGradient-2/70
+        className={`z-50 text-white fixed top-0 left-0 right-0 transition-all shadow-md bg-gradient-to-r bg-blueGradient-2 px-3
                 ${scrolled ? "p-0" : " p-2"}`}
         role="navigation"
       >

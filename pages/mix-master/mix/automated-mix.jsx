@@ -357,24 +357,34 @@ function Pricing() {
 
                     {
                         selectedPlan && (
-                            <div className='relative text-center flex w-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 py-20'>
+                            <div className='relative text-center flex w-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 pt-10 md:pb-16'>
                                 {/* Bottom Bar */}
-                                <div className='fixed bottom-0 py-6 bg-gradient-to-r from-blueGradient-2/60 to-blueGradient-2/70 filter md:flex w-full flex-1 items-center'>
-                                    <div className='md:w-1/2  text-xl'>
+                                <div className='fixed z-50 bottom-0 p-4 bg-gradient-to-r from-blueGradient-2/60 to-blueGradient-2/70 filter md:flex w-full flex-1 items-center backdrop-blur-xl'>
+                                    <div className='md:w-1/2 text-md pb-4  md:text-xl'>
                                         Estimated Delivery: 5 Days
                                     </div>
-                                    <div className='md:w-1/2 text-left space-y-2'>
-                                        <p>Email</p>
-                                        <div className="flex items-center gap-8">
-                                            <input className='rounded-lg bg-white/20 h-9 w-60' type="email" name="" id="" />
-                                            <Button>
-                                                <div>
-                                                    Proceed to Payment
-                                                </div>
-                                            </Button>
+                                    <div className='md:w-1/2 text-left space-y-3'>
+                                        <div className="md:flex items-center gap-8">
+                                            <input className='rounded-lg bg-white/10 h-9 w-60 placeholder:text-white/40' placeholder='Email' type="email" name="" id="" />
+                                            <div className='hidden md:block'>
+                                                <Button>
+                                                    <div>
+                                                        Proceed to Payment
+                                                    </div>
+                                                </Button>
+                                            </div>
                                         </div>
-                                        <div className='font-bold text-xl md:text-2xl'>
-                                            ₹2,500
+                                        <div className='font-bold flex items-center justify-between text-xl md:text-2xl'>
+                                            <span>
+                                                ₹2,500
+                                            </span>
+                                            <div className='md:hidden'>
+                                                <Button>
+                                                    <div>
+                                                        Proceed to Payment
+                                                    </div>
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -386,7 +396,7 @@ function Pricing() {
                                         <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                                     </svg>
                                 </div>
-                                <div className='mx-auto w-full space-y-16 rounded-lg py-20 bg-blueGradient-2/30 backdrop-blur-lg'>
+                                <div className='mx-auto w-full space-y-16 rounded-lg py-16 bg-blueGradient-2/30 backdrop-blur-lg'>
                                     <div className='text-2xl space-y-3  font-bold'>
                                         <span className='text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r py-5 from-pink-600 to-primary'>Automated Mix Plan</span>
                                         <span className='block'>Independent Artist</span>
@@ -444,10 +454,6 @@ function Pricing() {
 
                                         </div>
                                     </fieldset>
-
-                                    <button className='mt-12 lg:mt-8 flex mx-auto justify-center items-center gap-2.5 text-gray-100 bg-white/20 text-xl font-bold py-3 px-5 rounded-2xl  hover:-translate-y-1 duration-300 transition-all hover:shadow-2xl hover:bg-primary hover:text-white '>
-                                        Buy Now
-                                    </button>
 
                                 </div>
                             </div>

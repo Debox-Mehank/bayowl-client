@@ -1450,6 +1450,11 @@ imurmurhash@^0.1.4:
   resolved "https://registry.npmjs.org/imurmurhash/-/imurmurhash-0.1.4.tgz"
   integrity sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==
 
+indian-number-format@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/indian-number-format/-/indian-number-format-1.0.5.tgz#212f852d8ffd8d4e9295860c6b4a6329b220dcb8"
+  integrity sha512-srQIMFKY82WpaJiTtM6LRD+5ZFFuSOjFh9aIbjdPOln1lG7Zvs3S8PGJUOvto+6IMXc8zP+1y7kESEZltUTjqw==
+
 inflight@^1.0.4:
   version "1.0.6"
   resolved "https://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz"

@@ -15,7 +15,7 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <Navbar />
+      {/* <Navbar />
       <div className="-z-50 absolute top-0 left-0 right-0 bottom-0 bg-darkBlue min-h-screen" />
       <div
         style={{ height: "calc(100vh - 9rem)" }}
@@ -40,9 +40,9 @@ const Home: NextPage = () => {
                 </button>
               );
             })}
-          </div>
-          {/* Core Services (4 buttons) */}
-          {/* <div className='flex justify-center items-center gap-8 flex-wrap'>
+          </div> */}
+      {/* Core Services (4 buttons) */}
+      {/* <div className='flex justify-center items-center gap-8 flex-wrap'>
             {onlineServicesData.map(service => (
 
               <Link key={service.category} href={service.route}>
@@ -60,8 +60,8 @@ const Home: NextPage = () => {
 
             ))}
           </div> */}
-          {/* Categories */}
-          {/* <div className='flex justify-center items-center gap-8'>
+      {/* Categories */}
+      {/* <div className='flex justify-center items-center gap-8'>
 
             {
               activeService && onlineServicesData.filter(service => service.category === activeService)[0].services?.map(category => (
@@ -83,8 +83,8 @@ const Home: NextPage = () => {
                 </div>
               ))}
           </div> */}
-          {/* Sub-Categories (if they exist) */}
-          {/* <div className='flex justify-center items-center gap-8'>
+      {/* Sub-Categories (if they exist) */}
+      {/* <div className='flex justify-center items-center gap-8'>
             {
               activeService && activeCat && onlineServicesData.filter(service => service.category === activeService)[0].services?.filter(service => service.name === activeCat).map(subCat => (
                 <>
@@ -101,8 +101,8 @@ const Home: NextPage = () => {
               ))
             }
           </div> */}
-        </div>
-      </div>
+      {/* </div> */}
+      {/* </div> */}
     </div>
   );
 };

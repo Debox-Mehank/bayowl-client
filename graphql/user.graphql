@@ -65,3 +65,7 @@ query Me {
 query Logout {
   logout
 }
+
+query AddUserService($input: UserServicesInput!) {
+  addUserService(input: $input)
+}

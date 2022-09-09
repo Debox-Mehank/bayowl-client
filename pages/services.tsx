@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import ServiceCard from "../components/reusable/ServiceCard";
 import { allServices } from "../data/services";
 import { useMeQuery } from "../graphql/generated/graphql";
 
@@ -54,8 +55,7 @@ const Services = () => {
               <div className="flex justify-center items-center gap-8 flex-wrap">
                 {allServices.map((a) => {
                   return (
-                    <button
-                      data-aos="fade-up"
+                    <ServiceCard
                       key={a.mainCategory}
                       onClick={() => {
                         setSelectedMainCategory(a.mainCategory);
@@ -65,10 +65,23 @@ const Services = () => {
                           )}`
                         );
                       }}
-                      className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
-                    >
-                      {a.mainCategory}
-                    </button>
+                      title={a.mainCategory}
+                    />
+                    // <button
+                    //   data-aos="fade-up"
+                    //   key={a.mainCategory}
+                    //   onClick={() => {
+                    //     setSelectedMainCategory(a.mainCategory);
+                    //     router.push(
+                    //       `/services?mainCategory=${encodeURIComponent(
+                    //         a.mainCategory
+                    //       )}`
+                    //     );
+                    //   }}
+                    //   className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
+                    // >
+                    //   {a.mainCategory}
+                    // </button>
                   );
                 })}
               </div>
@@ -85,8 +98,7 @@ const Services = () => {
                   )[0]
                   .subCategories.map((a) => {
                     return (
-                      <button
-                        data-aos="fade-up"
+                      <ServiceCard
                         key={a.subCategory}
                         onClick={() => {
                           setSelectedSubCategory(a.subCategory);
@@ -96,10 +108,23 @@ const Services = () => {
                             )}&subCategory=${encodeURIComponent(a.subCategory)}`
                           );
                         }}
-                        className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
-                      >
-                        {a.subCategory}
-                      </button>
+                        title={a.subCategory}
+                      />
+                      // <button
+                      //   data-aos="fade-up"
+                      //   key={a.subCategory}
+                      //   onClick={() => {
+                      //     setSelectedSubCategory(a.subCategory);
+                      //     router.push(
+                      //       `/services?mainCategory=${encodeURIComponent(
+                      //         selectedMainCategory
+                      //       )}&subCategory=${encodeURIComponent(a.subCategory)}`
+                      //     );
+                      //   }}
+                      //   className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
+                      // >
+                      //   {a.subCategory}
+                      // </button>
                     );
                   })}
               </div>
@@ -119,8 +144,7 @@ const Services = () => {
                   )[0]
                   .services.map((a) => {
                     return (
-                      <button
-                        data-aos="fade-up"
+                      <ServiceCard
                         key={a.serviceName}
                         onClick={() => {
                           if (a.subServices) {
@@ -135,13 +159,43 @@ const Services = () => {
                               )}`
                             );
                           } else {
-                            console.log("final page");
+                            const data = {
+                              mainCategory: selectedMainCategory,
+                              subCategory: selectedSubCategory,
+                              serviceName: a.serviceName,
+                            };
+                            localStorage.setItem(
+                              "userService",
+                              JSON.stringify(data)
+                            );
+                            router.push("/pricing");
                           }
                         }}
-                        className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
-                      >
-                        {a.serviceName}
-                      </button>
+                        title={a.serviceName}
+                      />
+                      // <button
+                      //   data-aos="fade-up"
+                      //   key={a.serviceName}
+                      //   onClick={() => {
+                      //     if (a.subServices) {
+                      //       setSelectedService(a.serviceName);
+                      //       router.push(
+                      //         `/services?mainCategory=${encodeURIComponent(
+                      //           selectedMainCategory
+                      //         )}&subCategory=${encodeURIComponent(
+                      //           selectedSubCategory
+                      //         )}&serviceName=${encodeURIComponent(
+                      //           a.serviceName
+                      //         )}`
+                      //       );
+                      //     } else {
+                      //       console.log("final page");
+                      //     }
+                      //   }}
+                      //   className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
+                      // >
+                      //   {a.serviceName}
+                      // </button>
                     );
                   })}
               </div>
@@ -164,16 +218,34 @@ const Services = () => {
                   )[0]
                   .subServices?.map((a) => {
                     return (
-                      <button
-                        data-aos="fade-up"
+                      <ServiceCard
                         key={a.subService}
                         onClick={() => {
                           setSelectedSubService(a.subService);
+                          const data = {
+                            mainCategory: selectedMainCategory,
+                            subCategory: selectedSubCategory,
+                            serviceName: selectedService,
+                            subService: a.subService,
+                          };
+                          localStorage.setItem(
+                            "userService",
+                            JSON.stringify(data)
+                          );
+                          router.push("/pricing");
                         }}
-                        className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
-                      >
-                        {a.subService}
-                      </button>
+                        title={a.subService}
+                      />
+                      // <button
+                      //   data-aos="fade-up"
+                      //   key={a.subService}
+                      //   onClick={() => {
+                      //     setSelectedSubService(a.subService);
+                      //   }}
+                      //   className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
+                      // >
+                      //   {a.subService}
+                      // </button>
                     );
                   })}
               </div>

@@ -39,12 +39,18 @@ export type MutationAddServiceArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  addUserService: Scalars['Boolean'];
   getAllService: Array<Services>;
   getServiceDetails: Array<Services>;
   login: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   me: User;
   register: Scalars['Boolean'];
+};
+
+
+export type QueryAddUserServiceArgs = {
+  input: UserServicesInput;
 };
 
 
@@ -180,6 +186,35 @@ export type UserServices = {
   uploadFileFormat: Array<Scalars['String']>;
 };
 
+export type UserServicesInput = {
+  addOn: Array<AddOnInput>;
+  deliveryDays?: InputMaybe<Scalars['Float']>;
+  /** File formats for delivery file */
+  deliveryFileFormat: Array<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  estimatedTime?: InputMaybe<Scalars['Float']>;
+  for?: InputMaybe<Scalars['String']>;
+  inputTrackLimit?: InputMaybe<Scalars['Float']>;
+  mainCategory: Scalars['String'];
+  maxFileDuration?: InputMaybe<Scalars['Float']>;
+  mixProcessingDelays?: InputMaybe<Scalars['String']>;
+  mixProcessingOtherFx?: InputMaybe<Scalars['String']>;
+  mixProcessingReverbs?: InputMaybe<Scalars['String']>;
+  mixVocalTuning?: InputMaybe<Scalars['String']>;
+  numberOfReferenceFileUploads?: InputMaybe<Scalars['Float']>;
+  paid: Scalars['Boolean'];
+  price: Scalars['Float'];
+  projectName?: InputMaybe<Scalars['String']>;
+  revisionsDelivery?: InputMaybe<Scalars['Float']>;
+  serviceName: Scalars['String'];
+  setOfRevisions?: InputMaybe<Scalars['Float']>;
+  subCategory: Scalars['String'];
+  subService?: InputMaybe<Scalars['String']>;
+  subService2?: InputMaybe<Scalars['String']>;
+  /** File formats for uploading file */
+  uploadFileFormat: Array<Scalars['String']>;
+};
+
 export type GetServiceDetailsQueryVariables = Exact<{
   input: ServicesDetailInput;
 }>;
@@ -216,6 +251,13 @@ export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type LogoutQuery = { __typename?: 'Query', logout: boolean };
+
+export type AddUserServiceQueryVariables = Exact<{
+  input: UserServicesInput;
+}>;
+
+
+export type AddUserServiceQuery = { __typename?: 'Query', addUserService: boolean };
 
 
 export const GetServiceDetailsDocument = gql`
@@ -462,3 +504,36 @@ export function useLogoutLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Log
 export type LogoutQueryHookResult = ReturnType<typeof useLogoutQuery>;
 export type LogoutLazyQueryHookResult = ReturnType<typeof useLogoutLazyQuery>;
 export type LogoutQueryResult = Apollo.QueryResult<LogoutQuery, LogoutQueryVariables>;
+export const AddUserServiceDocument = gql`
+    query AddUserService($input: UserServicesInput!) {
+  addUserService(input: $input)
+}
+    `;
+
+/**
+ * __useAddUserServiceQuery__
+ *
+ * To run a query within a React component, call `useAddUserServiceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAddUserServiceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAddUserServiceQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddUserServiceQuery(baseOptions: Apollo.QueryHookOptions<AddUserServiceQuery, AddUserServiceQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AddUserServiceQuery, AddUserServiceQueryVariables>(AddUserServiceDocument, options);
+      }
+export function useAddUserServiceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AddUserServiceQuery, AddUserServiceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AddUserServiceQuery, AddUserServiceQueryVariables>(AddUserServiceDocument, options);
+        }
+export type AddUserServiceQueryHookResult = ReturnType<typeof useAddUserServiceQuery>;
+export type AddUserServiceLazyQueryHookResult = ReturnType<typeof useAddUserServiceLazyQuery>;
+export type AddUserServiceQueryResult = Apollo.QueryResult<AddUserServiceQuery, AddUserServiceQueryVariables>;

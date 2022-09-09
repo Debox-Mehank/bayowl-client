@@ -62,6 +62,7 @@ const Home: NextPage = () => {
       }
 
       setLoading(false);
+      localStorage.setItem("loggedIn", "true");
       router.replace("/dashboard");
     } catch (error: any) {
       console.log("login error : " + error.toString());
@@ -99,6 +100,7 @@ const Home: NextPage = () => {
 
       setLoading(false);
       router.replace("/dashboard");
+      localStorage.setItem("loggedIn", "true");
     } catch (error: any) {
       console.log("gmail login error : " + error.toString());
       toast.error("Something went wrong, try again later.");

@@ -93,7 +93,7 @@ function Dashboard() {
   const hours = date.getHours();
   const [open, setOpen] = useState(false);
 
-  const { data, loading, error } = useMeQuery();
+  const { data, loading, error } = useMeQuery({ fetchPolicy: "network-only" });
 
   return (
     <div className="bg-darkBlue text-white flex">
@@ -147,11 +147,30 @@ function Dashboard() {
         {/* Paid Subscriptions */}
 
         <div className="py-6 md:px-4 space-y-10 z-50">
-          {dummyServ.map((service, index) => (
+          {data?.me.services?.map((service, index) => (
             <Accordion
               modalTrigger={setOpen}
-              service={service}
-              key={service.name}
+              service={{
+                name: service.mainCategory,
+                projName: service.projectName!,
+                serviceDetails: {
+                  deliveryDays: service.deliveryDays!,
+                  deliveryFormat: service.deliveryFileFormat.join(", "),
+                  estimatedTime: service.estimatedTime!,
+                  inputTrackLimit: service.inputTrackLimit!,
+                  refFile: service.numberOfReferenceFileUploads!,
+                  revisionDays: service.revisionsDelivery,
+                },
+                status: [
+                  { name: "Submitted", href: "#", status: "complete" },
+                  { name: "Under Review", href: "#", status: "complete" },
+                  { name: "Work In Progress", href: "#", status: "current" },
+                  { name: "Delivered", href: "#", status: "upcoming" },
+                  { name: "Revision Request", href: "#", status: "upcoming" },
+                  { name: "Revision Delivered", href: "#", status: "upcoming" },
+                ],
+              }}
+              key={index}
             />
           ))}
         </div>

@@ -122,6 +122,7 @@ const Home: NextPage = () => {
 
         setLoading(false);
         router.replace("/dashboard");
+        localStorage.setItem("loggedIn", "true");
       } else {
         toast.error("Something went wrong, try again later.");
         return;

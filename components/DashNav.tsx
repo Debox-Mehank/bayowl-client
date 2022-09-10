@@ -10,8 +10,8 @@ function DashNav({
   name,
   email,
 }: {
-  name: string | undefined;
-  email: string | undefined;
+  name?: string | null;
+  email?: string | null;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");

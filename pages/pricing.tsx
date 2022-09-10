@@ -1,12 +1,13 @@
+import axios from "axios";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Button from "../components/reusable/Button";
 import {
   AddOn,
   Services,
-  useAddUserServiceLazyQuery,
   useGetServiceDetailsLazyQuery,
+  useInitiatePaymentLazyQuery,
 } from "../graphql/generated/graphql";
 
 function secondsToHms(d: number) {
@@ -27,9 +28,10 @@ const Pricing = () => {
   const [selectedService, setSelectedService] = useState<Services[]>();
   const [selectedServiceFinal, setSelectedServiceFinal] = useState<Services>();
   const [selectedAddons, setSelectedAddons] = useState<AddOn[]>([]);
+  const [email, setEmail] = useState<string>("");
 
   const [getServiceDetailsQuery] = useGetServiceDetailsLazyQuery();
-  const [addUserServiceQuery] = useAddUserServiceLazyQuery();
+  const [initiatePaymentQuery] = useInitiatePaymentLazyQuery();
 
   useEffect(() => {
     const userServiceLS = localStorage.getItem("userService");
@@ -71,6 +73,10 @@ const Pricing = () => {
 
   const handleProceed = async () => {
     if (selectedServiceFinal) {
+      if (!localStorage.getItem("loggedIn") && email === "") {
+        toast.error("Please provide your email before proceeding");
+        return;
+      }
       const total =
         selectedServiceFinal.price +
         selectedAddons.reduce((acc, o) => acc + o.value!, 0);
@@ -82,18 +88,19 @@ const Pricing = () => {
       );
 
       setLoading(true);
-      const { data, error } = await addUserServiceQuery({
+      const { data, error } = await initiatePaymentQuery({
         variables: {
-          input: {
+          service: {
             ...clone,
             addOn: selectedAddons.map((el) => ({
               type: el.type,
               value: el.value,
             })),
             price: total,
-            paid: true,
           },
+          email: email === "" ? null : email,
         },
+        fetchPolicy: "network-only",
       });
 
       if (error) {
@@ -102,14 +109,45 @@ const Pricing = () => {
         return;
       }
 
-      if (!data || !data.addUserService) {
+      if (!data || !data.initiatePayment) {
         setLoading(false);
         toast.error("Something went wrong, try again later.");
         return;
       }
 
       setLoading(false);
-      router.replace("/dashboard");
+      if (email === "") {
+        const order = JSON.parse(data.initiatePayment);
+
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          amount: order.amount,
+          currency: "INR",
+          name: "Bay Owl Studios",
+          order_id: order.id,
+          callback_url: process.env.NEXT_PUBLIC_RAZORPAY_CALLBACK,
+          prefill: {
+            email: email,
+          },
+          theme: {
+            color: "#f07202",
+          },
+          modal: {
+            confirm_close: true,
+          },
+        };
+        const razor = new (window as any).Razorpay(options);
+        razor.open();
+
+        return;
+      }
+
+      toast.success(
+        `Verification mail has been sent to your mail id, once your verification is done you will receive a payment link to complete the payment`,
+        { duration: 3000 }
+      );
+      localStorage.clear();
+      router.replace("/");
     }
   };
 
@@ -615,6 +653,8 @@ const Pricing = () => {
                         className="rounded-lg bg-white/10 h-9 w-60 placeholder:text-white/40"
                         placeholder="Email"
                         type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         name=""
                         id=""
                       />

@@ -1,22 +1,18 @@
 import type { GetServerSideProps, NextPage } from "next";
-import GoogleIcon from "../public/googleIcon.png";
-import Image from "next/image";
-import SmallBtn from "../components/reusable/SmallBtn";
 import Link from "next/link";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import {
   MeDocument,
   MeQuery,
-  useRegisterLazyQuery,
+  useCompleteAccountLazyQuery,
 } from "../graphql/generated/graphql";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 
 const Home: NextPage = () => {
   const router = useRouter();
+  const { email: emailQuery, token } = router.query;
   const [name, setName] = useState<string>("");
   const [number, setNumber] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -24,10 +20,21 @@ const Home: NextPage = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [registerQuery] = useRegisterLazyQuery();
+  const [registerQuery] = useCompleteAccountLazyQuery();
+
+  useEffect(() => {
+    if (emailQuery) {
+      setEmail(emailQuery.toString());
+    }
+  }, [emailQuery]);
 
   const handleSubmit = async () => {
     if (loading) {
+      return;
+    }
+
+    if (!token) {
+      toast.error("Something went wrong, try again later.");
       return;
     }
 
@@ -56,8 +63,8 @@ const Home: NextPage = () => {
           number: number.toString().trim(),
           email: email.toString().trim(),
           password: password.toString().trim(),
+          token: token.toString(),
         },
-        fetchPolicy: "network-only",
       });
 
       if (error) {
@@ -66,7 +73,7 @@ const Home: NextPage = () => {
         return;
       }
 
-      if (!data || !data.register) {
+      if (!data || !data.completeAccount) {
         setLoading(false);
         toast.error("Something went wrong, try again later.");
         return;
@@ -78,87 +85,15 @@ const Home: NextPage = () => {
       setName("");
       setPassword("");
       toast.success(
-        "Congragulations your account is created successfully, an email with verification link has been sent to your email.",
-        { duration: 3000 }
+        "Congragulations your account is created successfully, login with your credentials to continue"
       );
-      // router.replace("/dashboard");
+      router.replace("/login");
     } catch (error: any) {
       console.log("register error : " + error.toString());
       toast.error("Something went wrong, try again later.");
       return;
     }
   };
-
-  const handleSuccess = async (
-    response: Omit<TokenResponse, "error" | "error_description" | "error_uri">
-  ) => {
-    const token = response.access_token;
-
-    try {
-      setLoading(true);
-
-      const { data: userInfo } = await axios.get(
-        "https://www.googleapis.com/oauth2/v3/userinfo",
-        {
-          headers: {
-            Authorization: `Bearer ${response.access_token}`,
-          },
-        }
-      );
-
-      if (userInfo) {
-        const { data, error } = await registerQuery({
-          variables: {
-            name: userInfo.name.toString().trim(),
-            number: "",
-            email: userInfo.email.toString().trim(),
-            password: "",
-            token: token,
-          },
-        });
-
-        if (error) {
-          setLoading(false);
-          toast.error(error.message);
-          return;
-        }
-
-        if (!data || !data.register) {
-          setLoading(false);
-          toast.error("Something went wrong, try again later.");
-          return;
-        }
-
-        setLoading(false);
-        router.replace("/dashboard");
-        localStorage.setItem("loggedIn", "true");
-      } else {
-        toast.error("Something went wrong, try again later.");
-        return;
-      }
-    } catch (error: any) {
-      console.log("register error : " + error.toString());
-      toast.error("Something went wrong, try again later.");
-      return;
-    }
-  };
-
-  const handleError = async (
-    errorResponse: Pick<
-      TokenResponse,
-      "error" | "error_description" | "error_uri"
-    >
-  ) => {
-    console.log(
-      "gmail register error : " + errorResponse.error_description?.toString()
-    );
-    toast.error("Something went wrong, try again later.");
-  };
-
-  const login = useGoogleLogin({
-    onSuccess: handleSuccess,
-    onError: handleError,
-  });
 
   return (
     <div className="flex flex-col lg:flex-row w-full h-screen text-white overflow-hidden">
@@ -267,20 +202,13 @@ const Home: NextPage = () => {
               </g>
             </g>
           </svg>
-          <button
-            onClick={() => login()}
-            className="bg-white/90 hover:scale-105 hover:bg-white duration-300 transition-all text-black w-full py-2 md:py-3 rounded-xl font-bold flex items-center justify-center gap-2"
-          >
-            <Image height={20} width={20} src={GoogleIcon} />
-            <span>Continue with Google</span>
-          </button>
 
           {/* Before and after for surrounding content with a horizontal line */}
           <div
             className='flex gap-2 after:content-[""] after:flex-1 after:border-b-2 after:border-solid after:m-auto after:mr-2.5
                     before:content-[""] before:flex-1 before:border-b-2 before:border-solid before:m-auto before:ml-2.5'
           >
-            or sign-up with email
+            Fill all the details to create your account
           </div>
           <div className="space-y-6">
             <input
@@ -347,15 +275,8 @@ const Home: NextPage = () => {
                 ></path>
               </svg>
             ) : (
-              "Sign up"
+              "Submit"
             )}
-          </div>
-          <div className="flex justify-end">
-            <Link href={"/login"}>
-              <span className="underline cursor-pointer">
-                Have an account? Login instead.
-              </span>
-            </Link>
           </div>
         </div>
       </div>

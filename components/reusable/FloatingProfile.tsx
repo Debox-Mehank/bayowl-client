@@ -9,8 +9,8 @@ function FloatingProfile({
   email,
   position,
 }: {
-  name: string | undefined;
-  email: string | undefined;
+  name?: string | null;
+  email?: string | null;
   position: string;
 }) {
   const router = useRouter();

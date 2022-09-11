@@ -34,7 +34,7 @@ const Services = () => {
     }
   }, [mainCategoryRoute, subCategoryRoute, serviceNameRoute, router.query]);
 
-  const finalPageHandler = () => {};
+  const finalPageHandler = () => { };
 
   return (
     <div>
@@ -44,8 +44,10 @@ const Services = () => {
         style={{ height: "calc(100vh - 9rem)" }}
         className="bg-transparent z-0 mt-36 flex relative flex-col justify-center items-center max-w-7-xl mx-auto text-white"
       >
-        <div className="absolute animation-delay-2000 top-[35%] left-[26%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-        <div className="absolute animation-delay-4000 top-[35%] right-[30%] w-36 md:w-96 h-56 bg-primary opacity-40 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
+
+        <div className='absolute animation-delay-4000 top-[40%] right-[22%] w-36 md:w-96 h-56 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
+        <div className='absolute animation-delay-2000 top-[38%] right-[40%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
+        <div className='absolute top-[42%] right-[58%] w-36 md:w-96 h-56 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
         <div className="flex flex-col gap-8">
           {!selectedMainCategory ? (
             <>

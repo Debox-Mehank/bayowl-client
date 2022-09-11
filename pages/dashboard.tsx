@@ -137,10 +137,12 @@ function Dashboard() {
               : hours >= 12 && hours < 17
               ? "Afternoon"
               : "Evening"}
-            , {"John"}.
+            , {data?.me.name}
           </span>
           <div className="text-lg md:text-xl">
-            You have the following paid subscriptions in your account.
+            {(data?.me.services.length ?? 0) > 0
+              ? "You have the following paid subscriptions in your account."
+              : "You don't have any paid services, click below to start a new service"}
           </div>
         </div>
 

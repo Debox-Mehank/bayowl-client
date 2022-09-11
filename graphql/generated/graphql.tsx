@@ -27,6 +27,24 @@ export type AddOnInput = {
   value?: InputMaybe<Scalars['Float']>;
 };
 
+export type Admin = {
+  __typename?: 'Admin';
+  _id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  createdBy: Admin;
+  email: Scalars['String'];
+  name: Scalars['String'];
+  type: AdminRole;
+  updatedAt: Scalars['DateTime'];
+};
+
+/** Enum For Type of Admin Roles i.e. Master, Admin & Normal */
+export enum AdminRole {
+  Employee = 'employee',
+  Manager = 'manager',
+  Master = 'master'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   addService: Scalars['Boolean'];
@@ -40,12 +58,15 @@ export type MutationAddServiceArgs = {
 export type Query = {
   __typename?: 'Query';
   addUserService: Scalars['Boolean'];
+  completeAccount: Scalars['Boolean'];
   getAllService: Array<Services>;
   getServiceDetails: Array<Services>;
+  initiatePayment: Scalars['String'];
   login: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   me: User;
   register: Scalars['Boolean'];
+  verifyUser: Scalars['Boolean'];
 };
 
 
@@ -54,8 +75,23 @@ export type QueryAddUserServiceArgs = {
 };
 
 
+export type QueryCompleteAccountArgs = {
+  email: Scalars['String'];
+  name: Scalars['String'];
+  number: Scalars['String'];
+  password: Scalars['String'];
+  token: Scalars['String'];
+};
+
+
 export type QueryGetServiceDetailsArgs = {
   input: ServicesDetailInput;
+};
+
+
+export type QueryInitiatePaymentArgs = {
+  email?: InputMaybe<Scalars['String']>;
+  service: UserServicesInput;
 };
 
 
@@ -72,6 +108,11 @@ export type QueryRegisterArgs = {
   number: Scalars['String'];
   password: Scalars['String'];
   token?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryVerifyUserArgs = {
+  token: Scalars['String'];
 };
 
 export type Services = {
@@ -147,16 +188,30 @@ export type User = {
   email: Scalars['String'];
   lastLoggedIn?: Maybe<Scalars['DateTime']>;
   lastLoggedOut?: Maybe<Scalars['DateTime']>;
-  name: Scalars['String'];
-  number: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
+  number?: Maybe<Scalars['String']>;
   services: Array<UserServices>;
   updatedAt: Scalars['DateTime'];
 };
+
+/** Enum for status of user service */
+export enum UserServiceStatus {
+  Completed = 'completed',
+  Delivered = 'delivered',
+  Pendingupload = 'pendingupload',
+  Revisiondelivered = 'revisiondelivered',
+  Revisionrequest = 'revisionrequest',
+  Submitted = 'submitted',
+  Underreview = 'underreview',
+  Workinprogress = 'workinprogress'
+}
 
 export type UserServices = {
   __typename?: 'UserServices';
   _id: Scalars['ID'];
   addOn: Array<AddOn>;
+  assignedBy?: Maybe<Admin>;
+  assignedTo?: Maybe<Admin>;
   createdAt: Scalars['DateTime'];
   deliveryDays?: Maybe<Scalars['Float']>;
   /** File formats for delivery file */
@@ -178,6 +233,7 @@ export type UserServices = {
   revisionsDelivery?: Maybe<Scalars['Float']>;
   serviceName: Scalars['String'];
   setOfRevisions?: Maybe<Scalars['Float']>;
+  status?: Maybe<UserServiceStatus>;
   subCategory: Scalars['String'];
   subService?: Maybe<Scalars['String']>;
   subService2?: Maybe<Scalars['String']>;
@@ -202,7 +258,6 @@ export type UserServicesInput = {
   mixProcessingReverbs?: InputMaybe<Scalars['String']>;
   mixVocalTuning?: InputMaybe<Scalars['String']>;
   numberOfReferenceFileUploads?: InputMaybe<Scalars['Float']>;
-  paid: Scalars['Boolean'];
   price: Scalars['Float'];
   projectName?: InputMaybe<Scalars['String']>;
   revisionsDelivery?: InputMaybe<Scalars['Float']>;
@@ -242,22 +297,41 @@ export type RegisterQueryVariables = Exact<{
 
 export type RegisterQuery = { __typename?: 'Query', register: boolean };
 
+export type CompleteAccountQueryVariables = Exact<{
+  password: Scalars['String'];
+  email: Scalars['String'];
+  number: Scalars['String'];
+  name: Scalars['String'];
+  token: Scalars['String'];
+}>;
+
+
+export type CompleteAccountQuery = { __typename?: 'Query', completeAccount: boolean };
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name: string, email: string, number: string, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, services: Array<{ __typename?: 'UserServices', projectName?: string | null, _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, paid: boolean, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null }> }> } };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name?: string | null, email: string, number?: string | null, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, services: Array<{ __typename?: 'UserServices', projectName?: string | null, _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, paid: boolean, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null }> }> } };
 
 export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type LogoutQuery = { __typename?: 'Query', logout: boolean };
 
-export type AddUserServiceQueryVariables = Exact<{
-  input: UserServicesInput;
+export type InitiatePaymentQueryVariables = Exact<{
+  service: UserServicesInput;
+  email?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type AddUserServiceQuery = { __typename?: 'Query', addUserService: boolean };
+export type InitiatePaymentQuery = { __typename?: 'Query', initiatePayment: string };
+
+export type VerifyUserQueryVariables = Exact<{
+  token: Scalars['String'];
+}>;
+
+
+export type VerifyUserQuery = { __typename?: 'Query', verifyUser: boolean };
 
 
 export const GetServiceDetailsDocument = gql`
@@ -400,6 +474,49 @@ export function useRegisterLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<R
 export type RegisterQueryHookResult = ReturnType<typeof useRegisterQuery>;
 export type RegisterLazyQueryHookResult = ReturnType<typeof useRegisterLazyQuery>;
 export type RegisterQueryResult = Apollo.QueryResult<RegisterQuery, RegisterQueryVariables>;
+export const CompleteAccountDocument = gql`
+    query CompleteAccount($password: String!, $email: String!, $number: String!, $name: String!, $token: String!) {
+  completeAccount(
+    password: $password
+    email: $email
+    number: $number
+    name: $name
+    token: $token
+  )
+}
+    `;
+
+/**
+ * __useCompleteAccountQuery__
+ *
+ * To run a query within a React component, call `useCompleteAccountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCompleteAccountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCompleteAccountQuery({
+ *   variables: {
+ *      password: // value for 'password'
+ *      email: // value for 'email'
+ *      number: // value for 'number'
+ *      name: // value for 'name'
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useCompleteAccountQuery(baseOptions: Apollo.QueryHookOptions<CompleteAccountQuery, CompleteAccountQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CompleteAccountQuery, CompleteAccountQueryVariables>(CompleteAccountDocument, options);
+      }
+export function useCompleteAccountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CompleteAccountQuery, CompleteAccountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CompleteAccountQuery, CompleteAccountQueryVariables>(CompleteAccountDocument, options);
+        }
+export type CompleteAccountQueryHookResult = ReturnType<typeof useCompleteAccountQuery>;
+export type CompleteAccountLazyQueryHookResult = ReturnType<typeof useCompleteAccountLazyQuery>;
+export type CompleteAccountQueryResult = Apollo.QueryResult<CompleteAccountQuery, CompleteAccountQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -504,36 +621,70 @@ export function useLogoutLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Log
 export type LogoutQueryHookResult = ReturnType<typeof useLogoutQuery>;
 export type LogoutLazyQueryHookResult = ReturnType<typeof useLogoutLazyQuery>;
 export type LogoutQueryResult = Apollo.QueryResult<LogoutQuery, LogoutQueryVariables>;
-export const AddUserServiceDocument = gql`
-    query AddUserService($input: UserServicesInput!) {
-  addUserService(input: $input)
+export const InitiatePaymentDocument = gql`
+    query InitiatePayment($service: UserServicesInput!, $email: String) {
+  initiatePayment(service: $service, email: $email)
 }
     `;
 
 /**
- * __useAddUserServiceQuery__
+ * __useInitiatePaymentQuery__
  *
- * To run a query within a React component, call `useAddUserServiceQuery` and pass it any options that fit your needs.
- * When your component renders, `useAddUserServiceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useInitiatePaymentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useInitiatePaymentQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useAddUserServiceQuery({
+ * const { data, loading, error } = useInitiatePaymentQuery({
  *   variables: {
- *      input: // value for 'input'
+ *      service: // value for 'service'
+ *      email: // value for 'email'
  *   },
  * });
  */
-export function useAddUserServiceQuery(baseOptions: Apollo.QueryHookOptions<AddUserServiceQuery, AddUserServiceQueryVariables>) {
+export function useInitiatePaymentQuery(baseOptions: Apollo.QueryHookOptions<InitiatePaymentQuery, InitiatePaymentQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<AddUserServiceQuery, AddUserServiceQueryVariables>(AddUserServiceDocument, options);
+        return Apollo.useQuery<InitiatePaymentQuery, InitiatePaymentQueryVariables>(InitiatePaymentDocument, options);
       }
-export function useAddUserServiceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AddUserServiceQuery, AddUserServiceQueryVariables>) {
+export function useInitiatePaymentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<InitiatePaymentQuery, InitiatePaymentQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<AddUserServiceQuery, AddUserServiceQueryVariables>(AddUserServiceDocument, options);
+          return Apollo.useLazyQuery<InitiatePaymentQuery, InitiatePaymentQueryVariables>(InitiatePaymentDocument, options);
         }
-export type AddUserServiceQueryHookResult = ReturnType<typeof useAddUserServiceQuery>;
-export type AddUserServiceLazyQueryHookResult = ReturnType<typeof useAddUserServiceLazyQuery>;
-export type AddUserServiceQueryResult = Apollo.QueryResult<AddUserServiceQuery, AddUserServiceQueryVariables>;
+export type InitiatePaymentQueryHookResult = ReturnType<typeof useInitiatePaymentQuery>;
+export type InitiatePaymentLazyQueryHookResult = ReturnType<typeof useInitiatePaymentLazyQuery>;
+export type InitiatePaymentQueryResult = Apollo.QueryResult<InitiatePaymentQuery, InitiatePaymentQueryVariables>;
+export const VerifyUserDocument = gql`
+    query VerifyUser($token: String!) {
+  verifyUser(token: $token)
+}
+    `;
+
+/**
+ * __useVerifyUserQuery__
+ *
+ * To run a query within a React component, call `useVerifyUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useVerifyUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVerifyUserQuery({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useVerifyUserQuery(baseOptions: Apollo.QueryHookOptions<VerifyUserQuery, VerifyUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<VerifyUserQuery, VerifyUserQueryVariables>(VerifyUserDocument, options);
+      }
+export function useVerifyUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<VerifyUserQuery, VerifyUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<VerifyUserQuery, VerifyUserQueryVariables>(VerifyUserDocument, options);
+        }
+export type VerifyUserQueryHookResult = ReturnType<typeof useVerifyUserQuery>;
+export type VerifyUserLazyQueryHookResult = ReturnType<typeof useVerifyUserLazyQuery>;
+export type VerifyUserQueryResult = Apollo.QueryResult<VerifyUserQuery, VerifyUserQueryVariables>;

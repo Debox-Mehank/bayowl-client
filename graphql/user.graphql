@@ -18,6 +18,22 @@ query Register(
   )
 }
 
+query CompleteAccount(
+  $password: String!
+  $email: String!
+  $number: String!
+  $name: String!
+  $token: String!
+) {
+  completeAccount(
+    password: $password
+    email: $email
+    number: $number
+    name: $name
+    token: $token
+  )
+}
+
 query Me {
   me {
     _id
@@ -66,6 +82,10 @@ query Logout {
   logout
 }
 
-query AddUserService($input: UserServicesInput!) {
-  addUserService(input: $input)
+query InitiatePayment($service: UserServicesInput!, $email: String) {
+  initiatePayment(service: $service, email: $email)
+}
+
+query VerifyUser($token: String!) {
+  verifyUser(token: $token)
 }

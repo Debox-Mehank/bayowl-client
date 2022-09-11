@@ -10,8 +10,8 @@ function Navbar({
   name,
   email,
 }: {
-  name: string | undefined;
-  email: string | undefined;
+  name?: string | null;
+  email?: string | null;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();

@@ -149,32 +149,38 @@ function Dashboard() {
         {/* Paid Subscriptions */}
 
         <div className="py-6 md:px-4 space-y-10 z-50">
-          {data?.me.services?.map((service, index) => (
-            <Accordion
-              modalTrigger={setOpen}
-              service={{
-                name: service.mainCategory,
-                projName: service.projectName!,
-                serviceDetails: {
-                  deliveryDays: service.deliveryDays!,
-                  deliveryFormat: service.deliveryFileFormat.join(", "),
-                  estimatedTime: service.estimatedTime!,
-                  inputTrackLimit: service.inputTrackLimit!,
-                  refFile: service.numberOfReferenceFileUploads!,
-                  revisionDays: service.revisionsDelivery,
-                },
-                status: [
-                  { name: "Submitted", href: "#", status: "complete" },
-                  { name: "Under Review", href: "#", status: "complete" },
-                  { name: "Work In Progress", href: "#", status: "current" },
-                  { name: "Delivered", href: "#", status: "upcoming" },
-                  { name: "Revision Request", href: "#", status: "upcoming" },
-                  { name: "Revision Delivered", href: "#", status: "upcoming" },
-                ],
-              }}
-              key={index}
-            />
-          ))}
+          {data?.me.services
+            ?.filter((el) => el.paid)
+            .map((service, index) => (
+              <Accordion
+                modalTrigger={setOpen}
+                service={{
+                  name: service.mainCategory,
+                  projName: service.projectName!,
+                  serviceDetails: {
+                    deliveryDays: service.deliveryDays!,
+                    deliveryFormat: service.deliveryFileFormat.join(", "),
+                    estimatedTime: service.estimatedTime!,
+                    inputTrackLimit: service.inputTrackLimit!,
+                    refFile: service.numberOfReferenceFileUploads!,
+                    revisionDays: service.revisionsDelivery,
+                  },
+                  status: [
+                    { name: "Submitted", href: "#", status: "complete" },
+                    { name: "Under Review", href: "#", status: "complete" },
+                    { name: "Work In Progress", href: "#", status: "current" },
+                    { name: "Delivered", href: "#", status: "upcoming" },
+                    { name: "Revision Request", href: "#", status: "upcoming" },
+                    {
+                      name: "Revision Delivered",
+                      href: "#",
+                      status: "upcoming",
+                    },
+                  ],
+                }}
+                key={index}
+              />
+            ))}
         </div>
 
         {/* Add */}

@@ -9,18 +9,7 @@ import {
   useGetServiceDetailsLazyQuery,
   useInitiatePaymentLazyQuery,
 } from "../graphql/generated/graphql";
-
-function secondsToHms(d: number) {
-  d = Number(d);
-  var h = Math.floor(d / 3600);
-  var m = Math.floor((d % 3600) / 60);
-  var s = Math.floor((d % 3600) % 60);
-
-  var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
-  var mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes ") : "";
-  var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
-  return hDisplay + mDisplay + sDisplay;
-}
+import secondsToTime from "../utils/secsToTime";
 
 const Pricing = () => {
   const router = useRouter();
@@ -343,7 +332,7 @@ const Pricing = () => {
                     {selectedService.map((tier, tierIdx) => (
                       <td key={tierIdx} className="py-5 px-6">
                         <span className="block text-sm text-white">
-                          {secondsToHms(tier.maxFileDuration!)}
+                          {secondsToTime(tier.maxFileDuration!)}
                         </span>
                       </td>
                     ))}
@@ -568,7 +557,7 @@ const Pricing = () => {
                     {selectedService.map((tier, tierIdx) => (
                       <td key={tierIdx} className="py-5 px-6">
                         <span className="block text-sm text-white">
-                          {secondsToHms(tier.maxFileDuration!)}
+                          {secondsToTime(tier.maxFileDuration!)}
                         </span>
                       </td>
                     ))}
@@ -735,7 +724,7 @@ const Pricing = () => {
                   </div>
                   <div>
                     Maximum Song / File Duration:{" "}
-                    {secondsToHms(selectedServiceFinal.maxFileDuration!)}
+                    {secondsToTime(selectedServiceFinal.maxFileDuration!)}
                   </div>
                 </div>
               </div>

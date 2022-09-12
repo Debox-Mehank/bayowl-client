@@ -69,6 +69,13 @@ query Me {
         value
       }
       paid
+      referenceFiles
+      revisionFiles {
+        file
+        description
+        revision
+      }
+      uploadedFiles
     }
     lastLoggedIn
     lastLoggedOut
@@ -84,6 +91,10 @@ query Logout {
 
 query InitiatePayment($service: UserServicesInput!, $email: String) {
   initiatePayment(service: $service, email: $email)
+}
+
+query UpdatePorjectName($serviceId: String!, $projectName: String!) {
+  updatePorjectName(serviceId: $serviceId, projectName: $projectName)
 }
 
 query VerifyUser($token: String!) {

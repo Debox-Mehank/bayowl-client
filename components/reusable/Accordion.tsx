@@ -3,16 +3,18 @@ import { CheckIcon } from "@heroicons/react/solid";
 import down from "../../public/down.svg";
 import Button from "../../components/reusable/Button";
 import Image from "next/image";
+import { UserServiceStatus } from "../../graphql/generated/graphql";
 
 interface Props {
   service: service;
-  modalTrigger: Function;
+  handleAccordionClick?: (id: string) => void;
 }
 
 interface service {
+  id: string;
   projName?: string | null;
   name: string;
-  status: status[];
+  status?: UserServiceStatus | null;
   serviceDetails: serviceDetails;
 }
 
@@ -31,11 +33,24 @@ interface serviceDetails {
   revisionDays?: number | null;
 }
 
+const status = [
+  { name: "Submitted", href: "#", status: "upcoming" },
+  { name: "Under Review", href: "#", status: "upcoming" },
+  { name: "Work In Progress", href: "#", status: "upcoming" },
+  { name: "Delivered", href: "#", status: "upcoming" },
+  { name: "Revision Request", href: "#", status: "upcoming" },
+  {
+    name: "Revision Delivered",
+    href: "#",
+    status: "upcoming",
+  },
+];
+
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-function Accordion({ service, modalTrigger }: Props) {
+function Accordion({ service, handleAccordionClick }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -43,9 +58,9 @@ function Accordion({ service, modalTrigger }: Props) {
       className=" bg-white/5 rounded-lg p-2 sm:p-3 lg:p-4 xl:p-6"
       key={service.projName}
     >
-      <div className="flex gap-4 items-center z-50">
-        <span
-          className="gap-4 flex items-center cursor-pointer"
+      <div className="flex gap-4 items-center justify-between z-50">
+        <div
+          className="gap-4 flex flex-1 w-full items-center cursor-pointer"
           onClick={() => setIsOpen((prev) => !prev)}
         >
           <Image
@@ -61,17 +76,26 @@ function Accordion({ service, modalTrigger }: Props) {
               " - " +
               service.name}
           </span>
-        </span>
+        </div>
 
         <span
           onClick={() => {
-            !service.projName && modalTrigger(true);
+            if (handleAccordionClick) {
+              handleAccordionClick(service.id);
+            }
           }}
-          className={`ml-auto ${isOpen ? "hidden md:block" : null}`}
+          className={`${isOpen ? "hidden md:block" : null}`}
         >
           <Button>
             <>
-              {service.status.find((service) => service.status === "current")
+              {service.status === UserServiceStatus.Pendingupload &&
+              !service.projName
+                ? "Get Started"
+                : service.status === UserServiceStatus.Pendingupload &&
+                  service.projName
+                ? "Upload Files"
+                : "Work in Progress"}
+              {/* {service.status.find((service) => service.status === "current")
                 ?.name
                 ? service.status.find((service) => service.status === "current")
                     ?.name
@@ -79,7 +103,7 @@ function Accordion({ service, modalTrigger }: Props) {
                     (service) => service.status === "complete"
                   )
                 ? "Completed"
-                : "Get Started"}
+                : "Get Started"} */}
             </>
           </Button>
         </span>
@@ -138,17 +162,17 @@ function Accordion({ service, modalTrigger }: Props) {
             className="sm:hidden py-10 w-fit mx-auto text-center"
           >
             <ol role="list" className="overflow-hidden">
-              {service.status.map((step: any, stepIdx: any) => (
+              {status.map((step: any, stepIdx: any) => (
                 <li
                   key={step.name}
                   className={classNames(
-                    stepIdx !== service.status.length - 1 ? "pb-10" : "",
+                    stepIdx !== status.length - 1 ? "pb-10" : "",
                     "relative"
                   )}
                 >
                   {step.status === "complete" ? (
                     <>
-                      {stepIdx !== service.status.length - 1 ? (
+                      {stepIdx !== status.length - 1 ? (
                         <div
                           className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-primary"
                           aria-hidden="true"
@@ -178,7 +202,7 @@ function Accordion({ service, modalTrigger }: Props) {
                     </>
                   ) : step.status === "current" ? (
                     <>
-                      {stepIdx !== service.status.length - 1 ? (
+                      {stepIdx !== status.length - 1 ? (
                         <div
                           className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-gray-300"
                           aria-hidden="true"
@@ -209,7 +233,7 @@ function Accordion({ service, modalTrigger }: Props) {
                     </>
                   ) : (
                     <>
-                      {stepIdx !== service.status.length - 1 ? (
+                      {stepIdx !== status.length - 1 ? (
                         <div
                           className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-gray-300"
                           aria-hidden="true"
@@ -249,13 +273,11 @@ function Accordion({ service, modalTrigger }: Props) {
               role="list"
               className="flex items-center justify-center pt-8 pb-8 text-center"
             >
-              {service.status.map((step, stepIdx) => (
+              {status.map((step, stepIdx) => (
                 <li
                   key={step.name}
                   className={classNames(
-                    stepIdx !== service.status.length - 1
-                      ? "pr-8 sm:pr-20"
-                      : "",
+                    stepIdx !== status.length - 1 ? "pr-8 sm:pr-20" : "",
                     "relative"
                   )}
                 >

@@ -12,13 +12,21 @@ import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/outline";
 import { GetServerSideProps } from "next";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
-import { MeDocument, MeQuery, useMeQuery } from "../graphql/generated/graphql";
+import {
+  MeDocument,
+  MeQuery,
+  useMeQuery,
+  UserServices,
+  useUpdatePorjectNameLazyQuery,
+} from "../graphql/generated/graphql";
 import toast from "react-hot-toast";
 import Loader from "../components/reusable/Loader";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
+
+export type UserServiceFinal = Omit<UserServices, "createdAt" | "updatedAt">;
 
 const dummyServ = [
   {
@@ -92,15 +100,73 @@ function Dashboard() {
   const date = new Date();
   const hours = date.getHours();
   const [open, setOpen] = useState(false);
+  const [services, setServices] = useState<UserServiceFinal[]>([]);
+  const [projectName, setProjectName] = useState<string>("");
+  const [serviceId, setServiceId] = useState<string>("");
+
+  const [updateProjectName] = useUpdatePorjectNameLazyQuery();
+
+  const handleAccordionClick = (id: string) => {
+    setOpen(true);
+    setServiceId(id);
+  };
+
+  const handleSubmit = async () => {
+    if (!projectName) {
+      toast.error("Please provide a project name to proceed");
+      return;
+    }
+
+    if (!serviceId) {
+      toast.error("Something went wrong please try again later");
+      return;
+    }
+
+    try {
+      const { data, error } = await updateProjectName({
+        variables: { projectName: projectName, serviceId: serviceId },
+      });
+
+      if (error) {
+        // setLoading(false);
+        toast.error(error.message);
+        return;
+      }
+
+      if (!data || !data.updatePorjectName) {
+        // setLoading(false);
+        toast.error("Something went wrong, try again later.");
+        return;
+      }
+
+      const copyServices = [...services];
+      const foundServiceIdx = copyServices.findIndex(
+        (el) => el._id === serviceId
+      );
+      if (foundServiceIdx >= 0) {
+        copyServices[foundServiceIdx].projectName = projectName;
+      }
+      setServices(copyServices);
+    } catch (error) {
+      toast.error("Something went wrong please try again later");
+      return;
+    }
+  };
 
   const { data, loading, error } = useMeQuery({ fetchPolicy: "network-only" });
+
+  useEffect(() => {
+    if (data?.me) {
+      setServices(data.me.services);
+    }
+  }, [data]);
 
   return (
     <div className="bg-darkBlue text-white flex">
       <DashNav name={data?.me.name} email={data?.me.email} />
       <div className="px-8 relative">
-        <div className="absolute animation-delay-2000 top-[55%] left-[20%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-        <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
+        <div className="absolute animation-delay-2000 top-[55%] left-[20%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
+        <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
         <div className="mt-28">
           <Image
             objectFit="cover"
@@ -116,13 +182,13 @@ function Dashboard() {
             <input
               className="w-full rounded-xl bg-white/20"
               type="text"
-              name=""
-              id=""
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
             />
             <button
               type="button"
               className="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary/80 text-base font-medium text-white hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:text-sm"
-              onClick={() => setOpen(false)}
+              onClick={handleSubmit}
             >
               Proceed to upload
             </button>
@@ -149,12 +215,13 @@ function Dashboard() {
         {/* Paid Subscriptions */}
 
         <div className="py-6 md:px-4 space-y-10 z-50">
-          {data?.me.services
-            ?.filter((el) => el.paid)
+          {services
+            .filter((el) => el.paid)
             .map((service, index) => (
               <Accordion
-                modalTrigger={setOpen}
+                handleAccordionClick={handleAccordionClick}
                 service={{
+                  id: service._id,
                   name: service.mainCategory,
                   projName: service.projectName!,
                   serviceDetails: {
@@ -165,18 +232,19 @@ function Dashboard() {
                     refFile: service.numberOfReferenceFileUploads!,
                     revisionDays: service.revisionsDelivery,
                   },
-                  status: [
-                    { name: "Submitted", href: "#", status: "upcoming" },
-                    { name: "Under Review", href: "#", status: "upcoming" },
-                    { name: "Work In Progress", href: "#", status: "upcoming" },
-                    { name: "Delivered", href: "#", status: "upcoming" },
-                    { name: "Revision Request", href: "#", status: "upcoming" },
-                    {
-                      name: "Revision Delivered",
-                      href: "#",
-                      status: "upcoming",
-                    },
-                  ],
+                  status: service.status,
+                  // [
+                  //   { name: "Submitted", href: "#", status: "upcoming" },
+                  //   { name: "Under Review", href: "#", status: "upcoming" },
+                  //   { name: "Work In Progress", href: "#", status: "upcoming" },
+                  //   { name: "Delivered", href: "#", status: "upcoming" },
+                  //   { name: "Revision Request", href: "#", status: "upcoming" },
+                  //   {
+                  //     name: "Revision Delivered",
+                  //     href: "#",
+                  //     status: "upcoming",
+                  //   },
+                  // ],
                 }}
                 key={index}
               />

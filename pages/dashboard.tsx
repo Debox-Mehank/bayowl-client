@@ -166,9 +166,9 @@ function Dashboard() {
                     revisionDays: service.revisionsDelivery,
                   },
                   status: [
-                    { name: "Submitted", href: "#", status: "complete" },
-                    { name: "Under Review", href: "#", status: "complete" },
-                    { name: "Work In Progress", href: "#", status: "current" },
+                    { name: "Submitted", href: "#", status: "upcoming" },
+                    { name: "Under Review", href: "#", status: "upcoming" },
+                    { name: "Work In Progress", href: "#", status: "upcoming" },
                     { name: "Delivered", href: "#", status: "upcoming" },
                     { name: "Revision Request", href: "#", status: "upcoming" },
                     {

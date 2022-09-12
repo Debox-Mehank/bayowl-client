@@ -21,6 +21,21 @@ const Services = () => {
   const [selectedSubService, setSelectedSubService] = useState<string | null>();
 
   useEffect(() => {
+    if (!mainCategoryRoute) {
+      setSelectedMainCategory(undefined);
+      setSelectedSubCategory(undefined);
+      setSelectedService(undefined);
+    }
+
+    if (!subCategoryRoute) {
+      setSelectedSubCategory(undefined);
+      setSelectedService(undefined);
+    }
+
+    if (!serviceNameRoute) {
+      setSelectedService(undefined);
+    }
+
     if (mainCategoryRoute) {
       setSelectedMainCategory(mainCategoryRoute.toString());
     }
@@ -32,7 +47,7 @@ const Services = () => {
     if (serviceNameRoute) {
       setSelectedService(serviceNameRoute.toString());
     }
-  }, [mainCategoryRoute, subCategoryRoute, serviceNameRoute, router.query]);
+  }, [mainCategoryRoute, subCategoryRoute, serviceNameRoute]);
 
   const finalPageHandler = () => {};
 

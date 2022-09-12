@@ -33,19 +33,19 @@ export const allServices: AllServices[] = [
           {
             serviceName: "Master",
             subServices: [
-              { subService: "Automated Mix" },
-              { subService: "Template Mix" },
-              { subService: "In Depth Mix" },
-              { subService: "Industry Mix" },
+              { subService: "Automated Master" },
+              { subService: "Template Master" },
+              { subService: "In Depth Master" },
+              { subService: "Industry Master" },
             ],
           },
           {
             serviceName: "Stem Master",
             subServices: [
-              { subService: "Automated Stem Mix" },
-              { subService: "Template Stem Mix" },
-              { subService: "In Depth Stem Mix" },
-              { subService: "Industry Stem Mix" },
+              { subService: "Automated Stem Master" },
+              { subService: "Template Stem Master" },
+              { subService: "In Depth Stem Master" },
+              { subService: "Industry Stem Master" },
             ],
           },
         ],

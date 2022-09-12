@@ -283,7 +283,7 @@ function Upload() {
                                     )}
                                 <div className="pt-7 pb-4 space-y-2">
                                     {errorList.map(err => (
-                                        <div className="flex gap-4 text-left">
+                                        <div key={err.fileName} className="flex gap-4 text-left">
                                             <span className="w-1/4 font-bold">{err.fileName}</span>
                                             <span className="w-3/4">
                                                 {err.issue.map(issue => <p>{issue}</p>)}
@@ -433,7 +433,7 @@ function Upload() {
                                                     </div>
                                                     <div className="mt-4 flex flex-col w-full text-center gap-3">
                                                         {(refFilesArray.length > 0) && refFilesArray.map((file, index) => (
-                                                            <div className="flex py-4 justify-between px-8 bg-white/5 mb-4 rounded-xl">
+                                                            <div key={file.size} className="flex py-4 justify-between px-8 bg-white/5 mb-4 rounded-xl">
                                                                 <p className="text-lg">{file.name}</p>
                                                                 <TrashIcon
                                                                     onClick={() => {
@@ -526,7 +526,7 @@ function Upload() {
                                                     </div>
                                                     <div className="mt-4 flex flex-col gap-2 px-4">
                                                         {(refLinksArray.length > 0) && refLinksArray.map((link, index) => (
-                                                            <div className="flex py-4 justify-between px-4 bg-white/5 mb-4 rounded-xl">
+                                                            <div key={link} className="flex py-4 justify-between px-4 bg-white/5 mb-4 rounded-xl">
 
                                                                 <a className="max-w-xs text-sm text-ellipsis overflow-hidden hover:text-primary" target="_blank" rel="noopener noreferrer" href={link}>{link}</a>
 

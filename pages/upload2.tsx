@@ -380,9 +380,6 @@ function Upload() {
                                     {/* Reference Tracks Modal */}
                                     <Modal setOpen={setIsRefModalOpen} open={isRefModalOpen}>
                                         <div className="relative">
-
-                                            {/* Common Content */}
-
                                             <div className="relative">
                                                 {/* Back Icon */}
                                                 {
@@ -400,7 +397,6 @@ function Upload() {
                                                 <svg onClick={() => setIsRefModalOpen(false)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="absolute top-0.5 right-0 w-6 h-6 hover:text-primary duration-300 transition-colors cursor-pointer">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
-                                                <p className="pt-2 text-center">{refLinksArray.length + " / " + service.serviceDetails.refTrackLimit} References Added</p>
                                             </div>
 
                                             {/* Letting user choose if not chosen yet. */}
@@ -409,7 +405,7 @@ function Upload() {
                                                 <div data-aos="fade-up" className="text-center space-y-4 mt-4">
                                                     <div className="space-y-0.5">
                                                         <p>Please select how you would like to add reference tracks.</p>
-                                                        <p>You can add references through a link or upload them.</p>
+                                                        <p>You can either add links, or upload reference tracks.</p>
                                                     </div>
                                                     <div className="flex justify-around">
                                                         <span onClick={() => setIsRefByUpload(false)}>
@@ -433,7 +429,16 @@ function Upload() {
                                             {/* data-aos="fade-up" */}
                                             {isRefByUpload && (
                                                 <div data-aos="fade-up">
-
+                                                    <div className="text-center">
+                                                        {
+                                                            refFilesArray.length > 0 && (
+                                                                <div className="text-sm my-1">
+                                                                    <p className="">Going back will result in removal of any added files. </p>
+                                                                </div>
+                                                            )
+                                                        }
+                                                        <p className="pt-2">{refFilesArray.length + " / " + service.serviceDetails.refTrackLimit} Tracks Added</p>
+                                                    </div>
                                                     <div className="mt-4 flex flex-col w-full text-center gap-3">
                                                         {(refFilesArray.length > 0) && refFilesArray.map((file, index) => (
                                                             <div key={file.size} className="flex py-4 justify-between px-8 bg-white/5 mb-4 rounded-xl">
@@ -518,7 +523,17 @@ function Upload() {
 
                                             {isRefByUpload === false && (
                                                 <div data-aos="fade-up">
+                                                    <div className="text-center">
+                                                        {
+                                                            refLinksArray.length > 0 && (
+                                                                <div className="text-sm my-1">
+                                                                    <p className="">Going back will result in removal of any added links. </p>
+                                                                </div>
+                                                            )
+                                                        }
+                                                        <p className="pt-2">{refLinksArray.length + " / " + service.serviceDetails.refTrackLimit} Reference Links Added</p>
 
+                                                    </div>
                                                     <div className="mt-4 flex flex-col gap-2 px-4">
                                                         {(refLinksArray.length > 0) && refLinksArray.map((link, index) => (
                                                             <div key={link} className="flex py-4 justify-between px-4 bg-white/5 mb-4 rounded-xl">

@@ -21,6 +21,7 @@ const Home: NextPage = () => {
   const [number, setNumber] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -319,6 +320,15 @@ const Home: NextPage = () => {
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+            <input
+              autoComplete="off"
+              className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40"
+              placeholder="Confirm Password"
+              type={"password"}
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
           <div

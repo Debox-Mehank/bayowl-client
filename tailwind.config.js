@@ -46,6 +46,7 @@ module.exports = {
         'accent': "#192b54",
         'darkBlue': "#0B0B1D",
         'blueGradient': ['#1f3b83', '#192A55', '#331265', '#D7263D'],
+        'blue2': "#31263e",
         'orange1': "#f09402",
         'orange2': "#f07202",
         'orange3': "#ed4731",

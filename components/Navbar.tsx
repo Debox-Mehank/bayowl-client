@@ -50,13 +50,20 @@ function Navbar({
 
   return (
     <div className="z-50">
-      <div className=" h-full" />
+
+      {/* <div className=" h-full" /> */}
       <nav
         style={{ transition: "0.4s" }}
-        className={`z-50 text-white fixed top-0 left-0 right-0 transition-all shadow-md bg-gradient-to-r bg-blueGradient-2 px-3
+        className={`z-50 text-white fixed top-0 left-0 right-0 transition-all bg-gradient-to-br from-white/5 px-3 shadow-lg shadow-black/40
                 ${scrolled ? "p-0" : " p-2"}`}
         role="navigation"
       >
+
+        <div className="relative overflow-">
+          <div className='absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-10 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
+          <div className='absolute animation-delay-2000 top-5 left-[10%] w-36 md:w-96 h-10 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
+          <div className='absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
+        </div>
         <div
           className={`flex justify-between items-center flex-wrap h-auto w-full z-50 max-w-7xl mx-auto `}
         >
@@ -67,9 +74,8 @@ function Navbar({
                 <svg
                   height={scrolled ? 80 : 100}
                   width={scrolled ? 170 : 200}
-                  className={`${
-                    scrolled ? "fill-white" : "fill-white"
-                  } hover:fill-primary transition-colors duration-300 cursor-pointer`}
+                  className={`${scrolled ? "fill-white" : "fill-white"
+                    } hover:fill-primary transition-colors duration-300 cursor-pointer`}
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 715.02 158.51"
                 >
@@ -187,13 +193,11 @@ function Navbar({
 
           <ul
             id="mobile_nav"
-            className={`transition-all duration-300 absolute  bg-darkBlue/90 flex  ${
-              isOpen
-                ? "visible opacity-1 translate-y-0"
-                : "invisible opacity-0 translate-y-10"
-            } flex-col ${
-              scrolled ? "top-16" : "top-20"
-            } md:top-24 w-full lg:hidden shadow-md left-0 py-3 `}
+            className={`transition-all duration-300 absolute  bg-darkBlue/90 flex  ${isOpen
+              ? "visible opacity-1 translate-y-0"
+              : "invisible opacity-0 translate-y-10"
+              } flex-col ${scrolled ? "top-16" : "top-20"
+              } md:top-24 w-full lg:hidden shadow-md left-0 py-3 `}
           >
             <div className="w-11/12 mx-auto">
               <hr className="my-2" />

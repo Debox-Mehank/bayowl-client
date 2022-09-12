@@ -1,15 +1,15 @@
+// Defaults 
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { FileUploader } from "react-drag-drop-files";
+import Image from "next/image";
+
+// Hooks
 import { useCallback } from "react";
 import { useRef } from "react";
-import Image from "next/image";
-import Button from "../components/reusable/Button";
-import SmallBtn from "../components/reusable/SmallBtn";
+
 import { MusicNoteIcon, TrashIcon } from "@heroicons/react/solid/";
-import Modal from "../components/reusable/Modal";
 
 
 const maxFileSize = 1000000;
@@ -18,6 +18,14 @@ const maxFileSize = 1000000;
 import secondsToTime from "../utils/secsToTime";
 import formatBytes from "../utils/formatBytes";
 import isValidHttpUrl from "../utils/isValidURL";
+
+// Components
+import Modal from "../components/reusable/Modal";
+import Button from "../components/reusable/Button";
+import SmallBtn from "../components/reusable/SmallBtn";
+import { FileUploader } from "react-drag-drop-files";
+import toast, { Toaster } from 'react-hot-toast';
+
 
 
 const fileTypes = ["wav", "mp3"];
@@ -47,14 +55,13 @@ const service = {
 };
 
 
-
-interface refTrack {
-    name: string;
-    link: string | null;
-}
 interface errorList {
     fileName: string
     issue: string[]
+}
+
+interface refFileList {
+
 }
 
 const checkTypeDurationSize = async (file: File): Promise<boolean | errorList> => {
@@ -274,10 +281,10 @@ function Upload() {
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
 
-                                {errorList.length > 1 &&
+                                {errorList.length &&
                                     (
                                         <>
-                                            <h4 className="text-lg">We've found some issues with your file(s). </h4>
+                                            <h4 className="text-lg">{"We've found some issues with your file(s)."} </h4>
                                             <h4>They will not be uploaded.</h4>
                                         </>
                                     )}
@@ -286,7 +293,7 @@ function Upload() {
                                         <div key={err.fileName} className="flex gap-4 text-left">
                                             <span className="w-1/4 font-bold">{err.fileName}</span>
                                             <span className="w-3/4">
-                                                {err.issue.map(issue => <p>{issue}</p>)}
+                                                {err.issue.map((issue, index) => <p key={`${issue} - ${index}`}>{issue}</p>)}
                                             </span>
                                         </div>
                                     ))}
@@ -375,8 +382,6 @@ function Upload() {
                                                     isRefByUpload !== null && (
                                                         <svg onClick={() => {
                                                             setIsRefByUpload(null)
-                                                            setRefFilesArray([])
-                                                            setRefLinksArray([])
                                                         }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 absolute top-0.5 left-0 hover:text-primary duration-300 transition-colors cursor-pointer">
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                                                         </svg>
@@ -429,7 +434,6 @@ function Upload() {
                                                             )
                                                         }
                                                         <p className="pt-2">{refFilesArray.length + " / " + service.serviceDetails.refTrackLimit} Tracks Added</p>
-
                                                     </div>
                                                     <div className="mt-4 flex flex-col w-full text-center gap-3">
                                                         {(refFilesArray.length > 0) && refFilesArray.map((file, index) => (
@@ -451,14 +455,15 @@ function Upload() {
                                                                 <FileUploader
                                                                     key={key3.current}
                                                                     handleChange={async (file: File) => {
-
+                                                                        // toast(file.name)
                                                                         let hasIssues = false;
                                                                         let approvedFiles: File[] = []
                                                                         // Checking Type, Duration & Size for each file.
 
                                                                         // Check if files with the same name exists in the array or not.
                                                                         if (refFilesArray.find(prevFile => prevFile.name === file.name)) {
-                                                                            alert(`Upload Failed - Reference file named ${file.name} has already been selected.`)
+                                                                            // alert()
+                                                                            toast.error(`Upload Failed - Reference file named ${file.name} has already been selected.`)
                                                                             return
                                                                         }
 
@@ -470,7 +475,8 @@ function Upload() {
                                                                         } else if (typeof hasErrors === 'object') {
                                                                             hasIssues = true
                                                                             // Else append error list.
-                                                                            alert("Upload Failed - " + hasErrors.fileName + " - " + hasErrors.issue.join(" & "))
+                                                                            toast.error("Upload Failed - " + hasErrors.fileName + " - " + hasErrors.issue.join(" & "))
+
                                                                         }
 
                                                                         { approvedFiles.length && setRefFilesArray(prev => [...prev, ...approvedFiles]) }
@@ -543,7 +549,7 @@ function Upload() {
                                                         {
                                                             (refLinksArray.length < service.serviceDetails.refTrackLimit) && (
                                                                 <div className="w-full flex gap-4">
-                                                                    <input ref={urlEl} placeholder="Enter URL" className="bg-white/10 rounded-xl w-full" type="url" name="Ref Link" id="refLink" />
+                                                                    <input ref={urlEl} placeholder="Enter URL" className="bg-white/10 rounded-xl w-full border-transparent focus:border-transparent focus:ring-0" type="url" name="Ref Link" id="refLink" />
                                                                     <svg
                                                                         onClick={() => {
 
@@ -553,9 +559,7 @@ function Upload() {
                                                                                 urlEl.current.value = "";
                                                                                 return
                                                                             }
-
-                                                                            alert("Invalid HTTP URL. Please check and try again.")
-
+                                                                            toast.error("Invalid HTTP URL. Please check and try again.")
                                                                             // urlEl.current.text
                                                                             // refLinksArray()
                                                                         }}

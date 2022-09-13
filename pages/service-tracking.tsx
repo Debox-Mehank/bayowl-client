@@ -2,6 +2,7 @@ import React from "react";
 import DashNav from "../components/DashNav";
 import Button from "../components/reusable/Button";
 import { useMeQuery } from "../graphql/generated/graphql";
+import { useState } from "react";
 const transactions = [
   {
     id: "001",
@@ -78,6 +79,11 @@ function ServiceTracking() {
   const { data, loading, error } = useMeQuery({
     fetchPolicy: "network-only",
   });
+
+  const [projectList, setProjectList] = useState(transactions)
+  const [filteredList, setFilteredList] = useState<any>([])
+
+
   return (
     <div className="min-h-screen bg-darkBlue text-white flex relative ">
       <div className="absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden" />
@@ -87,13 +93,21 @@ function ServiceTracking() {
       {/* issue */}
       <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
         {/* Scrollable Div Below, issue */}
-        <div className="px-2 sm:px-3 lg:px-4 md:pt-24 md:w-screen overflow-x-auto whitespace-nowrap relative z-[100]">
+        <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[100]">
           <div className="w-80 md:w-full text-center text-xl sm:max-w-3xl text-white bg-white/10 rounded-md py-1 md:py-2 px-3 md:px-2 flex items-center gap-2 fixed">
             <input
+              onChange={(e) => {
+                const input = e.target.value
+                if (input) {
+                  const filteredArray = transactions.filter(projects => projects.projName.includes(input))
+                  setFilteredList(filteredArray)
+                }
+
+              }}
               name="search"
               id="search"
               type={"search"}
-              placeholder="Search by Brief ID, Project Name, Service Name or Date."
+              placeholder="Search by Project Name"
               className="w-full py-1 px-2 rounded-md border-none bg-transparent"
             />
             <div className="inline group">
@@ -120,22 +134,16 @@ function ServiceTracking() {
                         </div>
                     </div> */}
 
-          <div className="mt-16 flex flex-col">
+          <div className="mt-16 flex flex-col md:pt-8">
             <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                 <div className=" shadow ring-1 ring-black ring-opacity-5 md:rounded-lg block">
-                  <table className="min-w-full">
+                  <table className="w-full">
                     <thead className="bg-white/10">
                       <tr>
                         <th
                           scope="col"
-                          className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6"
-                        >
-                          Brief ID
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6 sticky -left-4 bg-black/40 z-50 backdrop-blur-[6px] flicker-fix backface-hidden"
                         >
                           Project Name
                         </th>
@@ -204,10 +212,7 @@ function ServiceTracking() {
                     <tbody className=" ">
                       {transactions.map((transaction) => (
                         <tr key={transaction.id}>
-                          <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-white sm:pl-6">
-                            {transaction.id}
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-white">
+                          <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-white sticky -left-4 bg-black/60 z-50 backdrop-blur-[6px] flicker-fix backface-hidden">
                             {transaction.projName}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">

@@ -10,7 +10,7 @@ const Home: NextPage = () => {
         <div className="-z-0 absolute animation-delay-2000 top-0 md:top-[30%] left-[0%] lg:left-[11%] w-32 md:w-96 h-96 bg-blueGradient-2 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="-z-0 hidden lg:block absolute animation-delay-4000 top-1/3 right-[24%] w-32 md:w-80 h-80 bg-orange3 rounded-full mix-blend-screen filter blur-[100px] opacity-90 animate-blob overflow-hidden" />
         <div className="-z-0 hidden lg:block absolute top-[48%] left-[20%] w-32 md:w-96 h-96 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-        <div className="space-y-4 text-center z-10 px-4 relative w-full md:px-12 lg:px-60">
+        <div className="space-y-4 text-center z-10 px-4 relative w-full md:px-12 max-w-lg">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 504.04 517.13"
@@ -119,7 +119,7 @@ const Home: NextPage = () => {
           </div>
           <div className="space-y-6">
             <input
-              className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40"
+              className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40 border-none focus:ring-0"
               placeholder="Email"
               type="email"
               name="Email"

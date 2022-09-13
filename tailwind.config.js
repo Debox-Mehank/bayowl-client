@@ -1,4 +1,18 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+const plugin = require('tailwindcss/plugin')
+
+
+const backfaceVisibility = plugin(function ({ addUtilities }) {
+  addUtilities({
+    '.backface-visible': {
+      'backface-visibility': 'visible',
+    },
+    '.backface-hidden': {
+      'backface-visibility': 'hidden',
+    }
+  })
+});
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -63,6 +77,7 @@ module.exports = {
   plugins: [
     require('@tailwindcss/aspect-ratio'),
     require('tailwindcss-border-gradient-radius'),
-    require('@tailwindcss/forms')
+    require('@tailwindcss/forms'),
+    backfaceVisibility
   ],
 }

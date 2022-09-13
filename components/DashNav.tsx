@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import useMediaQuery from "../hooks/useMediaQuery";
 import FloatingProfile from "./reusable/FloatingProfile";
+import toast from "react-hot-toast";
 
 function DashNav({
   name,
@@ -37,20 +38,18 @@ function DashNav({
         </div>
       </span>
 
-      <div className="hidden lg:block">
+      <div className="hidden lg:block ">
         <FloatingProfile position="absolute" name={name} email={email} />
       </div>
 
       <aside
         id="menu"
-        className={`min-h-screen static w-80 flex bg-darkBlue transition-transform duration-700 ${
-          isOpen ? "translate-x-0" : "-translate-x-80"
-        }`}
+        className={`min-h-screen sticky top-0 w-80 flex bg-darkBlue ${!isDesktop && isOpen ? "translate-x-0" : "-translate-x-80 md:-translate-x-0"}`}
       >
         <div className="lg:hidden">
           <FloatingProfile position="absolute" name={name} email={email} />
         </div>
-        <div className="w-full flex flex-col text-white px-10 py-4 space-y-6 sticky">
+        <div className="w-full flex items-start flex-col text-white px-10 py-4 space-y-6 sticky">
           <svg
             height={100}
             width={200}
@@ -150,9 +149,13 @@ function DashNav({
               </g>
             </g>
           </svg>
-          <Button>
-            <span className="text-center mx-auto text-md">New Service</span>
-          </Button>
+          <div className="w-full bg-gray-800 h-10">
+            <Link href={"/services"}>
+              <Button>
+                <div className="text-center w-full mx-auto text-md">New Service</div>
+              </Button>
+            </Link>
+          </div>
           {/* <div onClick={() => setIsOpen(false)}
                         className="text-right text-4xl hover:text-primary cursor-pointer">&times;</div> */}
           <Link href="/dashboard" className="">

@@ -78,9 +78,8 @@ function Accordion({ service, handleAccordionClick }: Props) {
           onClick={() => setIsOpen((prev) => !prev)}
         >
           <Image
-            className={`inline duration-300 transition-transform ${
-              isOpen ? "rotate-180" : null
-            }`}
+            className={`inline duration-300 transition-transform ${isOpen ? "rotate-180" : null
+              }`}
             height={30}
             width={30}
             src={down}
@@ -88,8 +87,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
           <span className="text-md md:text-2xl">
             {(service.projectName ? service.projectName : "Untitled Project") +
               " - " +
-              `${
-                service.subService ? service.subService : service.serviceName
+              `${service.subService ? service.subService : service.serviceName
               }`}
           </span>
         </div>
@@ -112,11 +110,10 @@ function Accordion({ service, handleAccordionClick }: Props) {
 
       <div
         className={`filter backdrop-blur-lg rounded-lg top-14 w-full transition-all duration-300 overflow-hidden
-         ${
-           isOpen
-             ? "max-h-[32rem] duration-500 transition-all ease-in"
-             : "max-h-0 duration-300 transition-all ease-out"
-         }`}
+         ${isOpen
+            ? "max-h-[100rem] duration-500 transition-all ease-in"
+            : "max-h-0 duration-300 transition-all ease-out"
+          }`}
       >
         <div className="px-6 py-10">
           <hr className="border-1 drop-shadow-xl py-4" />
@@ -147,13 +144,14 @@ function Accordion({ service, handleAccordionClick }: Props) {
             aria-label="Progress"
             className="sm:hidden py-10 w-fit mx-auto text-center"
           >
+            <span className="font-bold">Current Status:</span>
             <ol role="list" className="overflow-hidden">
               {service.status.map((step, stepIdx) => (
                 <li
                   key={step.name}
                   className={classNames(
-                    stepIdx !== service.status.length - 1 ? "pb-10" : "",
-                    "relative"
+                    stepIdx !== service.status.length - 1 ? "" : "",
+                    "relative mt-4"
                   )}
                 >
                   {step.state === ServiceStatusObjectState.Completed ? (
@@ -174,7 +172,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
                           </span>
                         </span>
                         <span className="ml-4 min-w-0 flex flex-col">
-                          <span className="text-xs font-semibold tracking-wide uppercase">
+                          <span className="text-xs font-semibold tracking-wide ">
                             {getStatusNames(step.name!)}
                           </span>
                         </span>
@@ -200,38 +198,14 @@ function Accordion({ service, handleAccordionClick }: Props) {
                             <span className="h-2.5 w-2.5 bg-primary rounded-full" />
                           </span>
                         </span>
-                        <span className="ml-4 min-w-0 flex flex-col">
-                          <span className="text-xs font-semibold tracking-wide uppercase text-primary">
+                        <span className="ml-4 min-w-0 flex flex-col self-center">
+                          <span className="text-xs font-semibold text-primary">
                             {getStatusNames(step.name!)}
                           </span>
                         </span>
                       </div>
                     </>
-                  ) : (
-                    <>
-                      {stepIdx !== service.status.length - 1 ? (
-                        <div
-                          className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-gray-300"
-                          aria-hidden="true"
-                        />
-                      ) : null}
-                      <div className="relative flex items-start group">
-                        <span
-                          className="h-9 flex items-center"
-                          aria-hidden="true"
-                        >
-                          <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-300 rounded-full group-hover:border-gray-400">
-                            <span className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-gray-300" />
-                          </span>
-                        </span>
-                        <span className="ml-4 min-w-0 flex flex-col">
-                          <span className="text-xs font-semibold tracking-wide uppercase text-gray-500">
-                            {getStatusNames(step.name!)}
-                          </span>
-                        </span>
-                      </div>
-                    </>
-                  )}
+                  ) : null}
                 </li>
               ))}
             </ol>
@@ -266,7 +240,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
                           className="w-5 h-5 text-white fill-white"
                           aria-hidden="true"
                         />
-                        <span className="absolute top-10">
+                        <span className="absolute top-10 text-sm">
                           {getStatusNames(step.name!)}
                         </span>
                       </div>
@@ -287,7 +261,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
                           className="h-2.5 w-2.5 bg-primary rounded-full"
                           aria-hidden="true"
                         />
-                        <span className="mt-24">
+                        <span className="mt-24 text-sm">
                           {getStatusNames(step.name!)}
                         </span>
                       </div>
@@ -305,7 +279,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
                           className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-gray-300"
                           aria-hidden="true"
                         />
-                        <span className="mt-24">
+                        <span className="mt-24 text-sm">
                           {getStatusNames(step.name!)}
                         </span>
                       </div>

@@ -22,14 +22,14 @@ function DashNav({
   }, [isDesktop]);
 
   return (
-    <div className="fixed top-0 left-0 lg:static z-50">
+    <div className={`fixed top-0 left-0 lg:static ${isOpen ? "z-[100]" : ""}`}>
       <span
         onClick={() => setIsOpen((prev) => !prev)}
         className="fixed top-6 right-2 text-white lg:hidden inline-block z-[80]"
       >
         <div
           id="nav-icon3"
-          className={`z-[60] w-full h-full ${isOpen ? "open" : ""}`}
+          className={`z-[120] w-full h-full ${isOpen ? "open" : ""}`}
         >
           <span></span>
           <span></span>

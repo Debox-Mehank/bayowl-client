@@ -93,7 +93,7 @@ function ServiceTracking() {
       {/* issue */}
       <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
         {/* Scrollable Div Below, issue */}
-        <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[100]">
+        <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[60]">
           <div className="w-80 md:w-full text-center text-xl sm:max-w-3xl text-white bg-white/10 rounded-md py-1 md:py-2 px-3 md:px-2 flex items-center gap-2 fixed">
             <input
               onChange={(e) => {
@@ -143,7 +143,7 @@ function ServiceTracking() {
                       <tr>
                         <th
                           scope="col"
-                          className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6 sticky -left-4 bg-black/40 z-50 backdrop-blur-[6px] flicker-fix backface-hidden"
+                          className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6 sticky -left-4 bg-black/40 z-[100] backdrop-blur-[6px] flicker-fix backface-hidden"
                         >
                           Project Name
                         </th>
@@ -212,7 +212,7 @@ function ServiceTracking() {
                     <tbody className=" ">
                       {transactions.map((transaction) => (
                         <tr key={transaction.id}>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-white sticky -left-4 bg-black/60 z-50 backdrop-blur-[6px] flicker-fix backface-hidden">
+                          <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-white sticky -left-4 bg-black/60 z-[60] backdrop-blur-[6px] flicker-fix backface-hidden">
                             {transaction.projName}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">

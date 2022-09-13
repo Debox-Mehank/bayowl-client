@@ -167,16 +167,16 @@ const Pricing = () => {
                 {selectedService && selectedService[0].subService2
                   ? selectedService[0].subService
                   : selectedService
-                    ? selectedService[0].serviceName
-                    : ""}
+                  ? selectedService[0].serviceName
+                  : ""}
               </h1>
               <p>{selectedService && selectedService[0].for}</p>
               <p>{selectedService && selectedService[0].description}</p>
             </div>
           )}
           {selectedService &&
-            selectedService[0].subService2 &&
-            !selectedServiceFinal ? (
+          selectedService[0].subService2 &&
+          !selectedServiceFinal ? (
             <div className="hidden lg:block">
               <table className="w-full table-fixed">
                 <caption className="sr-only">Pricing plan comparison</caption>
@@ -429,7 +429,7 @@ const Pricing = () => {
                       className="py-8 px-6 text-sm font-medium text-left align-top"
                       scope="row"
                     >
-                      { }
+                      {}
                     </th>
                     {selectedService.map((tier) => (
                       <td
@@ -630,17 +630,15 @@ const Pricing = () => {
             <div className="relative text-center flex w-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 pt-10 md:pb-16">
               {/* Bottom Bar */}
               <div className="fixed z-50 bottom-0 p-4 filter md:flex w-full flex-1 items-center backdrop-blur-xl">
-
-
                 <div className="md:w-1/2 text-md pb-4  md:text-xl relative">
-                  <div className='absolute animation-delay-4000 top-0 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-                  <div className='absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
+                  <div className="absolute animation-delay-4000 top-0 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
+                  <div className="absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
                   Estimated Delivery: {selectedServiceFinal.deliveryDays} days
                 </div>
                 <div className="md:w-1/2 text-left space-y-3 relative">
-                  <div className='absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-40 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-                  <div className='absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-20 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-                  <div className='absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-30 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
+                  <div className="absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-40 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
+                  <div className="absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-20 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
+                  <div className="absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-30 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
                   <div className="md:flex items-center gap-8">
                     {localStorage.getItem("loggedIn") ? (
                       <div className="w-60"></div>
@@ -701,8 +699,8 @@ const Pricing = () => {
                     {selectedService && selectedService[0].subService2
                       ? selectedService[0].subService
                       : selectedService
-                        ? selectedService[0].serviceName
-                        : ""}
+                      ? selectedService[0].serviceName
+                      : ""}
                   </span>
                   <span className="block">
                     {selectedServiceFinal.subService2

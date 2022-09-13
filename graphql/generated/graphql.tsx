@@ -129,6 +129,19 @@ export type RevisionFiles = {
   revision: Scalars['Float'];
 };
 
+export type ServiceStatusObject = {
+  __typename?: 'ServiceStatusObject';
+  name?: Maybe<UserServiceStatus>;
+  state: ServiceStatusObjectState;
+};
+
+/** Enum for state */
+export enum ServiceStatusObjectState {
+  Completed = 'completed',
+  Current = 'current',
+  Pending = 'pending'
+}
+
 export type Services = {
   __typename?: 'Services';
   _id: Scalars['ID'];
@@ -211,6 +224,7 @@ export type User = {
 /** Enum for status of user service */
 export enum UserServiceStatus {
   Completed = 'completed',
+  Delivered = 'delivered',
   Pendingupload = 'pendingupload',
   Revisiondelivered = 'revisiondelivered',
   Revisionrequest = 'revisionrequest',
@@ -243,11 +257,13 @@ export type UserServices = {
   price: Scalars['Float'];
   projectName?: Maybe<Scalars['String']>;
   referenceFiles: Array<Scalars['String']>;
+  reupload?: Maybe<Scalars['DateTime']>;
   revisionFiles: Array<RevisionFiles>;
   revisionsDelivery?: Maybe<Scalars['Float']>;
   serviceName: Scalars['String'];
   setOfRevisions?: Maybe<Scalars['Float']>;
-  status?: Maybe<UserServiceStatus>;
+  status: Array<ServiceStatusObject>;
+  statusType: UserServiceStatus;
   subCategory: Scalars['String'];
   subService?: Maybe<Scalars['String']>;
   subService2?: Maybe<Scalars['String']>;
@@ -326,7 +342,7 @@ export type CompleteAccountQuery = { __typename?: 'Query', completeAccount: bool
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name?: string | null, email: string, number?: string | null, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, services: Array<{ __typename?: 'UserServices', projectName?: string | null, _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, paid: boolean, referenceFiles: Array<string>, uploadedFiles: Array<string>, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', file?: string | null, description?: string | null, revision: number }> }> } };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name?: string | null, email: string, number?: string | null, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, services: Array<{ __typename?: 'UserServices', projectName?: string | null, _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, paid: boolean, referenceFiles: Array<string>, uploadedFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', file?: string | null, description?: string | null, revision: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> }> } };
 
 export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -583,6 +599,12 @@ export const MeDocument = gql`
         revision
       }
       uploadedFiles
+      statusType
+      status {
+        name
+        state
+      }
+      reupload
     }
     lastLoggedIn
     lastLoggedOut

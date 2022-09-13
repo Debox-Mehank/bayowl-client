@@ -120,7 +120,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (meQueryData.error || meQueryData.errors) {
       return {
         redirect: {
-          destination: "/services",
+          destination: "/login",
           permanent: false,
         },
       };
@@ -135,7 +135,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } catch (error: any) {
     return {
       redirect: {
-        destination: "/services",
+        destination: "/login",
         permanent: false,
       },
     };

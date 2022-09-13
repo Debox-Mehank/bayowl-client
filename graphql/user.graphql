@@ -76,6 +76,12 @@ query Me {
         revision
       }
       uploadedFiles
+      statusType
+      status {
+        name
+        state
+      }
+      reupload
     }
     lastLoggedIn
     lastLoggedOut

@@ -3,48 +3,62 @@ import { CheckIcon } from "@heroicons/react/solid";
 import down from "../../public/down.svg";
 import Button from "../../components/reusable/Button";
 import Image from "next/image";
-import { UserServiceStatus } from "../../graphql/generated/graphql";
+import { UserServiceFinal } from "../../pages/dashboard";
+import {
+  ServiceStatusObjectState,
+  UserServiceStatus,
+} from "../../graphql/generated/graphql";
 
 interface Props {
-  service: service;
+  service: UserServiceFinal;
   handleAccordionClick?: (id: string) => void;
 }
 
-interface service {
-  id: string;
-  projName?: string | null;
-  name: string;
-  status?: UserServiceStatus | null;
-  serviceDetails: serviceDetails;
-}
+const getButtonText = (service: UserServiceFinal): string => {
+  let btnText = "";
+  if (
+    service.statusType === UserServiceStatus.Pendingupload &&
+    !service.projectName
+  ) {
+    btnText = "Get Started";
+  } else if (
+    service.statusType === UserServiceStatus.Pendingupload &&
+    service.projectName
+  ) {
+    if (service.reupload) {
+      btnText = "Reupload Files";
+    } else {
+      btnText = "Upload Files";
+    }
+  } else if (service.statusType === UserServiceStatus.Underreview) {
+    if (service.reupload) {
+      btnText = "Under Review For Reupload";
+    } else {
+      btnText = "Under Review";
+    }
+  }
+  return btnText;
+};
 
-interface status {
-  name: string;
-  href: string;
-  status: string;
-}
-
-interface serviceDetails {
-  estimatedTime?: number | null;
-  inputTrackLimit?: number | null;
-  refFile?: number | null;
-  deliveryFormat?: string | null;
-  deliveryDays?: number | null;
-  revisionDays?: number | null;
-}
-
-const status = [
-  { name: "Submitted", href: "#", status: "upcoming" },
-  { name: "Under Review", href: "#", status: "upcoming" },
-  { name: "Work In Progress", href: "#", status: "upcoming" },
-  { name: "Delivered", href: "#", status: "upcoming" },
-  { name: "Revision Request", href: "#", status: "upcoming" },
-  {
-    name: "Revision Delivered",
-    href: "#",
-    status: "upcoming",
-  },
-];
+const getStatusNames = (s: UserServiceStatus): string => {
+  let txt = "";
+  if (s === UserServiceStatus.Pendingupload) {
+    txt = "Pending Upload";
+  } else if (s === UserServiceStatus.Underreview) {
+    txt = "Under Review";
+  } else if (s === UserServiceStatus.Workinprogress) {
+    txt = "Work In Progress";
+  } else if (s === UserServiceStatus.Delivered) {
+    txt = "Delivered";
+  } else if (s === UserServiceStatus.Revisionrequest) {
+    txt = "Revision Requested";
+  } else if (s === UserServiceStatus.Revisiondelivered) {
+    txt = "Revision Delivered";
+  } else if (s === UserServiceStatus.Completed) {
+    txt = "Completed";
+  }
+  return txt;
+};
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -56,7 +70,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
   return (
     <div
       className=" bg-white/5 rounded-lg p-2 sm:p-3 lg:p-4 xl:p-6"
-      key={service.projName}
+      key={service._id}
     >
       <div className="flex gap-4 items-center justify-between z-50">
         <div
@@ -72,39 +86,24 @@ function Accordion({ service, handleAccordionClick }: Props) {
             src={down}
           />
           <span className="text-md md:text-2xl">
-            {(service.projName ? service.projName : "Untitled Project") +
+            {(service.projectName ? service.projectName : "Untitled Project") +
               " - " +
-              service.name}
+              `${
+                service.subService ? service.subService : service.serviceName
+              }`}
           </span>
         </div>
 
         <span
           onClick={() => {
-            if (handleAccordionClick) {
-              handleAccordionClick(service.id);
+            if (handleAccordionClick && !service.projectName) {
+              handleAccordionClick(service._id);
             }
           }}
           className={`${isOpen ? "hidden md:block" : null}`}
         >
           <Button>
-            <>
-              {service.status === UserServiceStatus.Pendingupload &&
-              !service.projName
-                ? "Get Started"
-                : service.status === UserServiceStatus.Pendingupload &&
-                  service.projName
-                ? "Upload Files"
-                : "Work in Progress"}
-              {/* {service.status.find((service) => service.status === "current")
-                ?.name
-                ? service.status.find((service) => service.status === "current")
-                    ?.name
-                : service.status.every(
-                    (service) => service.status === "complete"
-                  )
-                ? "Completed"
-                : "Get Started"} */}
-            </>
+            <>{getButtonText(service)}</>
           </Button>
         </span>
       </div>
@@ -124,64 +123,48 @@ function Accordion({ service, handleAccordionClick }: Props) {
           {/* Plan Details */}
           <div className="flex flex-col md:flex-row justify-center gap-4">
             <div className="rounded-lg text-center py-5 md:px-10 bg-white/20 inline">
-              Estimated Time
-              <span className="block md:text-xl">
-                {service.serviceDetails.estimatedTime}
-              </span>
-            </div>
-            <div className="rounded-lg text-center py-5 md:px-10 bg-white/20 inline">
               Input Track Limit
               <span className="block md:text-xl">
-                {service.serviceDetails.inputTrackLimit}
-              </span>
-            </div>
-            <div className="rounded-lg text-center py-5 md:px-10 bg-white/20 inline">
-              No. of Reference Files
-              <span className="block md:text-xl">
-                {service.serviceDetails.refFile}
+                {service.inputTrackLimit}
               </span>
             </div>
             <div className="rounded-lg text-center py-5 md:px-10 bg-white/20 inline">
               Delivery Format
               <span className="block md:text-xl">
-                {service.serviceDetails.deliveryFormat}
+                {service.deliveryFileFormat.join(", ")}
               </span>
             </div>
             <div className="rounded-lg text-center py-5 md:px-10 bg-white/20 inline">
               Revision Delivery Days
               <span className="block md:text-xl">
-                {service.serviceDetails.deliveryDays}
+                {service.revisionsDelivery}
               </span>
             </div>
           </div>
 
           {/* Progress tracker till sm - smaller screens  */}
-
           <nav
             aria-label="Progress"
             className="sm:hidden py-10 w-fit mx-auto text-center"
           >
             <ol role="list" className="overflow-hidden">
-              {status.map((step: any, stepIdx: any) => (
+              {service.status.map((step, stepIdx) => (
                 <li
                   key={step.name}
                   className={classNames(
-                    stepIdx !== status.length - 1 ? "pb-10" : "",
+                    stepIdx !== service.status.length - 1 ? "pb-10" : "",
                     "relative"
                   )}
                 >
-                  {step.status === "complete" ? (
+                  {step.state === ServiceStatusObjectState.Completed ? (
                     <>
-                      {stepIdx !== status.length - 1 ? (
+                      {stepIdx !== service.status.length - 1 ? (
                         <div
                           className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-primary"
                           aria-hidden="true"
                         />
                       ) : null}
-                      <a
-                        href={step.href}
-                        className="relative flex items-start group"
-                      >
+                      <div className="relative flex items-start group">
                         <span className="h-9 flex items-center">
                           <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-primary rounded-full group-hover:bg-primary">
                             <CheckIcon
@@ -192,24 +175,20 @@ function Accordion({ service, handleAccordionClick }: Props) {
                         </span>
                         <span className="ml-4 min-w-0 flex flex-col">
                           <span className="text-xs font-semibold tracking-wide uppercase">
-                            {step.name}
-                          </span>
-                          <span className="text-sm text-gray-500">
-                            {step.description}
+                            {getStatusNames(step.name!)}
                           </span>
                         </span>
-                      </a>
+                      </div>
                     </>
-                  ) : step.status === "current" ? (
+                  ) : step.state === ServiceStatusObjectState.Current ? (
                     <>
-                      {stepIdx !== status.length - 1 ? (
+                      {stepIdx !== service.status.length - 1 ? (
                         <div
                           className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-gray-300"
                           aria-hidden="true"
                         />
                       ) : null}
-                      <a
-                        href={step.href}
+                      <div
                         className="relative flex items-start group"
                         aria-current="step"
                       >
@@ -223,26 +202,20 @@ function Accordion({ service, handleAccordionClick }: Props) {
                         </span>
                         <span className="ml-4 min-w-0 flex flex-col">
                           <span className="text-xs font-semibold tracking-wide uppercase text-primary">
-                            {step.name}
-                          </span>
-                          <span className="text-sm text-gray-500">
-                            {step.description}
+                            {getStatusNames(step.name!)}
                           </span>
                         </span>
-                      </a>
+                      </div>
                     </>
                   ) : (
                     <>
-                      {stepIdx !== status.length - 1 ? (
+                      {stepIdx !== service.status.length - 1 ? (
                         <div
                           className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 bg-gray-300"
                           aria-hidden="true"
                         />
                       ) : null}
-                      <a
-                        href={step.href}
-                        className="relative flex items-start group"
-                      >
+                      <div className="relative flex items-start group">
                         <span
                           className="h-9 flex items-center"
                           aria-hidden="true"
@@ -253,35 +226,34 @@ function Accordion({ service, handleAccordionClick }: Props) {
                         </span>
                         <span className="ml-4 min-w-0 flex flex-col">
                           <span className="text-xs font-semibold tracking-wide uppercase text-gray-500">
-                            {step.name}
-                          </span>
-                          <span className="text-sm text-gray-500">
-                            {step.description}
+                            {getStatusNames(step.name!)}
                           </span>
                         </span>
-                      </a>
+                      </div>
                     </>
                   )}
                 </li>
               ))}
             </ol>
           </nav>
-          {/* Progress Tracker for sm+ - bigger screens */}
 
+          {/* Progress Tracker for sm+ - bigger screens */}
           <nav aria-label="Progress" className="hidden sm:block">
             <ol
               role="list"
               className="flex items-center justify-center pt-8 pb-8 text-center"
             >
-              {status.map((step, stepIdx) => (
+              {service.status.map((step, stepIdx) => (
                 <li
                   key={step.name}
                   className={classNames(
-                    stepIdx !== status.length - 1 ? "pr-8 sm:pr-20" : "",
+                    stepIdx !== service.status.length - 1
+                      ? "pr-8 sm:pr-20"
+                      : "",
                     "relative"
                   )}
                 >
-                  {step.status === "complete" ? (
+                  {step.state === ServiceStatusObjectState.Completed ? (
                     <>
                       <div
                         className="absolute inset-0 flex items-center"
@@ -289,18 +261,17 @@ function Accordion({ service, handleAccordionClick }: Props) {
                       >
                         <div className="h-0.5 w-full bg-primary" />
                       </div>
-                      <a
-                        href="#"
-                        className="relative w-8 h-8 flex flex-col items-center justify-center bg-primary rounded-full hover:bg-primary"
-                      >
+                      <div className="relative w-8 h-8 flex flex-col items-center justify-center bg-primary rounded-full hover:bg-primary">
                         <CheckIcon
                           className="w-5 h-5 text-white fill-white"
                           aria-hidden="true"
                         />
-                        <span className="absolute top-10">{step.name}</span>
-                      </a>
+                        <span className="absolute top-10">
+                          {getStatusNames(step.name!)}
+                        </span>
+                      </div>
                     </>
-                  ) : step.status === "current" ? (
+                  ) : step.state === ServiceStatusObjectState.Current ? (
                     <>
                       <div
                         className="absolute inset-0 flex items-center"
@@ -308,8 +279,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
                       >
                         <div className="h-0.5 w-full bg-gray-200" />
                       </div>
-                      <a
-                        href="#"
+                      <div
                         className="relative w-8 h-8 flex items-center justify-center bg-white border-4 border-primary rounded-full"
                         aria-current="step"
                       >
@@ -317,8 +287,10 @@ function Accordion({ service, handleAccordionClick }: Props) {
                           className="h-2.5 w-2.5 bg-primary rounded-full"
                           aria-hidden="true"
                         />
-                        <span className="mt-24">{step.name}</span>
-                      </a>
+                        <span className="mt-24">
+                          {getStatusNames(step.name!)}
+                        </span>
+                      </div>
                     </>
                   ) : (
                     <>
@@ -328,16 +300,15 @@ function Accordion({ service, handleAccordionClick }: Props) {
                       >
                         <div className="h-0.5 w-full bg-gray-200" />
                       </div>
-                      <a
-                        href="#"
-                        className="group relative w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-300 rounded-full hover:border-gray-400"
-                      >
+                      <div className="group relative w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-300 rounded-full hover:border-gray-400">
                         <span
                           className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-gray-300"
                           aria-hidden="true"
                         />
-                        <span className="mt-24">{step.name}</span>
-                      </a>
+                        <span className="mt-24">
+                          {getStatusNames(step.name!)}
+                        </span>
+                      </div>
                     </>
                   )}
                 </li>

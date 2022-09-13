@@ -17,10 +17,12 @@ import {
   MeQuery,
   useMeQuery,
   UserServices,
+  UserServiceStatus,
   useUpdatePorjectNameLazyQuery,
 } from "../graphql/generated/graphql";
 import toast from "react-hot-toast";
 import Loader from "../components/reusable/Loader";
+import { useRouter } from "next/router";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -97,6 +99,7 @@ const dummyServ = [
 ];
 
 function Dashboard() {
+  const router = useRouter();
   const date = new Date();
   const hours = date.getHours();
   const [open, setOpen] = useState(false);
@@ -147,6 +150,7 @@ function Dashboard() {
         copyServices[foundServiceIdx].projectName = projectName;
       }
       setServices(copyServices);
+      router.push("/upload");
     } catch (error) {
       toast.error("Something went wrong please try again later");
       return;
@@ -220,32 +224,7 @@ function Dashboard() {
             .map((service, index) => (
               <Accordion
                 handleAccordionClick={handleAccordionClick}
-                service={{
-                  id: service._id,
-                  name: service.mainCategory,
-                  projName: service.projectName!,
-                  serviceDetails: {
-                    deliveryDays: service.deliveryDays!,
-                    deliveryFormat: service.deliveryFileFormat.join(", "),
-                    estimatedTime: service.estimatedTime!,
-                    inputTrackLimit: service.inputTrackLimit!,
-                    refFile: service.numberOfReferenceFileUploads!,
-                    revisionDays: service.revisionsDelivery,
-                  },
-                  status: service.status,
-                  // [
-                  //   { name: "Submitted", href: "#", status: "upcoming" },
-                  //   { name: "Under Review", href: "#", status: "upcoming" },
-                  //   { name: "Work In Progress", href: "#", status: "upcoming" },
-                  //   { name: "Delivered", href: "#", status: "upcoming" },
-                  //   { name: "Revision Request", href: "#", status: "upcoming" },
-                  //   {
-                  //     name: "Revision Delivered",
-                  //     href: "#",
-                  //     status: "upcoming",
-                  //   },
-                  // ],
-                }}
+                service={service}
                 key={index}
               />
             ))}

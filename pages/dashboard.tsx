@@ -97,8 +97,9 @@ function Dashboard() {
     <div className="bg-darkBlue text-white flex">
       <DashNav name={data?.me.name} email={data?.me.email} />
       <div className="px-8 relative">
-        <div className="absolute animation-delay-2000 top-[55%] left-[20%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-        <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
+        {/* <div className="absolute animation-delay-2000 top-[55%] left-[20%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" /> */}
+        <div className="absolute animation-delay-4000 top-[60%] right-[30%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
+        <div className="absolute animation-delay-4000 top-[40%] left-[10%] w-36 md:w-96 h-56 bg-pink-700 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="mt-28">
           <Image
             objectFit="cover"
@@ -110,6 +111,10 @@ function Dashboard() {
         {/* Modal Start */}
         <Modal open={open} setOpen={setOpen}>
           <div className="space-y-4 text-center">
+            <svg onClick={() => setOpen(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="relative left-0 top-0 w-6 h-6 hover:fill-primary">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+
             <p className="text-center font-bold">Name your Project</p>
             <input
               className="w-full rounded-xl bg-white/20"
@@ -128,19 +133,19 @@ function Dashboard() {
         </Modal>
         {/* Modal End */}
         <div className="py-4 space-y-3">
-          <span className="text-2xl md:text-4xl font-bold">
+          <span className="text-2xl md:text-3xl font-bold">
             Good{" "}
             {hours < 12
               ? "Morning"
               : hours >= 12 && hours < 17
                 ? "Afternoon"
                 : "Evening"}
-            , {data?.me.name}
+            , {data?.me.name}.
           </span>
-          <div className="text-lg md:text-xl">
+          <div className="text-md md:text-lg">
             {(data?.me.services.length ?? 0) > 0
               ? "You have the following paid subscriptions in your account."
-              : "You don't have any paid services, click below to start a new service"}
+              : "You don't have any paid services, click below to start with a new service."}
           </div>
         </div>
 

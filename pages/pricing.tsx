@@ -9,6 +9,7 @@ import {
   useGetServiceDetailsLazyQuery,
   useInitiatePaymentLazyQuery,
 } from "../graphql/generated/graphql";
+import Modal from "../components/reusable/Modal";
 
 function secondsToHms(d: number) {
   d = Number(d);
@@ -29,9 +30,10 @@ const Pricing = () => {
   const [selectedServiceFinal, setSelectedServiceFinal] = useState<Services>();
   const [selectedAddons, setSelectedAddons] = useState<AddOn[]>([]);
   const [email, setEmail] = useState<string>("");
-
   const [getServiceDetailsQuery] = useGetServiceDetailsLazyQuery();
   const [initiatePaymentQuery] = useInitiatePaymentLazyQuery();
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     const userServiceLS = localStorage.getItem("userService");
@@ -156,7 +158,7 @@ const Pricing = () => {
       <div className="text-white relative">
         <div className="absolute animation-delay-2000 top-[35%] left-[35%] w-36 md:w-96 h-56 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="absolute top-[42%] right-[34%] w-36 md:w-80 h-72 bg-orange3 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-        <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8 ">
           {!selectedServiceFinal && (
             <div className="mt-8 mb-16 text-xl mx-auto space-y-2 md:sticky md:top-0 md:bg-darkBlue/30 md:backdrop-blur-xl z-20 px-4 pb-2 py-3">
               <svg
@@ -643,16 +645,14 @@ const Pricing = () => {
               <div className="fixed z-50 bottom-0 p-4 filter md:flex w-full flex-1 items-center backdrop-blur-xl">
 
 
-                <div className="md:w-1/2 text-md pb-4  md:text-xl relative">
-                  <div className='absolute animation-delay-4000 top-0 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-                  <div className='absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
+                <div className="md:w-1/2 text-md  md:text-xl relative">
                   Estimated Delivery: {selectedServiceFinal.deliveryDays} days
                 </div>
                 <div className="md:w-1/2 text-left space-y-3 relative">
                   <div className='absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-40 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
                   <div className='absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-20 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
                   <div className='absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-30 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-                  <div className="md:flex items-center gap-8">
+                  <div className="md:flex items-center gap-8 h-full pb-3.5">
                     {localStorage.getItem("loggedIn") ? (
                       // Add price here.
                       <div className="font-bold flex items-center justify-between text-xl md:text-2xl">
@@ -725,8 +725,8 @@ const Pricing = () => {
                   />
                 </svg>
               </div>
-              <div className="mx-auto w-full space-y-16 rounded-lg py-16 bg-blueGradient-2/30 backdrop-blur-lg">
-                <div className="text-2xl space-y-3  font-bold">
+              <div className="mx-auto w-full space-y-8 rounded-lg py-12 bg-blueGradient-2/30 backdrop-blur-lg">
+                <div className="text-2xl space-y-3">
                   <span className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r py-5 from-pink-600 to-primary">
                     {selectedService && selectedService[0].subService2
                       ? selectedService[0].subService
@@ -734,11 +734,24 @@ const Pricing = () => {
                         ? selectedService[0].serviceName
                         : ""}
                   </span>
-                  <span className="block">
-                    {selectedServiceFinal.subService2
-                      ? selectedServiceFinal.subService2
-                      : selectedServiceFinal.serviceName}
+                  <span className="block space-x-2">
+                    <span>
+                      {selectedServiceFinal.subService2 || selectedServiceFinal.serviceName}
+                    </span>
+                    <svg onClick={() => setIsModalOpen(true)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline hover:stroke-primary cursor-pointer">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                    </svg>
+                    <Modal open={isModalOpen} setOpen={setIsModalOpen} >
+                      <div className="text-center relative ">
+                        <svg onClick={() => setIsModalOpen(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 absolute right-0 -top-3 hover:text-primary cursor-pointer">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <h3>{selectedServiceFinal.subService2 || selectedServiceFinal.serviceName}</h3>
+                        <p>{(selectedServiceFinal.subService2 || selectedServiceFinal.serviceName).includes("Commercial") ? "If backed by a label or management or using the file for commercial purposes" : "For independent musicians and artists releasing their own music without an existing agreement to sell the song commercially"}</p>
+                      </div>
+                    </Modal>
                   </span>
+
                 </div>
                 <div className="text-xl space-y-3">
                   <div>

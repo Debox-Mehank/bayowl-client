@@ -62,14 +62,25 @@ html {
         linear-gradient(to bottom right, #f09402, #ed4731);
     background-clip: padding-box, border-box;
     background-origin: padding-box, border-box;
+    transition: 0.3s all linear;
 }
 
-.hover\:border-gradient-btn:hover {
+.border-gradient-btn:hover {
     background: linear-gradient(to right, #18181B, #18181B),
-        linear-gradient(to bottom right, #f09402, #f09402, #f09402, #f09402, #c5c5c5);
+        linear-gradient(to bottom right, #4d1b98, purple, #331265);
     background-clip: padding-box, border-box;
     background-origin: padding-box, border-box;
 }
+
+/* Disabled */
+.border-gradient-btn-dis {
+    background: linear-gradient(to right, #18181B, #18181B),
+        linear-gradient(to bottom right, #6b4201, #710d00);
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    transition: 0.3s all linear;
+}
+
 
 .gradient-border-3 {
     border: 3px solid transparent;
@@ -187,4 +198,8 @@ html {
         scrollbar-width: none;
         /* Firefox */
     }
+}
+
+.flicker-fix {
+    transform: translate3d(0px, 0px, 0px) translateY(0px);
 }

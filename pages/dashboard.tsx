@@ -26,74 +26,6 @@ import { useRouter } from "next/router";
 
 export type UserServiceFinal = Omit<UserServices, "createdAt" | "updatedAt">;
 
-const dummyServ = [
-  {
-    projName: null,
-    name: "Mix & Master (Pro Mix)",
-    // Submitted / Under Review / Work In Progress / Delivered / Revision Request Under Review / Revision Delivered
-    status: [
-      { name: "Submitted", href: "#", status: "upcoming" },
-      { name: "Under Review", href: "#", status: "upcoming" },
-      { name: "Work In Progress", href: "#", status: "upcoming" },
-      { name: "Delivered", href: "#", status: "upcoming" },
-      { name: "Revision Request", href: "#", status: "upcoming" },
-      { name: "Revision Delivered", href: "#", status: "upcoming" },
-    ],
-    isExpanded: false,
-    serviceDetails: {
-      estimatedTime: "16 Hours",
-      inputTrackLimit: 30,
-      refFile: 3,
-      deliveryFormat: "48/24 .wav mix file + Instrument bus stems",
-      deliveryDays: 7,
-      revisionDays: 3,
-    },
-  },
-  {
-    projName: "Dream",
-    name: "Mix & Master (Pro Mix)",
-    status: [
-      { name: "Submitted", href: "#", status: "complete" },
-      { name: "Under Review", href: "#", status: "complete" },
-      { name: "Work In Progress", href: "#", status: "current" },
-      { name: "Delivered", href: "#", status: "upcoming" },
-      { name: "Revision Request", href: "#", status: "upcoming" },
-      { name: "Revision Delivered", href: "#", status: "upcoming" },
-    ],
-    // Submitted / Under Review / Work In Progress / Delivered / Revision Request Under Review / Revision Delivered
-    serviceDetails: {
-      estimatedTime: "16 Hours",
-      inputTrackLimit: 30,
-      refFile: 3,
-      deliveryFormat: "48/24 .wav mix file + Instrument bus stems",
-      deliveryDays: 7,
-      revisionDays: 3,
-    },
-  },
-  {
-    projName: "Stream",
-    name: "Mix & Master (Pro Mix)",
-    // Submitted / Under Review / Work In Progress / Delivered / Revision Request Under Review / Revision Delivered
-    status: [
-      { name: "Submitted", href: "#", status: "complete" },
-      { name: "Under Review", href: "#", status: "complete" },
-      { name: "Work In Progress", href: "#", status: "complete" },
-      { name: "Delivered", href: "#", status: "complete" },
-      { name: "Revision Request", href: "#", status: "complete" },
-      { name: "Revision Delivered", href: "#", status: "complete" },
-    ],
-    isExpanded: false,
-    serviceDetails: {
-      estimatedTime: "16 Hours",
-      inputTrackLimit: 30,
-      refFile: 3,
-      deliveryFormat: "48/24 .wav mix file + Instrument bus stems",
-      deliveryDays: 7,
-      revisionDays: 3,
-    },
-  },
-];
-
 function Dashboard() {
   const router = useRouter();
   const date = new Date();
@@ -146,7 +78,7 @@ function Dashboard() {
         copyServices[foundServiceIdx].projectName = projectName;
       }
       setServices(copyServices);
-      router.push("/upload");
+      router.push(`/upload?serviceId=${copyServices[foundServiceIdx]._id}`);
     } catch (error) {
       toast.error("Something went wrong please try again later");
       return;

@@ -1,3 +1,47 @@
+fragment userServices on UserServices {
+  _id
+  mainCategory
+  subCategory
+  serviceName
+  subService
+  subService2
+  for
+  description
+  estimatedTime
+  price
+  inputTrackLimit
+  uploadFileFormat
+  deliveryFileFormat
+  deliveryDays
+  maxFileDuration
+  numberOfReferenceFileUploads
+  setOfRevisions
+  revisionsDelivery
+  mixVocalTuning
+  mixProcessingReverbs
+  mixProcessingDelays
+  mixProcessingOtherFx
+  addOn {
+    type
+    value
+  }
+  projectName
+  paid
+  uploadedFiles
+  referenceFiles
+  revisionFiles {
+    description
+    file
+    revision
+  }
+  statusType
+  status {
+    name
+    state
+  }
+  reupload
+}
+
 query Login($password: String!, $email: String!, $token: String) {
   login(password: $password, email: $email, token: $token)
 }
@@ -41,47 +85,7 @@ query Me {
     email
     number
     services {
-      projectName
-      _id
-      mainCategory
-      subCategory
-      serviceName
-      subService
-      subService2
-      for
-      description
-      estimatedTime
-      price
-      inputTrackLimit
-      uploadFileFormat
-      deliveryFileFormat
-      deliveryDays
-      maxFileDuration
-      numberOfReferenceFileUploads
-      setOfRevisions
-      revisionsDelivery
-      mixVocalTuning
-      mixProcessingReverbs
-      mixProcessingDelays
-      mixProcessingOtherFx
-      addOn {
-        type
-        value
-      }
-      paid
-      referenceFiles
-      revisionFiles {
-        file
-        description
-        revision
-      }
-      uploadedFiles
-      statusType
-      status {
-        name
-        state
-      }
-      reupload
+      ...userServices
     }
     lastLoggedIn
     lastLoggedOut
@@ -101,6 +105,12 @@ query InitiatePayment($service: UserServicesInput!, $email: String) {
 
 query UpdatePorjectName($serviceId: String!, $projectName: String!) {
   updatePorjectName(serviceId: $serviceId, projectName: $projectName)
+}
+
+query GetUserServiceDetailsById($serviceId: String!) {
+  getUserServiceDetailsById(serviceId: $serviceId) {
+    ...userServices
+  }
 }
 
 query VerifyUser($token: String!) {

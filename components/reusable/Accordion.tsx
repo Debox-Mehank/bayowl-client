@@ -8,6 +8,7 @@ import {
   ServiceStatusObjectState,
   UserServiceStatus,
 } from "../../graphql/generated/graphql";
+import { useRouter } from "next/router";
 
 interface Props {
   service: UserServiceFinal;
@@ -65,6 +66,7 @@ function classNames(...classes: any) {
 }
 
 function Accordion({ service, handleAccordionClick }: Props) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -94,8 +96,18 @@ function Accordion({ service, handleAccordionClick }: Props) {
 
         <span
           onClick={() => {
-            if (handleAccordionClick && !service.projectName) {
-              handleAccordionClick(service._id);
+            if (
+              service.statusType === UserServiceStatus.Pendingupload &&
+              !service.projectName
+            ) {
+              if (handleAccordionClick) {
+                handleAccordionClick(service._id);
+              }
+            } else if (
+              service.statusType === UserServiceStatus.Pendingupload &&
+              service.projectName
+            ) {
+              router.push(`/upload?serviceId=${service._id}`);
             }
           }}
           className={`${isOpen ? "hidden md:block" : null}`}

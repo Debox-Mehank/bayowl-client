@@ -61,6 +61,7 @@ export type Query = {
   completeAccount: Scalars['Boolean'];
   getAllService: Array<Services>;
   getServiceDetails: Array<Services>;
+  getUserServiceDetailsById?: Maybe<UserServices>;
   initiatePayment: Scalars['String'];
   login: Scalars['Boolean'];
   logout: Scalars['Boolean'];
@@ -87,6 +88,11 @@ export type QueryCompleteAccountArgs = {
 
 export type QueryGetServiceDetailsArgs = {
   input: ServicesDetailInput;
+};
+
+
+export type QueryGetUserServiceDetailsByIdArgs = {
+  serviceId: Scalars['String'];
 };
 
 
@@ -308,6 +314,8 @@ export type GetServiceDetailsQueryVariables = Exact<{
 
 export type GetServiceDetailsQuery = { __typename?: 'Query', getServiceDetails: Array<{ __typename?: 'Services', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, createdAt: any, updatedAt: any, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null }> }> };
 
+export type UserServicesFragment = { __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> };
+
 export type LoginQueryVariables = Exact<{
   password: Scalars['String'];
   email: Scalars['String'];
@@ -342,7 +350,7 @@ export type CompleteAccountQuery = { __typename?: 'Query', completeAccount: bool
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name?: string | null, email: string, number?: string | null, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, services: Array<{ __typename?: 'UserServices', projectName?: string | null, _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, paid: boolean, referenceFiles: Array<string>, uploadedFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', file?: string | null, description?: string | null, revision: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> }> } };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name?: string | null, email: string, number?: string | null, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, services: Array<{ __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> }> } };
 
 export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -365,6 +373,13 @@ export type UpdatePorjectNameQueryVariables = Exact<{
 
 export type UpdatePorjectNameQuery = { __typename?: 'Query', updatePorjectName: boolean };
 
+export type GetUserServiceDetailsByIdQueryVariables = Exact<{
+  serviceId: Scalars['String'];
+}>;
+
+
+export type GetUserServiceDetailsByIdQuery = { __typename?: 'Query', getUserServiceDetailsById?: { __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> } | null };
+
 export type VerifyUserQueryVariables = Exact<{
   token: Scalars['String'];
 }>;
@@ -372,7 +387,51 @@ export type VerifyUserQueryVariables = Exact<{
 
 export type VerifyUserQuery = { __typename?: 'Query', verifyUser: boolean };
 
-
+export const UserServicesFragmentDoc = gql`
+    fragment userServices on UserServices {
+  _id
+  mainCategory
+  subCategory
+  serviceName
+  subService
+  subService2
+  for
+  description
+  estimatedTime
+  price
+  inputTrackLimit
+  uploadFileFormat
+  deliveryFileFormat
+  deliveryDays
+  maxFileDuration
+  numberOfReferenceFileUploads
+  setOfRevisions
+  revisionsDelivery
+  mixVocalTuning
+  mixProcessingReverbs
+  mixProcessingDelays
+  mixProcessingOtherFx
+  addOn {
+    type
+    value
+  }
+  projectName
+  paid
+  uploadedFiles
+  referenceFiles
+  revisionFiles {
+    description
+    file
+    revision
+  }
+  statusType
+  status {
+    name
+    state
+  }
+  reupload
+}
+    `;
 export const GetServiceDetailsDocument = gql`
     query GetServiceDetails($input: ServicesDetailInput!) {
   getServiceDetails(input: $input) {
@@ -564,47 +623,7 @@ export const MeDocument = gql`
     email
     number
     services {
-      projectName
-      _id
-      mainCategory
-      subCategory
-      serviceName
-      subService
-      subService2
-      for
-      description
-      estimatedTime
-      price
-      inputTrackLimit
-      uploadFileFormat
-      deliveryFileFormat
-      deliveryDays
-      maxFileDuration
-      numberOfReferenceFileUploads
-      setOfRevisions
-      revisionsDelivery
-      mixVocalTuning
-      mixProcessingReverbs
-      mixProcessingDelays
-      mixProcessingOtherFx
-      addOn {
-        type
-        value
-      }
-      paid
-      referenceFiles
-      revisionFiles {
-        file
-        description
-        revision
-      }
-      uploadedFiles
-      statusType
-      status {
-        name
-        state
-      }
-      reupload
+      ...userServices
     }
     lastLoggedIn
     lastLoggedOut
@@ -613,7 +632,7 @@ export const MeDocument = gql`
     updatedAt
   }
 }
-    `;
+    ${UserServicesFragmentDoc}`;
 
 /**
  * __useMeQuery__
@@ -741,6 +760,41 @@ export function useUpdatePorjectNameLazyQuery(baseOptions?: Apollo.LazyQueryHook
 export type UpdatePorjectNameQueryHookResult = ReturnType<typeof useUpdatePorjectNameQuery>;
 export type UpdatePorjectNameLazyQueryHookResult = ReturnType<typeof useUpdatePorjectNameLazyQuery>;
 export type UpdatePorjectNameQueryResult = Apollo.QueryResult<UpdatePorjectNameQuery, UpdatePorjectNameQueryVariables>;
+export const GetUserServiceDetailsByIdDocument = gql`
+    query GetUserServiceDetailsById($serviceId: String!) {
+  getUserServiceDetailsById(serviceId: $serviceId) {
+    ...userServices
+  }
+}
+    ${UserServicesFragmentDoc}`;
+
+/**
+ * __useGetUserServiceDetailsByIdQuery__
+ *
+ * To run a query within a React component, call `useGetUserServiceDetailsByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserServiceDetailsByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserServiceDetailsByIdQuery({
+ *   variables: {
+ *      serviceId: // value for 'serviceId'
+ *   },
+ * });
+ */
+export function useGetUserServiceDetailsByIdQuery(baseOptions: Apollo.QueryHookOptions<GetUserServiceDetailsByIdQuery, GetUserServiceDetailsByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserServiceDetailsByIdQuery, GetUserServiceDetailsByIdQueryVariables>(GetUserServiceDetailsByIdDocument, options);
+      }
+export function useGetUserServiceDetailsByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserServiceDetailsByIdQuery, GetUserServiceDetailsByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserServiceDetailsByIdQuery, GetUserServiceDetailsByIdQueryVariables>(GetUserServiceDetailsByIdDocument, options);
+        }
+export type GetUserServiceDetailsByIdQueryHookResult = ReturnType<typeof useGetUserServiceDetailsByIdQuery>;
+export type GetUserServiceDetailsByIdLazyQueryHookResult = ReturnType<typeof useGetUserServiceDetailsByIdLazyQuery>;
+export type GetUserServiceDetailsByIdQueryResult = Apollo.QueryResult<GetUserServiceDetailsByIdQuery, GetUserServiceDetailsByIdQueryVariables>;
 export const VerifyUserDocument = gql`
     query VerifyUser($token: String!) {
   verifyUser(token: $token)

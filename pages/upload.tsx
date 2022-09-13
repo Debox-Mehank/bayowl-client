@@ -270,7 +270,7 @@ function Upload() {
                     </div> */}
                 </div>
                 <div className="mx-auto w-4/6 rounded-2xl h-full">
-                    <form className="w-full h-full" name="files"
+                    <form className="w-full h-full" name="File Upload Form"
                         onSubmit={() => {
 
                             // Send (Upload) File List, Ref Links, Text Area (remarks) 
@@ -315,7 +315,7 @@ function Upload() {
                                         key={key.current}
                                         multiple={true}
                                         handleChange={handleChange}
-                                        name="File Submission"
+                                        name="Base Files"
                                         disabled={false}
                                         fileOrFiles={filesArray}
                                     >
@@ -545,7 +545,7 @@ function Upload() {
 
 
                                                                 }}
-                                                                name="File Submission"
+                                                                name="Reference Files"
                                                                 fileOrFiles={refFilesArray}
                                                                 classes={"w-full text-center cursor-pointer group"}
                                                             >
@@ -618,12 +618,25 @@ function Upload() {
                                 </Modal>
                                 <textarea
                                     className="bg-darkBlue/20 rounded-xl w-full h-full my-2"
-                                    name=""
+                                    name="Remarks"
                                     id="remarks"
                                     placeholder="Please mention any preferences or special requests here."
                                 />
-                                <div className="pb-2 pt-1">
-                                    Tracks Selected: {filesArray.length + " / " + service.serviceDetails.inputTrackLimit}
+                                <div className="pb-2 pt-1 flex gap-2">
+                                    <div>Tracks Selected: {filesArray.length + " / " + service.serviceDetails.inputTrackLimit}</div>
+                                    {
+                                        (errorList.length > 0) && (
+                                            <>
+                                                <span>|</span>
+                                                <div onClick={() => setIsErrorModalOpen(true)} className="flex gap-2 items-center justify-center cursor-pointer">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 inline stroke-red-500">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                                                    </svg>
+                                                    <span className="text-red-500">Issues with your recent upload.</span>
+                                                </div>
+                                            </>
+                                        )
+                                    }
                                 </div>
                                 <div className="flex justify-between z-50">
                                     {
@@ -698,7 +711,7 @@ function Upload() {
 
                                                         }}
                                                         fileOrFiles={filesArray}
-                                                        name="File Submission"
+                                                        name="Additional Base Files"
                                                         className=""
                                                     >
                                                         <SmallBtn classNames="bg-black/80" isWFull={false}>

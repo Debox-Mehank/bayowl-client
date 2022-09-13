@@ -654,7 +654,21 @@ const Pricing = () => {
                   <div className='absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-30 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
                   <div className="md:flex items-center gap-8">
                     {localStorage.getItem("loggedIn") ? (
-                      <div className="w-60"></div>
+                      // Add price here.
+                      <div className="font-bold flex items-center justify-between text-xl md:text-2xl">
+                        <span>
+                          ₹{" "}
+                          {(
+                            selectedServiceFinal.price +
+                            selectedAddons.reduce((acc, o) => acc + o.value!, 0)
+                          ).toLocaleString("en-IN")}
+                        </span>
+                        <div className="md:hidden">
+                          <Button>
+                            <div>Proceed to Payment</div>
+                          </Button>
+                        </div>
+                      </div>
                     ) : (
                       <input
                         className="rounded-lg bg-white/10 h-9 w-60 placeholder:text-white/40"
@@ -672,20 +686,25 @@ const Pricing = () => {
                       </Button>
                     </div>
                   </div>
-                  <div className="font-bold flex items-center justify-between text-xl md:text-2xl">
-                    <span>
-                      ₹{" "}
-                      {(
-                        selectedServiceFinal.price +
-                        selectedAddons.reduce((acc, o) => acc + o.value!, 0)
-                      ).toLocaleString("en-IN")}
-                    </span>
-                    <div className="md:hidden">
-                      <Button>
-                        <div>Proceed to Payment</div>
-                      </Button>
-                    </div>
-                  </div>
+                  {
+                    !localStorage.getItem("loggedIn") && (
+                      <div className="font-bold flex items-center justify-between text-xl md:text-2xl">
+                        <span>
+                          ₹{" "}
+                          {(
+                            selectedServiceFinal.price +
+                            selectedAddons.reduce((acc, o) => acc + o.value!, 0)
+                          ).toLocaleString("en-IN")}
+                        </span>
+                        <div className="md:hidden">
+                          <Button>
+                            <div>Proceed to Payment</div>
+                          </Button>
+                        </div>
+                      </div>
+                    )
+                  }
+
                 </div>
               </div>
               <div className="absolute -top-5 left-4 md:-left-1">

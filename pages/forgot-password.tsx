@@ -119,7 +119,7 @@ const Home: NextPage = () => {
           </div>
           <div className="space-y-6">
             <input
-              className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40"
+              className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40 border-none focus:ring-0"
               placeholder="Email"
               type="email"
               name="Email"

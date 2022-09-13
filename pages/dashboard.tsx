@@ -16,9 +16,7 @@ import { MeDocument, MeQuery, useMeQuery } from "../graphql/generated/graphql";
 import toast from "react-hot-toast";
 import Loader from "../components/reusable/Loader";
 
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
-}
+
 
 const dummyServ = [
   {
@@ -135,8 +133,8 @@ function Dashboard() {
             {hours < 12
               ? "Morning"
               : hours >= 12 && hours < 17
-              ? "Afternoon"
-              : "Evening"}
+                ? "Afternoon"
+                : "Evening"}
             , {data?.me.name}
           </span>
           <div className="text-lg md:text-xl">

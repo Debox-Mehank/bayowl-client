@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import useMediaQuery from "../hooks/useMediaQuery";
 import FloatingProfile from "./reusable/FloatingProfile";
+import toast from "react-hot-toast";
 
 function DashNav({
   name,
@@ -43,9 +44,7 @@ function DashNav({
 
       <aside
         id="menu"
-        className={`min-h-screen static w-80 flex bg-darkBlue transition-transform duration-700 ${
-          isOpen ? "translate-x-0" : "-translate-x-80"
-        }`}
+        className={`min-h-screen sticky w-80 flex bg-darkBlue ${!isDesktop && isOpen ? "translate-x-0" : "-translate-x-80 md:-translate-x-0"}`}
       >
         <div className="lg:hidden">
           <FloatingProfile position="absolute" name={name} email={email} />
@@ -150,9 +149,11 @@ function DashNav({
               </g>
             </g>
           </svg>
-          <Button>
-            <span className="text-center mx-auto text-md">New Service</span>
-          </Button>
+          <Link href={"/services"}>
+            <Button>
+              <span className="text-center mx-auto text-md">New Service</span>
+            </Button>
+          </Link>
           {/* <div onClick={() => setIsOpen(false)}
                         className="text-right text-4xl hover:text-primary cursor-pointer">&times;</div> */}
           <Link href="/dashboard" className="">

@@ -18,11 +18,13 @@ export type Scalars = {
 
 export type AddOn = {
   __typename?: 'AddOn';
+  qty?: Maybe<Scalars['Float']>;
   type: Scalars['String'];
   value?: Maybe<Scalars['Float']>;
 };
 
 export type AddOnInput = {
+  qty?: InputMaybe<Scalars['Float']>;
   type: Scalars['String'];
   value?: InputMaybe<Scalars['Float']>;
 };
@@ -69,6 +71,7 @@ export type Query = {
   me: User;
   register: Scalars['Boolean'];
   updatePorjectName: Scalars['Boolean'];
+  uploadFilesForService: Scalars['Boolean'];
   verifyUser: Scalars['Boolean'];
 };
 
@@ -84,6 +87,11 @@ export type QueryCompleteAccountArgs = {
   number: Scalars['String'];
   password: Scalars['String'];
   token: Scalars['String'];
+};
+
+
+export type QueryGetS3SignedUrlArgs = {
+  fileName: Scalars['String'];
 };
 
 
@@ -122,6 +130,13 @@ export type QueryRegisterArgs = {
 export type QueryUpdatePorjectNameArgs = {
   projectName: Scalars['String'];
   serviceId: Scalars['String'];
+};
+
+
+export type QueryUploadFilesForServiceArgs = {
+  referenceUploadedFiles: Array<Scalars['String']>;
+  serviceId: Scalars['String'];
+  uplodedFiles: Array<Scalars['String']>;
 };
 
 
@@ -388,7 +403,9 @@ export type VerifyUserQueryVariables = Exact<{
 
 export type VerifyUserQuery = { __typename?: 'Query', verifyUser: boolean };
 
-export type GetS3SignedUrlQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetS3SignedUrlQueryVariables = Exact<{
+  fileName: Scalars['String'];
+}>;
 
 
 export type GetS3SignedUrlQuery = { __typename?: 'Query', getS3SignedURL: string };
@@ -835,8 +852,8 @@ export type VerifyUserQueryHookResult = ReturnType<typeof useVerifyUserQuery>;
 export type VerifyUserLazyQueryHookResult = ReturnType<typeof useVerifyUserLazyQuery>;
 export type VerifyUserQueryResult = Apollo.QueryResult<VerifyUserQuery, VerifyUserQueryVariables>;
 export const GetS3SignedUrlDocument = gql`
-    query GetS3SignedURL {
-  getS3SignedURL
+    query GetS3SignedURL($fileName: String!) {
+  getS3SignedURL(fileName: $fileName)
 }
     `;
 
@@ -852,10 +869,11 @@ export const GetS3SignedUrlDocument = gql`
  * @example
  * const { data, loading, error } = useGetS3SignedUrlQuery({
  *   variables: {
+ *      fileName: // value for 'fileName'
  *   },
  * });
  */
-export function useGetS3SignedUrlQuery(baseOptions?: Apollo.QueryHookOptions<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>) {
+export function useGetS3SignedUrlQuery(baseOptions: Apollo.QueryHookOptions<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>(GetS3SignedUrlDocument, options);
       }

@@ -116,6 +116,7 @@ const Pricing = () => {
           currency: "INR",
           name: "Bay Owl Studios",
           order_id: order.id,
+          redirect: true,
           callback_url: process.env.NEXT_PUBLIC_RAZORPAY_CALLBACK,
           prefill: {
             email: email,

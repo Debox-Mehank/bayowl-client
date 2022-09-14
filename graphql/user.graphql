@@ -117,6 +117,6 @@ query VerifyUser($token: String!) {
   verifyUser(token: $token)
 }
 
-query GetS3SignedURL {
-  getS3SignedURL
+query GetS3SignedURL($fileName: String!) {
+  getS3SignedURL(fileName: $fileName)
 }

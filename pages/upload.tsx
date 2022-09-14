@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Image from "next/image";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 // Hooks
 import { useCallback } from "react";
@@ -238,7 +240,13 @@ function Upload() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const { data: s3Url, error } = await getS3URL();
+    const finalFileName = `uploadedFiles_${serviceId}`;
+
+    const { data: s3Url, error } = await getS3URL({
+      variables: { fileName: finalFileName },
+    });
+
+    const zip = new JSZip();
 
     if (error) {
       setLoading(false);
@@ -252,18 +260,27 @@ function Upload() {
       return;
     }
 
-    // post the image direclty to the s3 bucket
-    await fetch(s3Url.getS3SignedURL, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      body: filesArray[0],
+    filesArray.forEach((file) => {
+      zip.file(`${file.name}`, file);
     });
 
-    const imageUrl = s3Url.getS3SignedURL.split("?")[0];
-    console.log(imageUrl);
-    router.push("/service-tracking");
+    zip.generateAsync({ type: "blob" }).then(async function (content) {
+      // // see FileSaver.js
+      // saveAs(content, "example.zip");
+
+      // post the image direclty to the s3 bucket
+      await fetch(s3Url.getS3SignedURL, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: content,
+      });
+
+      const imageUrl = s3Url.getS3SignedURL.split("?")[0];
+      console.log(imageUrl);
+      router.push("/service-tracking");
+    });
   };
 
   return (

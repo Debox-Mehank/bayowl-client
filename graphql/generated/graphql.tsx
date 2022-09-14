@@ -60,6 +60,7 @@ export type Query = {
   addUserService: Scalars['Boolean'];
   completeAccount: Scalars['Boolean'];
   getAllService: Array<Services>;
+  getS3SignedURL: Scalars['String'];
   getServiceDetails: Array<Services>;
   getUserServiceDetailsById?: Maybe<UserServices>;
   initiatePayment: Scalars['String'];
@@ -386,6 +387,11 @@ export type VerifyUserQueryVariables = Exact<{
 
 
 export type VerifyUserQuery = { __typename?: 'Query', verifyUser: boolean };
+
+export type GetS3SignedUrlQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetS3SignedUrlQuery = { __typename?: 'Query', getS3SignedURL: string };
 
 export const UserServicesFragmentDoc = gql`
     fragment userServices on UserServices {
@@ -828,3 +834,35 @@ export function useVerifyUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type VerifyUserQueryHookResult = ReturnType<typeof useVerifyUserQuery>;
 export type VerifyUserLazyQueryHookResult = ReturnType<typeof useVerifyUserLazyQuery>;
 export type VerifyUserQueryResult = Apollo.QueryResult<VerifyUserQuery, VerifyUserQueryVariables>;
+export const GetS3SignedUrlDocument = gql`
+    query GetS3SignedURL {
+  getS3SignedURL
+}
+    `;
+
+/**
+ * __useGetS3SignedUrlQuery__
+ *
+ * To run a query within a React component, call `useGetS3SignedUrlQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetS3SignedUrlQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetS3SignedUrlQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetS3SignedUrlQuery(baseOptions?: Apollo.QueryHookOptions<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>(GetS3SignedUrlDocument, options);
+      }
+export function useGetS3SignedUrlLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>(GetS3SignedUrlDocument, options);
+        }
+export type GetS3SignedUrlQueryHookResult = ReturnType<typeof useGetS3SignedUrlQuery>;
+export type GetS3SignedUrlLazyQueryHookResult = ReturnType<typeof useGetS3SignedUrlLazyQuery>;
+export type GetS3SignedUrlQueryResult = Apollo.QueryResult<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>;

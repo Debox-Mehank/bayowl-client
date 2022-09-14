@@ -11,7 +11,7 @@ import { useRef } from "react";
 
 import { MusicNoteIcon, TrashIcon } from "@heroicons/react/solid/";
 
-const maxFileSize = 1000000;
+const maxFileSize = 104857600;
 
 // Utils
 import secondsToTime from "../utils/secsToTime";
@@ -25,6 +25,7 @@ import SmallBtn from "../components/reusable/SmallBtn";
 import { FileUploader } from "react-drag-drop-files";
 import toast from "react-hot-toast";
 import {
+  useGetS3SignedUrlLazyQuery,
   useGetUserServiceDetailsByIdLazyQuery,
   useGetUserServiceDetailsByIdQuery,
 } from "../graphql/generated/graphql";
@@ -133,6 +134,7 @@ function Upload() {
 
   const [getUserServiceDetailsByIdQuery] =
     useGetUserServiceDetailsByIdLazyQuery();
+  const [getS3URL] = useGetS3SignedUrlLazyQuery();
 
   useEffect(() => {
     const fetchFunc = async () => {
@@ -235,6 +237,33 @@ function Upload() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    const { data: s3Url, error } = await getS3URL();
+
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+
+    if (!s3Url || !s3Url.getS3SignedURL) {
+      setLoading(false);
+      toast.error("Something went wrong, try again later.");
+      return;
+    }
+
+    // post the image direclty to the s3 bucket
+    await fetch(s3Url.getS3SignedURL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: filesArray[0],
+    });
+
+    const imageUrl = s3Url.getS3SignedURL.split("?")[0];
+    console.log(imageUrl);
+    router.push("/service-tracking");
   };
 
   return (
@@ -834,132 +863,124 @@ function Upload() {
                         )}
                       </div>
                       <div className="flex justify-between z-50">
-                        {(service.numberOfReferenceFileUploads ?? 0) > 0 && (
-                          <div className="space-x-4">
+                        <div className="space-x-4">
+                          {(service.numberOfReferenceFileUploads ?? 0) > 0 && (
                             <span
                               onClick={() => {
                                 setIsRefModalOpen(true);
                               }}
                             >
-                              <SmallBtn
-                                classNames="bg-black/80"
-                                isWFull={false}
-                              >
+                              <Button>
                                 <>Add References</>
-                              </SmallBtn>
+                              </Button>
                             </span>
-                            {filesArray.length > 0 &&
-                              filesArray.length <
-                                (service.inputTrackLimit ?? 0) && (
-                                <span>
-                                  <FileUploader
-                                    key={key2.current}
-                                    multiple={true}
-                                    handleChange={async (
-                                      fileList: FileList
-                                    ) => {
-                                      setErrorList([]);
+                          )}
+                          {filesArray.length > 0 &&
+                            filesArray.length <
+                              (service.inputTrackLimit ?? 0) && (
+                              <span>
+                                <FileUploader
+                                  key={key2.current}
+                                  multiple={true}
+                                  handleChange={async (fileList: FileList) => {
+                                    setErrorList([]);
 
-                                      let hasIssues = false;
+                                    let hasIssues = false;
 
-                                      // Checking Number of files based on track Limit
+                                    // Checking Number of files based on track Limit
+                                    if (
+                                      Array.from(fileList).length >
+                                      (service.inputTrackLimit ?? 0)
+                                    ) {
+                                      setErrorList([
+                                        {
+                                          fileName: "Tracks over the limit.",
+                                          issue: [
+                                            `Track limit for the selected plan is ${service.inputTrackLimit}`,
+                                          ],
+                                        },
+                                      ]);
+                                      setIsErrorModalOpen(true);
+                                      hasIssues = true;
+                                      return;
+                                    }
+
+                                    //
+
+                                    let approvedFiles: File[] = [];
+
+                                    // Checking Type, Duration & Size for each file.
+
+                                    for (const file of Array.from(fileList)) {
+                                      // Check if files with the same name exists in the array or not.
                                       if (
-                                        Array.from(fileList).length >
-                                        (service.inputTrackLimit ?? 0)
+                                        filesArray.find(
+                                          (prevFile) =>
+                                            prevFile.name === file.name
+                                        )
                                       ) {
-                                        setErrorList([
+                                        setErrorList((prev) => [
+                                          ...prev,
                                           {
-                                            fileName: "Tracks over the limit.",
+                                            fileName: file.name,
                                             issue: [
-                                              `Track limit for the selected plan is ${service.inputTrackLimit}`,
+                                              "A file by this name already exists.",
                                             ],
                                           },
                                         ]);
-                                        setIsErrorModalOpen(true);
                                         hasIssues = true;
-                                        return;
+                                        // Break and don't run other checks
+                                        break;
                                       }
 
-                                      //
-
-                                      let approvedFiles: File[] = [];
-
-                                      // Checking Type, Duration & Size for each file.
-
-                                      for (const file of Array.from(fileList)) {
-                                        // Check if files with the same name exists in the array or not.
-                                        if (
-                                          filesArray.find(
-                                            (prevFile) =>
-                                              prevFile.name === file.name
-                                          )
-                                        ) {
-                                          setErrorList((prev) => [
-                                            ...prev,
-                                            {
-                                              fileName: file.name,
-                                              issue: [
-                                                "A file by this name already exists.",
-                                              ],
-                                            },
-                                          ]);
-                                          hasIssues = true;
-                                          // Break and don't run other checks
-                                          break;
-                                        }
-
-                                        const hasErrors =
-                                          await checkTypeDurationSize(
-                                            file,
-                                            service.uploadFileFormat,
-                                            service.maxFileDuration ?? 0
-                                          );
-                                        //  If no errors, push to approved files.
-                                        if (!hasErrors) {
-                                          approvedFiles = [
-                                            ...approvedFiles,
-                                            file,
-                                          ];
-                                        } else if (
-                                          typeof hasErrors === "object"
-                                        ) {
-                                          hasIssues = true;
-                                          // Else append error list.
-                                          setErrorList((prev) => [
-                                            ...prev,
-                                            hasErrors,
-                                          ]);
-                                        }
+                                      const hasErrors =
+                                        await checkTypeDurationSize(
+                                          file,
+                                          service.uploadFileFormat,
+                                          service.maxFileDuration ?? 0
+                                        );
+                                      //  If no errors, push to approved files.
+                                      if (!hasErrors) {
+                                        approvedFiles = [
+                                          ...approvedFiles,
+                                          file,
+                                        ];
+                                      } else if (
+                                        typeof hasErrors === "object"
+                                      ) {
+                                        hasIssues = true;
+                                        // Else append error list.
+                                        setErrorList((prev) => [
+                                          ...prev,
+                                          hasErrors,
+                                        ]);
                                       }
-                                      {
-                                        hasIssues && setIsErrorModalOpen(true);
-                                      }
+                                    }
+                                    {
+                                      hasIssues && setIsErrorModalOpen(true);
+                                    }
 
-                                      {
-                                        approvedFiles.length &&
-                                          setFilesArray((prev) => [
-                                            ...prev,
-                                            ...approvedFiles,
-                                          ]);
-                                      }
+                                    {
+                                      approvedFiles.length &&
+                                        setFilesArray((prev) => [
+                                          ...prev,
+                                          ...approvedFiles,
+                                        ]);
+                                    }
 
-                                      key2.current = key2.current + 1;
-                                    }}
-                                    fileOrFiles={filesArray}
-                                    name="Additional Base Files"
-                                    className=""
-                                  >
-                                    <SmallBtn
-                                      classNames="bg-black/80"
-                                      isWFull={false}
-                                    >
-                                      <>Add More Files</>
-                                    </SmallBtn>
-                                  </FileUploader>
-                                </span>
-                              )}
-                          </div>
-                        )}
+                                    key2.current = key2.current + 1;
+                                  }}
+                                  fileOrFiles={filesArray}
+                                  name="Additional Base Files"
+                                  className=""
+                                >
+                                  <Button>
+                                    <>Add More Files</>
+                                  </Button>
+                                </FileUploader>
+                              </span>
+                            )}
+                        </div>
 
                         <div className="ml-auto">
                           <Button onClick={handleSubmit}>

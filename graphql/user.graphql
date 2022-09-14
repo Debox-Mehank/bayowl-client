@@ -116,3 +116,7 @@ query GetUserServiceDetailsById($serviceId: String!) {
 query VerifyUser($token: String!) {
   verifyUser(token: $token)
 }
+
+query GetS3SignedURL {
+  getS3SignedURL
+}

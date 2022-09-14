@@ -107,7 +107,7 @@ function ServiceTracking() {
       {/* issue */}
       <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
         {/* Scrollable Div Below, issue */}
-        <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[100]">
+        <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[60]">
           <div className="w-80 md:w-full text-center text-xl sm:max-w-3xl text-white bg-white/10 rounded-md py-1 md:py-2 px-3 md:px-2 flex items-center gap-2 fixed">
             <input
               onChange={(e) => {
@@ -162,61 +162,61 @@ function ServiceTracking() {
                       <tr>
                         <th
                           scope="col"
-                          className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6 sticky -left-4 bg-black/40 z-50 backdrop-blur-[6px] flicker-fix backface-hidden"
+                          className="whitespace-nowrap py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-white sm:pl-6 sticky -left-4 bg-black/40 z-[100] backdrop-blur-[6px] flicker-fix backface-hidden"
                         >
                           Project Name
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Service Name
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Note to Engineer
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Date of Submission
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Current Status
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Est. Delivery Date
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Re-Upload
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Download
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Request Revision
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Mark Completed
                         </th>
@@ -243,12 +243,12 @@ function ServiceTracking() {
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             {/* {transaction.dateSubmitted} */}
-                            Some date
+                            {/* Some date */}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             <div className="flex items-center justify-center gap-2 h-full">
-                              <span className="relative z-10 w-5 h-5 flex items-center justify-center bg-white border-2 border-primary rounded-full">
-                                <span className="h-1.5 w-1.5 bg-primary rounded-full" />
+                              <span className="relative z-10 w-4 h-4 flex items-center justify-center bg-white border-2 border-primary rounded-full">
+                                <span className="h-1 w-1 bg-primary rounded-full" />
                               </span>
                               <span>
                                 {getStatusNames(transaction.statusType)}
@@ -257,7 +257,7 @@ function ServiceTracking() {
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {/* {transaction.estimatedDelivery} */}
-                            Some date
+                            {/* Some date */}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button>

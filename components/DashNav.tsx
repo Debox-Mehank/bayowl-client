@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import useMediaQuery from "../hooks/useMediaQuery";
 import FloatingProfile from "./reusable/FloatingProfile";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 function DashNav({
   name,
@@ -16,20 +17,22 @@ function DashNav({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const router = useRouter();
+  const currentRoute = router.pathname;
 
   useEffect(() => {
     isDesktop ? setIsOpen(true) : setIsOpen(false);
   }, [isDesktop]);
 
   return (
-    <div className="fixed top-0 left-0 lg:static z-50">
+    <div className={`fixed top-0 left-0 lg:static ${isOpen ? "z-[100]" : ""}`}>
       <span
         onClick={() => setIsOpen((prev) => !prev)}
         className="fixed top-6 right-2 text-white lg:hidden inline-block z-[80]"
       >
         <div
           id="nav-icon3"
-          className={`z-[60] w-full h-full ${isOpen ? "open" : ""}`}
+          className={`z-[120] w-full h-full ${isOpen ? "open" : ""}`}
         >
           <span></span>
           <span></span>
@@ -158,13 +161,15 @@ function DashNav({
           </div>
           {/* <div onClick={() => setIsOpen(false)}
                         className="text-right text-4xl hover:text-primary cursor-pointer">&times;</div> */}
-          <Link href="/dashboard" className="">
-            <span className="hover:text-primary cursor-pointer duration-300 transition-colors text-lg">
+          {/* className={currentRoute === "/dashboard" ? "text-blueGradient-3" : ""} */}
+          <Link href="/dashboard" >
+            <span className={`hover:text-primary/80 cursor-pointer duration-300 transition-colors text-lg ${currentRoute === "/dashboard" ? "text-primary" : ""}`} >
               Dashboard
             </span>
           </Link>
-          <Link href="/service-tracking">
-            <span className="hover:text-primary cursor-pointer duration-300 transition-colors text-lg">
+          <Link href="/service-tracking" >
+            {/* */}
+            <span className={`hover:text-primary/80 cursor-pointer duration-300 transition-colors text-lg ${currentRoute === "/service-tracking" ? "text-primary" : ""}`}>
               Service Tracking
             </span>
           </Link>

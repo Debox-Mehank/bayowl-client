@@ -24,6 +24,7 @@ fragment userServices on UserServices {
   addOn {
     type
     value
+    qty
   }
   projectName
   paid

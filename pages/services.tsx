@@ -66,7 +66,7 @@ const Services = () => {
         <div className="flex flex-col gap-8">
           {!selectedMainCategory ? (
             <>
-              <div className="flex justify-center items-center gap-8 flex-wrap">
+              <div className="flex justify-center items-center gap-8 flex-wrap relative">
                 <p className="text-3xl font-bold">Select Main Category</p>
               </div>
               <div className="flex justify-center items-center gap-8 flex-wrap">
@@ -105,7 +105,10 @@ const Services = () => {
             </>
           ) : !selectedSubCategory ? (
             <>
-              <div className="flex justify-center items-center gap-8 flex-wrap">
+              <div className="flex justify-center items-center gap-8 flex-wrap relative">
+                <svg onClick={() => router.back()} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 absolute left-0 top-1 cursor-pointer hover:fill-primary">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                </svg>
                 <p className="text-3xl font-bold">{selectedMainCategory}</p>
               </div>
               <div className="flex justify-center items-center gap-8 flex-wrap">
@@ -148,7 +151,10 @@ const Services = () => {
             </>
           ) : !selectedService ? (
             <>
-              <div className="flex justify-center items-center gap-8 flex-wrap">
+              <div className="flex justify-center items-center gap-8 flex-wrap relative">
+                <svg onClick={() => router.back()} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 absolute left-0 top-1 cursor-pointer hover:fill-primary">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                </svg>
                 <p className="text-3xl font-bold">{selectedSubCategory}</p>
               </div>
               <div className="flex justify-center items-center gap-8 flex-wrap">
@@ -219,7 +225,11 @@ const Services = () => {
             </>
           ) : (
             <>
-              <div className="flex justify-center items-center gap-8 flex-wrap">
+              <div className="flex justify-center items-center gap-8 flex-wrap relative">
+                <svg onClick={() => router.back()} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 absolute left-0 top-1 cursor-pointer hover:fill-primary">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                </svg>
+
                 <p className="text-3xl font-bold">{selectedService}</p>
               </div>
               <div className="flex justify-center items-center gap-8 flex-wrap">

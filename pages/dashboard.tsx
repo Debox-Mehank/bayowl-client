@@ -117,7 +117,7 @@ function Dashboard() {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="relative left-0 top-0 w-6 h-6 hover:fill-primary"
+              className="absolute right-2 top-2 w-6 h-6 hover:text-primary cursor-pointer"
             >
               <path
                 strokeLinecap="round"
@@ -149,8 +149,8 @@ function Dashboard() {
             {hours < 12
               ? "Morning"
               : hours >= 12 && hours < 17
-              ? "Afternoon"
-              : "Evening"}
+                ? "Afternoon"
+                : "Evening"}
             , {data?.me.name}.
           </span>
           <div className="text-md md:text-lg">
@@ -162,7 +162,7 @@ function Dashboard() {
 
         {/* Paid Subscriptions */}
 
-        <div className="py-6 md:px-4 space-y-10 z-50">
+        <div className="py-6 space-y-10 z-50">
           {services
             .filter((el) => el.paid)
             .map((service, index) => (

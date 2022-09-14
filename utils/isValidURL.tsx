@@ -1,11 +1,11 @@
 export default function isValidHttpUrl(string: string) {
-    let url;
-
     try {
-        url = new URL(string);
-    } catch (_) {
+        return (
+            string.match(
+                /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%.\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%\+.~#?&//=]*)/g
+            ) !== null
+        );
+    } catch (e) {
         return false;
     }
-
-    return url.protocol === "http:" || url.protocol === "https:";
 }

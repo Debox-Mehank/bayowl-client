@@ -11,20 +11,21 @@ import { useRef } from "react";
 
 import { MusicNoteIcon, TrashIcon } from "@heroicons/react/solid/";
 
-const maxFileSize = 1000000;
+const maxFileSize = 104857600;
 
 // Utils
 import secondsToTime from "../utils/secsToTime";
 import formatBytes from "../utils/formatBytes";
 import isValidHttpUrl from "../utils/isValidURL";
+import { getClickableLink } from "../utils/getClickableLink";
 
 // Components
 import Modal from "../components/reusable/Modal";
 import Button from "../components/reusable/Button";
-import SmallBtn from "../components/reusable/SmallBtn";
 import { FileUploader } from "react-drag-drop-files";
 import toast from "react-hot-toast";
 import {
+  useGetS3SignedUrlLazyQuery,
   useGetUserServiceDetailsByIdLazyQuery,
   useGetUserServiceDetailsByIdQuery,
 } from "../graphql/generated/graphql";
@@ -63,7 +64,8 @@ interface errorList {
 
 interface refFileList {
   name?: string;
-  url: string;
+  file?: File;
+  url?: string;
   isAddedByUpload: boolean;
 }
 
@@ -133,6 +135,7 @@ function Upload() {
 
   const [getUserServiceDetailsByIdQuery] =
     useGetUserServiceDetailsByIdLazyQuery();
+  const [getS3URL] = useGetS3SignedUrlLazyQuery();
 
   useEffect(() => {
     const fetchFunc = async () => {
@@ -164,6 +167,8 @@ function Upload() {
   const [isAlertModalOpen, setIsAlertModalOpen] = useState<Boolean>(false);
   const [isRefModalOpen, setIsRefModalOpen] = useState<Boolean>(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState<Boolean>(false);
+  const [onLoadModalOpen, setOnLoadModalOpen] = useState<Boolean>(false);
+  const [summaryModalOpen, setSummaryModalOpen] = useState<Boolean>(false);
 
   // Main File State
   const [filesArray, setFilesArray] = useState<File[]>([]);
@@ -173,7 +178,7 @@ function Upload() {
 
   // To let user choose between adding references tracks by files or links.
   const [isRefByUpload, setIsRefByUpload] = useState<Boolean | null>(null);
-  const [refLinksArray, setRefLinksArray] = useState<refFileList[]>([]);
+  const [refArray, setrefArray] = useState<refFileList[]>([]);
 
   // Error list to alert users reasons for upload failure.
   const [errorList, setErrorList] = useState<errorList[]>([]);
@@ -182,6 +187,11 @@ function Upload() {
   const key2 = useRef(0);
   const key3 = useRef(0);
   const urlEl = useRef<HTMLInputElement>(null);
+
+
+  useEffect(() => {
+    // setOnLoadModalOpen(true)
+  }, [])
 
   const handleChange = useCallback(
     async (files: FileList) => {
@@ -235,12 +245,105 @@ function Upload() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    const { data: s3Url, error } = await getS3URL();
+
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+
+    if (!s3Url || !s3Url.getS3SignedURL) {
+      setLoading(false);
+      toast.error("Something went wrong, try again later.");
+      return;
+    }
+
+    // post the image direclty to the s3 bucket
+    await fetch(s3Url.getS3SignedURL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: filesArray[0],
+    });
+
+    const imageUrl = s3Url.getS3SignedURL.split("?")[0];
+    console.log(imageUrl);
+    router.push("/service-tracking");
   };
 
   return (
     <>
       {loading ? <>Loading...</> : null}
-      <div className="h-screen bg-darkBlue text-white flex relative max-w-7xl mx-auto max-h-[50rem]">
+      <div className="md:h-[96vh] max-h-[48rem] bg-darkBlue text-white flex relative max-w-7xl mx-auto">
+        <Modal open={summaryModalOpen} setOpen={setSummaryModalOpen}>
+          <div className="relative text-center">
+            <svg onClick={() => setSummaryModalOpen(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="absolute right-0 -top-2 w-6 h-6 hover:text-primary cursor-pointer">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <h3 className="font-bold text-primary text-lg">Summary</h3>
+            <p className="pt-4">Please ensure all your files added. After proceeding from this step, you will not be able to make any changes.</p>
+            <p className="pt-4 text-center">
+              <ul>
+                <li>
+                  Tracks Selected:{" "}
+                  {filesArray.length +
+                    " / " +
+                    (service?.inputTrackLimit || 0)}
+                </li>
+                {
+                  ((service?.numberOfReferenceFileUploads || 0) > 0) && (
+                    <li>
+                      Reference Tracks Selected:{" "}
+                      {refArray.length +
+                        " / " +
+                        (service?.numberOfReferenceFileUploads || 0)}
+                    </li>
+                  )
+                }
+
+
+              </ul>
+            </p>
+            <div className="pt-4">
+              <span className="w-fit mx-auto block pt-4">
+                <Button onClick={handleSubmit}>
+                  <>
+                    {"Proceed & Upload"}
+                  </>
+                </Button>
+              </span>
+            </div>
+          </div>
+        </Modal>
+        <Modal open={onLoadModalOpen} setOpen={setOnLoadModalOpen}>
+          <div>
+
+            <svg onClick={() => setOnLoadModalOpen(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="absolute right-3 top-3 w-6 h-6 hover:text-primary cursor-pointer">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+
+            <h4 className="font-bold text-primary text-center">Before you proceed with adding your files, please ensure the following.</h4>
+
+            <p className="pt-2">
+              Please ensure that there is no white noise / silence in the beginning or towards the end of your tracks, and they match the following conditions.
+            </p>
+
+
+            <p className="pt-3 pb-2 px-4">
+
+              <ul className="list-disc">
+                <li>Your input track limit is {service?.inputTrackLimit} track(s)</li>
+                <li>Accepted file format(s) are:  {service?.uploadFileFormat}</li>
+                <li>The maximum duration for your plan is {secondsToTime(service?.maxFileDuration ?? 0)} </li>
+                <li>The maximum file size for one track is {formatBytes(maxFileSize)} </li>
+                {/* <li></li> */}
+              </ul>
+            </p>
+          </div>
+        </Modal>
         <div className="absolute animation-delay-2000 top-[45%] left-[15%] w-36 md:w-96 h-96 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[60px] animate-blob overflow-hidden" />
         <div className="absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden" />
         <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden" />
@@ -260,59 +363,62 @@ function Upload() {
               </h3>
             </div>
             <div className="hidden md:flex px-8 py-10 relative w-full justify-center items-center gap-10">
-              <svg
-                onClick={() => {
-                  // setAddOns(null)
-                  router.back();
-                }}
-                xmlns="http://www.w3.org/2000/svg"
-                width="27"
-                height="30"
-                className="fill-white hover:fill-primary duration-300 transition-colors cursor-pointer absolute top-12 -left-4"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
-                />
-              </svg>
-              <div className="flex flex-col justify-center gap-6 w-2/6">
-                <div>
-                  <span className="text-4xl font-bold">
-                    {service.projectName}
-                  </span>
-                  <div className="text-xl font-bold">{service.subCategory}</div>
-                </div>
-                <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
-                  Upload Formats:
-                  <span className="block text-xl">
-                    {service.uploadFileFormat.join(", ")}
-                  </span>
-                </div>
-                <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
-                  Input Track Limit
-                  <span className="block text-xl">
-                    {service.inputTrackLimit}
-                  </span>
-                </div>
-                <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
-                  No. of Reference Files
-                  <span className="block text-xl">
-                    {service.numberOfReferenceFileUploads}
-                  </span>
-                </div>
 
-                <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
-                  Maximum Duration of Files
-                  <span className="block text-xl">
-                    {secondsToTime(service.maxFileDuration ?? 0)}
-                  </span>
-                </div>
-                <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
-                  Maximum File Size
-                  <span className="block text-xl">
-                    {formatBytes(maxFileSize)}
-                  </span>
+              <div className="w-2/6 relative flex flex-col gap-1">
+                <svg
+                  onClick={() => {
+                    // setAddOns(null)
+                    router.back();
+                  }}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="27"
+                  height="30"
+                  className="fill-white hover:fill-primary duration-300 transition-colors cursor-pointer top-0"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
+                  />
+                </svg>
+                <div className="flex flex-col justify-center gap-6 flex-1">
+                  <div>
+                    <span className="text-4xl font-bold">
+                      {service.projectName}
+                    </span>
+                    <div className="text-xl font-bold">{service.subCategory}</div>
+                  </div>
+                  <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
+                    Upload Formats:
+                    <span className="block text-xl">
+                      {service.uploadFileFormat.join(", ")}
+                    </span>
+                  </div>
+                  <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
+                    Input Track Limit
+                    <span className="block text-xl">
+                      {service.inputTrackLimit}
+                    </span>
+                  </div>
+                  <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
+                    No. of Reference Files
+                    <span className="block text-xl">
+                      {service.numberOfReferenceFileUploads}
+                    </span>
+                  </div>
+
+                  <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
+                    Maximum Duration of Files
+                    <span className="block text-xl">
+                      {secondsToTime(service.maxFileDuration ?? 0)}
+                    </span>
+                  </div>
+                  <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
+                    Maximum File Size
+                    <span className="block text-xl">
+                      {formatBytes(maxFileSize)}
+                    </span>
+                  </div>
                 </div>
                 {/* <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
                         Delivery Format
@@ -327,8 +433,8 @@ function Upload() {
                   <Modal
                     open={isErrorModalOpen}
                     setOpen={() => {
-                      setIsErrorModalOpen;
-                      setErrorList([]);
+                      setIsErrorModalOpen(true);
+                      // setErrorList([]);
                     }}
                   >
                     <div className="text-center relative">
@@ -347,7 +453,7 @@ function Upload() {
                         />
                       </svg>
 
-                      {errorList.length && (
+                      {(errorList.length > 0) && (
                         <>
                           <h4 className="text-lg">
                             {"We've found some issues with your file(s)."}{" "}
@@ -361,10 +467,10 @@ function Upload() {
                             key={err.fileName}
                             className="flex gap-4 text-left"
                           >
-                            <span className="w-1/4 font-bold">
+                            <span className="font-bold overflow-auto">
                               {err.fileName}
                             </span>
-                            <span className="w-3/4">
+                            <span className="flex-1">
                               {err.issue.map((issue, index) => (
                                 <p key={`${issue} - ${index}`}>{issue}</p>
                               ))}
@@ -387,11 +493,10 @@ function Upload() {
                           fileOrFiles={filesArray}
                         >
                           <div
-                            className={`w-full cursor-pointer h-full px-2 bg-white/10 flex flex-col gap-8 rounded-xl ${
-                              filesArray.length <= 0
-                                ? "justify-center items-center"
-                                : ""
-                            }`}
+                            className={`w-full cursor-pointer h-full px-2 bg-white/10 flex flex-col gap-8 rounded-xl ${filesArray.length <= 0
+                              ? "justify-center items-center"
+                              : ""
+                              }`}
                           >
                             {filesArray.length <= 0 && (
                               <>
@@ -497,14 +602,14 @@ function Upload() {
                               />
                             </svg>
                             <p className="pt-2 text-center">
-                              {refLinksArray.length +
+                              {refArray.length +
                                 " / " +
                                 service.numberOfReferenceFileUploads}{" "}
                               References Added
                             </p>
                             <div className="mt-3">
-                              {refLinksArray.length > 0 &&
-                                refLinksArray.map((link, index) => (
+                              {refArray.length > 0 &&
+                                refArray.map((link, index) => (
                                   <div
                                     key={link.url}
                                     className="flex py-4 justify-between px-4 bg-white/5 mb-4 rounded-xl"
@@ -520,11 +625,7 @@ function Upload() {
 
                                     <TrashIcon
                                       onClick={() => {
-                                        if (link.isAddedByUpload) {
-                                          // Remove File From S3
-                                        }
-
-                                        setRefLinksArray((prev) =>
+                                        setrefArray((prev) =>
                                           prev.filter(
                                             (link, idx) => idx !== index
                                           )
@@ -535,20 +636,20 @@ function Upload() {
                                   </div>
                                 ))}
                             </div>
-                            {refLinksArray.length > 0 && (
-                              <div className="text-center mt-4 space-y-4">
-                                <span onClick={() => setIsRefModalOpen(false)}>
+                            {refArray.length > 0 && (
+                              <div className="text-center mt-4 space-y-4 ">
+                                <span className="block max-w-[8rem] w-fit mx-auto" onClick={() => setIsRefModalOpen(false)}>
                                   <Button>
                                     <>Proceed</>
                                   </Button>
                                 </span>
-                                {refLinksArray.length <
+                                {refArray.length <
                                   (service.numberOfReferenceFileUploads ??
                                     0) && (
-                                  <div className="font-bold text-md py-3">
-                                    Or add more
-                                  </div>
-                                )}
+                                    <div className="font-bold text-md py-3">
+                                      Or add more
+                                    </div>
+                                  )}
                               </div>
                             )}
                           </div>
@@ -556,13 +657,13 @@ function Upload() {
                           {/* Letting user choose  */}
 
                           {isRefByUpload === null &&
-                            refLinksArray.length <
-                              (service.numberOfReferenceFileUploads ?? 0) && (
+                            refArray.length <
+                            (service.numberOfReferenceFileUploads ?? 0) && (
                               <div
                                 data-aos="fade-up"
                                 className="text-center space-y-4 mt-4"
                               >
-                                {refLinksArray.length < 1 && (
+                                {refArray.length < 1 && (
                                   <div className="space-y-0.5">
                                     <p>
                                       Please select how you would like to add
@@ -576,20 +677,16 @@ function Upload() {
                                 )}
                                 <div className="flex justify-around">
                                   <span onClick={() => setIsRefByUpload(false)}>
-                                    <SmallBtn
-                                      isWFull={false}
-                                      classNames="bg-black/80"
+                                    <Button
                                     >
                                       <h3>Use a link</h3>
-                                    </SmallBtn>
+                                    </Button>
                                   </span>
                                   <span onClick={() => setIsRefByUpload(true)}>
-                                    <SmallBtn
-                                      isWFull={false}
-                                      classNames="bg-black/80"
+                                    <Button
                                     >
                                       <h3> Upload Track</h3>
-                                    </SmallBtn>
+                                    </Button>
                                   </span>
                                 </div>
                               </div>
@@ -627,101 +724,101 @@ function Upload() {
                                   refFilesArray.length >
                                   (service.numberOfReferenceFileUploads ?? 0)
                                 ) && (
-                                  <FileUploader
-                                    key={key3.current}
-                                    handleChange={async (file: File) => {
-                                      let approvedFiles: File[] = [];
-                                      // Checking Type, Duration & Size for each file.
+                                    <FileUploader
+                                      key={key3.current}
+                                      handleChange={async (file: File) => {
+                                        let approvedFiles: File[] = [];
+                                        // Checking Type, Duration & Size for each file.
 
-                                      // Check if files with the same name exists in the array or not.
-                                      if (
-                                        refFilesArray.find(
-                                          (prevFile) =>
-                                            prevFile.name === file.name
-                                        )
-                                      ) {
-                                        // alert()
-                                        toast.error(
-                                          `Upload Failed - Reference file named ${file.name} has already been selected.`
-                                        );
-                                        return;
-                                      }
-                                      //
-                                      if (
-                                        filesArray.find(
-                                          (prevFile) =>
-                                            prevFile.name === file.name
-                                        )
-                                      ) {
-                                        // alert()
-                                        toast.error(
-                                          `Upload Failed - You have already added this file as a part of your base files.`
-                                        );
-                                        return;
-                                      }
+                                        // Check if files with the same name exists in the array or not.
+                                        if (
+                                          refFilesArray.find(
+                                            (prevFile) =>
+                                              prevFile.name === file.name
+                                          )
+                                        ) {
+                                          // alert()
+                                          toast.error(
+                                            `Upload Failed - Reference file named ${file.name} has already been selected.`
+                                          );
+                                          return;
+                                        }
+                                        //
+                                        if (
+                                          filesArray.find(
+                                            (prevFile) =>
+                                              prevFile.name === file.name
+                                          )
+                                        ) {
+                                          // alert()
+                                          toast.error(
+                                            `Upload Failed - You have already added this file as a part of your base files.`
+                                          );
+                                          return;
+                                        }
 
-                                      const hasErrors =
-                                        await checkTypeDurationSize(
-                                          file,
-                                          service.uploadFileFormat,
-                                          service.maxFileDuration ?? 0
-                                        );
-                                      //  If no errors, push to approved files.
-                                      if (!hasErrors) {
-                                        // Upload the file to S3 that returns a URL
-                                        // Append RefLinksArray with the returned URL.
-                                        setRefLinksArray((prev) => [
-                                          ...prev,
-                                          {
-                                            name: file.name,
-                                            url: "s3",
-                                            isAddedByUpload: true,
-                                          },
-                                        ]);
-                                      } else if (
-                                        typeof hasErrors === "object"
-                                      ) {
-                                        // Else append error list.
-                                        toast.error(
-                                          "Upload Failed - " +
+                                        const hasErrors =
+                                          await checkTypeDurationSize(
+                                            file,
+                                            service.uploadFileFormat,
+                                            service.maxFileDuration ?? 0
+                                          );
+                                        //  If no errors, push to approved files.
+                                        if (!hasErrors) {
+                                          // Upload the file to S3 that returns a URL
+                                          // Append refArray with the returned URL.
+                                          setrefArray((prev) => [
+                                            ...prev,
+                                            {
+                                              name: file.name,
+                                              file: file,
+                                              isAddedByUpload: true,
+                                            },
+                                          ]);
+                                        } else if (
+                                          typeof hasErrors === "object"
+                                        ) {
+                                          // Else append error list.
+                                          toast.error(
+                                            "Upload Failed - " +
                                             hasErrors.fileName +
                                             " - " +
                                             hasErrors.issue.join(" & ")
-                                        );
+                                          );
+                                        }
+
+                                        setIsRefByUpload(null);
+
+                                        key3.current = key3.current + 1;
+                                      }}
+                                      name="Reference Files"
+                                      fileOrFiles={refFilesArray}
+                                      classes={
+                                        "w-full text-center cursor-pointer group"
                                       }
-
-                                      setIsRefByUpload(null);
-
-                                      key3.current = key3.current + 1;
-                                    }}
-                                    name="Reference Files"
-                                    fileOrFiles={refFilesArray}
-                                    classes={
-                                      "w-full text-center cursor-pointer group"
-                                    }
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      strokeWidth={1.5}
-                                      stroke="currentColor"
-                                      className="w-8 h-8 my-1 group-hover:text-primary duration-200 transition-colors mx-auto"
                                     >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                                      />
-                                    </svg>
-                                    <span className="text-center mx-auto group-hover:text-primary duration-200 transition-colors">
-                                      Click to upload or drag on this area.
-                                    </span>
-                                  </FileUploader>
-                                )}
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-8 h-8 my-1 group-hover:text-primary duration-200 transition-colors mx-auto"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                      </svg>
+                                      <span className="text-center mx-auto group-hover:text-primary duration-200 transition-colors">
+                                        Click to upload or drag on this area.
+                                      </span>
+                                    </FileUploader>
+                                  )}
                                 {refFilesArray.length > 0 && (
-                                  <div className="text-sm text-center my-1">
-                                    <span
+                                  <div className="text-sm text-center">
+                                    <span className=""
                                       onClick={() => setIsRefModalOpen(false)}
                                     >
                                       <Button>
@@ -739,54 +836,54 @@ function Upload() {
                           {isRefByUpload === false && (
                             <div data-aos="fade-up">
                               <div className="mt-4 flex flex-col gap-2 px-4">
-                                {refLinksArray.length <
+                                {refArray.length <
                                   (service.numberOfReferenceFileUploads ??
                                     0) && (
-                                  <div className="w-full flex gap-4">
-                                    <input
-                                      ref={urlEl}
-                                      placeholder="Enter URL"
-                                      className="bg-white/10 rounded-xl w-full border-transparent focus:border-transparent focus:ring-0"
-                                      type="url"
-                                      name="Ref Link"
-                                      id="refLink"
-                                    />
-                                    <svg
-                                      onClick={() => {
-                                        const input = urlEl.current?.value;
-                                        if (input && isValidHttpUrl(input)) {
-                                          setRefLinksArray((prev) => [
-                                            ...prev,
-                                            {
-                                              url: input,
-                                              isAddedByUpload: false,
-                                            },
-                                          ]);
-                                          urlEl.current.value = "";
-                                          setIsRefByUpload(null);
-                                          return;
-                                        }
-                                        toast.error(
-                                          "Invalid HTTP URL. Please check and try again."
-                                        );
-                                        // urlEl.current.text
-                                        // refLinksArray()
-                                      }}
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      strokeWidth={1.5}
-                                      stroke="currentColor"
-                                      className="w-10 h-10 cursor-pointer hover:text-primary duration-200 transition-colors mx-auto"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    <div className="w-full flex gap-4">
+                                      <input
+                                        ref={urlEl}
+                                        placeholder="Enter URL"
+                                        className="bg-white/10 rounded-xl w-full border-transparent focus:border-transparent focus:ring-0"
+                                        type="url"
+                                        name="Ref Link"
+                                        id="refLink"
                                       />
-                                    </svg>
-                                  </div>
-                                )}
+                                      <svg
+                                        onClick={() => {
+                                          const input = urlEl.current?.value;
+                                          if (input && isValidHttpUrl(input)) {
+                                            setrefArray((prev) => [
+                                              ...prev,
+                                              {
+                                                url: getClickableLink(input),
+                                                isAddedByUpload: false,
+                                              },
+                                            ]);
+                                            urlEl.current.value = "";
+                                            setIsRefByUpload(null);
+                                            return;
+                                          }
+                                          toast.error(
+                                            "Invalid URL. Please check and try again."
+                                          );
+                                          // urlEl.current.text
+                                          // refArray()
+                                        }}
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-10 h-10 cursor-pointer hover:text-primary duration-200 transition-colors mx-auto"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                      </svg>
+                                    </div>
+                                  )}
                               </div>
                             </div>
                           )}
@@ -834,135 +931,133 @@ function Upload() {
                         )}
                       </div>
                       <div className="flex justify-between z-50">
-                        {(service.numberOfReferenceFileUploads ?? 0) > 0 && (
-                          <div className="space-x-4">
+                        <div className="space-x-4">
+                          {(service.numberOfReferenceFileUploads ?? 0) > 0 && (
                             <span
                               onClick={() => {
                                 setIsRefModalOpen(true);
                               }}
                             >
-                              <SmallBtn
-                                classNames="bg-black/80"
-                                isWFull={false}
-                              >
-                                <>Add References</>
-                              </SmallBtn>
+                              <div className="w-fit">
+                                <Button>
+                                  <>Add References</>
+                                </Button>
+                              </div>
                             </span>
-                            {filesArray.length > 0 &&
-                              filesArray.length <
-                                (service.inputTrackLimit ?? 0) && (
-                                <span>
-                                  <FileUploader
-                                    key={key2.current}
-                                    multiple={true}
-                                    handleChange={async (
-                                      fileList: FileList
-                                    ) => {
-                                      setErrorList([]);
+                          )}
+                          {filesArray.length > 0 &&
+                            filesArray.length <
+                            (service.inputTrackLimit ?? 0) && (
+                              <span>
+                                <FileUploader
+                                  key={key2.current}
+                                  multiple={true}
+                                  handleChange={async (fileList: FileList) => {
+                                    setErrorList([]);
 
-                                      let hasIssues = false;
+                                    let hasIssues = false;
 
-                                      // Checking Number of files based on track Limit
+                                    // Checking Number of files based on track Limit
+                                    if (
+                                      Array.from(fileList).length >
+                                      (service.inputTrackLimit ?? 0)
+                                    ) {
+                                      setErrorList([
+                                        {
+                                          fileName: "Tracks over the limit.",
+                                          issue: [
+                                            `Track limit for the selected plan is ${service.inputTrackLimit}`,
+                                          ],
+                                        },
+                                      ]);
+                                      setIsErrorModalOpen(true);
+                                      hasIssues = true;
+                                      return;
+                                    }
+
+                                    //
+
+                                    let approvedFiles: File[] = [];
+
+                                    // Checking Type, Duration & Size for each file.
+
+                                    for (const file of Array.from(fileList)) {
+                                      // Check if files with the same name exists in the array or not.
                                       if (
-                                        Array.from(fileList).length >
-                                        (service.inputTrackLimit ?? 0)
+                                        filesArray.find(
+                                          (prevFile) =>
+                                            prevFile.name === file.name
+                                        )
                                       ) {
-                                        setErrorList([
+                                        setErrorList((prev) => [
+                                          ...prev,
                                           {
-                                            fileName: "Tracks over the limit.",
+                                            fileName: file.name,
                                             issue: [
-                                              `Track limit for the selected plan is ${service.inputTrackLimit}`,
+                                              "A file by this name already exists.",
                                             ],
                                           },
                                         ]);
-                                        setIsErrorModalOpen(true);
                                         hasIssues = true;
-                                        return;
+                                        // Break and don't run other checks
+                                        break;
                                       }
 
-                                      //
-
-                                      let approvedFiles: File[] = [];
-
-                                      // Checking Type, Duration & Size for each file.
-
-                                      for (const file of Array.from(fileList)) {
-                                        // Check if files with the same name exists in the array or not.
-                                        if (
-                                          filesArray.find(
-                                            (prevFile) =>
-                                              prevFile.name === file.name
-                                          )
-                                        ) {
-                                          setErrorList((prev) => [
-                                            ...prev,
-                                            {
-                                              fileName: file.name,
-                                              issue: [
-                                                "A file by this name already exists.",
-                                              ],
-                                            },
-                                          ]);
-                                          hasIssues = true;
-                                          // Break and don't run other checks
-                                          break;
-                                        }
-
-                                        const hasErrors =
-                                          await checkTypeDurationSize(
-                                            file,
-                                            service.uploadFileFormat,
-                                            service.maxFileDuration ?? 0
-                                          );
-                                        //  If no errors, push to approved files.
-                                        if (!hasErrors) {
-                                          approvedFiles = [
-                                            ...approvedFiles,
-                                            file,
-                                          ];
-                                        } else if (
-                                          typeof hasErrors === "object"
-                                        ) {
-                                          hasIssues = true;
-                                          // Else append error list.
-                                          setErrorList((prev) => [
-                                            ...prev,
-                                            hasErrors,
-                                          ]);
-                                        }
+                                      const hasErrors =
+                                        await checkTypeDurationSize(
+                                          file,
+                                          service.uploadFileFormat,
+                                          service.maxFileDuration ?? 0
+                                        );
+                                      //  If no errors, push to approved files.
+                                      if (!hasErrors) {
+                                        approvedFiles = [
+                                          ...approvedFiles,
+                                          file,
+                                        ];
+                                      } else if (
+                                        typeof hasErrors === "object"
+                                      ) {
+                                        hasIssues = true;
+                                        // Else append error list.
+                                        setErrorList((prev) => [
+                                          ...prev,
+                                          hasErrors,
+                                        ]);
                                       }
-                                      {
-                                        hasIssues && setIsErrorModalOpen(true);
-                                      }
+                                    }
+                                    {
+                                      hasIssues && setIsErrorModalOpen(true);
+                                    }
 
-                                      {
-                                        approvedFiles.length &&
-                                          setFilesArray((prev) => [
-                                            ...prev,
-                                            ...approvedFiles,
-                                          ]);
-                                      }
+                                    {
+                                      approvedFiles.length &&
+                                        setFilesArray((prev) => [
+                                          ...prev,
+                                          ...approvedFiles,
+                                        ]);
+                                    }
 
-                                      key2.current = key2.current + 1;
-                                    }}
-                                    fileOrFiles={filesArray}
-                                    name="Additional Base Files"
-                                    className=""
-                                  >
-                                    <SmallBtn
-                                      classNames="bg-black/80"
-                                      isWFull={false}
-                                    >
+                                    key2.current = key2.current + 1;
+                                  }}
+                                  fileOrFiles={filesArray}
+                                  name="Additional Base Files"
+                                  className=""
+                                >
+                                  <div className="w-fit">
+                                    <Button>
                                       <>Add More Files</>
-                                    </SmallBtn>
-                                  </FileUploader>
-                                </span>
-                              )}
-                          </div>
-                        )}
+                                    </Button>
+                                  </div>
+                                </FileUploader>
+                              </span>
+                            )}
+                        </div>
 
                         <div className="ml-auto">
-                          <Button onClick={handleSubmit}>
+                          <Button onClick={() => {
+                            filesArray.length === 0 ? toast.error("Please select the file(s) before proceeding.") : setSummaryModalOpen(true)
+                          }}>
                             <>Submit</>
                           </Button>
                         </div>

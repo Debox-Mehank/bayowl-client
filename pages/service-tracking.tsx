@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DashNav from "../components/DashNav";
 import Button from "../components/reusable/Button";
-import { useMeQuery } from "../graphql/generated/graphql";
+import {
+  ServiceStatusObjectState,
+  useMeQuery,
+} from "../graphql/generated/graphql";
 import { useState } from "react";
+import { UserServiceFinal } from "./dashboard";
+import { getStatusNames } from "../components/reusable/Accordion";
 const transactions = [
   {
     id: "001",
@@ -80,9 +85,18 @@ function ServiceTracking() {
     fetchPolicy: "network-only",
   });
 
-  const [projectList, setProjectList] = useState(transactions)
-  const [filteredList, setFilteredList] = useState<any>([])
+  const [services, setServices] = useState<UserServiceFinal[]>([]);
+  const [filteredServices, setFilteredServices] = useState<UserServiceFinal[]>(
+    []
+  );
 
+  useEffect(() => {
+    if (data?.me) {
+      const servicesArr = data.me.services.filter((el) => el.projectName);
+      setServices(servicesArr);
+      setFilteredServices(servicesArr);
+    }
+  }, [data]);
 
   return (
     <div className="min-h-screen bg-darkBlue text-white flex relative ">
@@ -97,12 +111,17 @@ function ServiceTracking() {
           <div className="w-80 md:w-full text-center text-xl sm:max-w-3xl text-white bg-white/10 rounded-md py-1 md:py-2 px-3 md:px-2 flex items-center gap-2 fixed">
             <input
               onChange={(e) => {
-                const input = e.target.value
+                const input = e.target.value.toString().toLowerCase().trim();
                 if (input) {
-                  const filteredArray = transactions.filter(projects => projects.projName.includes(input))
-                  setFilteredList(filteredArray)
+                  const arr = [...services];
+                  setFilteredServices(
+                    arr.filter((el) =>
+                      el.projectName?.toLocaleLowerCase().trim().includes(input)
+                    )
+                  );
+                } else {
+                  setFilteredServices(services);
                 }
-
               }}
               name="search"
               id="search"
@@ -143,61 +162,61 @@ function ServiceTracking() {
                       <tr>
                         <th
                           scope="col"
-                          className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6 sticky -left-4 bg-black/40 z-[100] backdrop-blur-[6px] flicker-fix backface-hidden"
+                          className="whitespace-nowrap py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-white sm:pl-6 sticky -left-4 bg-black/40 z-[100] backdrop-blur-[6px] flicker-fix backface-hidden"
                         >
                           Project Name
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Service Name
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Note to Engineer
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Date of Submission
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Current Status
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Est. Delivery Date
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Re-Upload
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Download
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Request Revision
                         </th>
                         <th
                           scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
+                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
                           Mark Completed
                         </th>
@@ -210,34 +229,35 @@ function ServiceTracking() {
                       </tr>
                     </thead>
                     <tbody className=" ">
-                      {transactions.map((transaction) => (
-                        <tr key={transaction.id}>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-white sticky -left-4 bg-black/60 z-[60] backdrop-blur-[6px] flicker-fix backface-hidden">
-                            {transaction.projName}
+                      {filteredServices.map((transaction) => (
+                        <tr key={transaction._id}>
+                          <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-white sticky -left-4 bg-black/60 z-50 backdrop-blur-[6px] flicker-fix backface-hidden">
+                            {transaction.projectName}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             {transaction.serviceName}
                           </td>
                           <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
-                            {transaction.notes}
+                            {/* {transaction.notes} */}
+                            N/A
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            {transaction.dateSubmitted}
+                            {/* {transaction.dateSubmitted} */}
+                            {/* Some date */}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             <div className="flex items-center justify-center gap-2 h-full">
-                              <span className="relative z-10 w-5 h-5 flex items-center justify-center bg-white border-2 border-primary rounded-full">
-                                <span className="h-1.5 w-1.5 bg-primary rounded-full" />
+                              <span className="relative z-10 w-4 h-4 flex items-center justify-center bg-white border-2 border-primary rounded-full">
+                                <span className="h-1 w-1 bg-primary rounded-full" />
                               </span>
                               <span>
-                                {transaction.status.find(
-                                  (stat) => stat.status === "current"
-                                )?.name || "Completed"}
+                                {getStatusNames(transaction.statusType)}
                               </span>
                             </div>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
-                            {transaction.estimatedDelivery}
+                            {/* {transaction.estimatedDelivery} */}
+                            {/* Some date */}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button>

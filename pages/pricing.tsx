@@ -12,6 +12,7 @@ import {
 import Modal from "../components/reusable/Modal";
 import secondsToTime from "../utils/secsToTime";
 
+
 const Pricing = () => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
@@ -169,16 +170,16 @@ const Pricing = () => {
                 {selectedService && selectedService[0].subService2
                   ? selectedService[0].subService
                   : selectedService
-                  ? selectedService[0].serviceName
-                  : ""}
+                    ? selectedService[0].serviceName
+                    : ""}
               </h1>
               <p>{selectedService && selectedService[0].for}</p>
               <p>{selectedService && selectedService[0].description}</p>
             </div>
           )}
           {selectedService &&
-          selectedService[0].subService2 &&
-          !selectedServiceFinal ? (
+            selectedService[0].subService2 &&
+            !selectedServiceFinal ? (
             <div className="hidden lg:block">
               <table className="w-full table-fixed">
                 <caption className="sr-only">Pricing plan comparison</caption>
@@ -431,7 +432,7 @@ const Pricing = () => {
                       className="py-8 px-6 text-sm font-medium text-left align-top"
                       scope="row"
                     >
-                      {}
+                      { }
                     </th>
                     {selectedService.map((tier) => (
                       <td
@@ -632,12 +633,12 @@ const Pricing = () => {
             <div className="relative text-center flex w-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 pt-10 md:pb-16">
               {/* Bottom Bar */}
               <div className="fixed z-50 bottom-0 p-4 filter md:flex w-full flex-1 items-center backdrop-blur-xl">
-                <div className="md:w-1/2 text-md pb-4  md:text-xl relative">
+                <div className="md:w-1/2 text-md md:text-xl relative">
                   <div className="absolute animation-delay-4000 top-0 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
                   <div className="absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
                   Estimated Delivery: {selectedServiceFinal.deliveryDays} days
                 </div>
-                <div className="md:w-1/2 text-left space-y-3 relative">
+                <div className="md:w-1/2 text-left space-x-3 relative">
                   <div className="absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-40 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
                   <div className="absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-20 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
                   <div className="absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-30 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
@@ -649,7 +650,7 @@ const Pricing = () => {
                           ₹{" "}
                           {(
                             selectedServiceFinal.price +
-                            selectedAddons.reduce((acc, o) => acc + o.value!, 0)
+                            selectedAddons.reduce((acc, o) => acc + o.value! * (o.qty ?? 0), 0)
                           ).toLocaleString("en-IN")}
                         </span>
                         <div className="md:hidden">
@@ -676,7 +677,7 @@ const Pricing = () => {
                     </div>
                   </div>
                   {!localStorage.getItem("loggedIn") && (
-                    <div className="font-bold flex items-center justify-between text-xl md:text-2xl">
+                    <div className="font-bold flex items-center justify-between text-xl md:text-2xl pt-3">
                       <span>
                         ₹{" "}
                         {(
@@ -717,13 +718,13 @@ const Pricing = () => {
                     {selectedService && selectedService[0].subService2
                       ? selectedService[0].subService
                       : selectedService
-                      ? selectedService[0].serviceName
-                      : ""}
+                        ? selectedService[0].serviceName
+                        : ""}
                   </span>
                   <span className="block space-x-2">
                     <span>
-                      {selectedServiceFinal.subService2 ||
-                        selectedServiceFinal.serviceName}
+                      {selectedServiceFinal.subService2?.split("*")[0] ||
+                        selectedServiceFinal.serviceName.split("*")[0]}
                     </span>
                     <svg
                       onClick={() => setIsModalOpen(true)}
@@ -757,9 +758,9 @@ const Pricing = () => {
                             d="M6 18L18 6M6 6l12 12"
                           />
                         </svg>
-                        <h3>
-                          {selectedServiceFinal.subService2 ||
-                            selectedServiceFinal.serviceName}
+                        <h3 className="">
+                          {selectedServiceFinal.subService2?.split("*")[0] ||
+                            selectedServiceFinal.serviceName.split("*")[0]}
                         </h3>
                         <p>
                           {(
@@ -814,7 +815,12 @@ const Pricing = () => {
                               htmlFor={addOn.type}
                               className=" font-medium text-white "
                             >
-                              <div className="border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center">
+                              <div className={`border-2 rounded-lg relative flex-1 flex items-start gap-4 py-4 px-3 justify-center 
+                              ${selectedAddons.find(
+                                (el) => el.type === addOn.type
+                              )
+                                  ? "border-primary"
+                                  : "border-gray-400/60"}`}>
                                 <div className="min-w-0 flex-1 text-md">
                                   <p
                                     id="comments-description"
@@ -826,8 +832,46 @@ const Pricing = () => {
                                     - ₹{addOn.value?.toLocaleString("en-IN")}
                                   </p>
                                 </div>
-                                <div className="flex justify-center items-center my-auto">
-                                  <input
+                                <div className="flex gap-2 justify-center items-center my-auto">
+                                  <div className="bg-white/10 p-[3px] rounded-full cursor-pointer">
+                                    <svg onClick={() => {
+                                      let arr: AddOn[] = [...selectedAddons]
+                                      const objIndex = arr.findIndex(el => el.type === addOn.type)
+                                      console.log(objIndex)
+                                      if (objIndex < 0) {
+                                        // arr.push({ ...addOn, qty: 1 })
+                                      } else {
+                                        const qt = arr[objIndex].qty!;
+                                        if (qt === 1) {
+                                          arr = arr.filter((el) => el.type !== addOn.type)
+                                        } else {
+                                          arr[objIndex].qty! -= 1;
+                                        }
+                                      }
+                                      setSelectedAddons(arr)
+
+                                    }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+                                    </svg>
+
+                                  </div>
+                                  <span>{selectedAddons.find(el => el.type === addOn.type) ? selectedAddons.find(el => el.type === addOn.type)?.qty : 0}</span>
+                                  <div className="bg-white/10 p-[3px] rounded-full cursor-pointer">
+                                    <svg onClick={() => {
+                                      const arr: AddOn[] = [...selectedAddons]
+                                      const objIndex = arr.findIndex(el => el.type === addOn.type)
+                                      if (objIndex < 0) {
+                                        arr.push({ ...addOn, qty: 1 })
+                                      } else {
+                                        arr[objIndex].qty! += 1;
+                                      }
+                                      console.log(arr)
+                                      setSelectedAddons(arr)
+                                    }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                  </div>
+                                  {/* <input
                                     id={addOn.type}
                                     aria-describedby="comments-description"
                                     name={addOn.type}
@@ -857,8 +901,8 @@ const Pricing = () => {
 
                                       setSelectedAddons(arr);
                                     }}
-                                    className="focus:ring-indigo-500 h-4 w-4 text-primary border-gray-300 rounded"
-                                  />
+                                    className="focus:ring-primary h-4 w-4 text-primary border-gray-300 rounded"
+                                  /> */}
                                 </div>
                               </div>
                             </label>

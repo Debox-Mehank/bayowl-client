@@ -25,6 +25,7 @@ query GetServiceDetails($input: ServicesDetailInput!) {
     addOn {
       type
       value
+      qty
     }
     createdAt
     updatedAt

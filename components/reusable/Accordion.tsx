@@ -41,7 +41,7 @@ const getButtonText = (service: UserServiceFinal): string => {
   return btnText;
 };
 
-const getStatusNames = (s: UserServiceStatus): string => {
+export const getStatusNames = (s: UserServiceStatus): string => {
   let txt = "";
   if (s === UserServiceStatus.Pendingupload) {
     txt = "Pending Upload";

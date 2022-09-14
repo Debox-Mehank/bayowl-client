@@ -1,7 +1,7 @@
 import type { GetServerSideProps, NextPage } from "next";
 import GoogleIcon from "../public/googleIcon.png";
 import Image from "next/image";
-import SmallBtn from "../components/reusable/SmallBtn";
+import Button from "../components/reusable/Button";
 import Link from "next/link";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import {

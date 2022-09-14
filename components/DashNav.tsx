@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import useMediaQuery from "../hooks/useMediaQuery";
 import FloatingProfile from "./reusable/FloatingProfile";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 function DashNav({
   name,
@@ -16,6 +17,8 @@ function DashNav({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const router = useRouter();
+  const currentRoute = router.pathname;
 
   useEffect(() => {
     isDesktop ? setIsOpen(true) : setIsOpen(false);
@@ -158,13 +161,15 @@ function DashNav({
           </div>
           {/* <div onClick={() => setIsOpen(false)}
                         className="text-right text-4xl hover:text-primary cursor-pointer">&times;</div> */}
-          <Link href="/dashboard" className="">
-            <span className="hover:text-primary cursor-pointer duration-300 transition-colors text-lg">
+          {/* className={currentRoute === "/dashboard" ? "text-blueGradient-3" : ""} */}
+          <Link href="/dashboard" >
+            <span className={`hover:text-primary/80 cursor-pointer duration-300 transition-colors text-lg ${currentRoute === "/dashboard" ? "text-primary" : ""}`} >
               Dashboard
             </span>
           </Link>
-          <Link href="/service-tracking">
-            <span className="hover:text-primary cursor-pointer duration-300 transition-colors text-lg">
+          <Link href="/service-tracking" >
+            {/* */}
+            <span className={`hover:text-primary/80 cursor-pointer duration-300 transition-colors text-lg ${currentRoute === "/service-tracking" ? "text-primary" : ""}`}>
               Service Tracking
             </span>
           </Link>

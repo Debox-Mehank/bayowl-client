@@ -162,7 +162,7 @@ function Dashboard() {
 
         {/* Paid Subscriptions */}
 
-        <div className="py-6 md:px-4 space-y-10 z-50">
+        <div className="py-6 space-y-10 z-50">
           {services
             .filter((el) => el.paid)
             .map((service, index) => (

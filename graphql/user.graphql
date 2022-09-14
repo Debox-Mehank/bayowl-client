@@ -24,6 +24,7 @@ fragment userServices on UserServices {
   addOn {
     type
     value
+    qty
   }
   projectName
   paid
@@ -115,4 +116,8 @@ query GetUserServiceDetailsById($serviceId: String!) {
 
 query VerifyUser($token: String!) {
   verifyUser(token: $token)
+}
+
+query GetS3SignedURL {
+  getS3SignedURL
 }

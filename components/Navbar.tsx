@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,9 +59,9 @@ function Navbar({
       >
 
         <div className="relative overflow-">
-          <div className='absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-10 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-          <div className='absolute animation-delay-2000 top-5 left-[10%] w-36 md:w-96 h-10 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-          <div className='absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
+          <div className='absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-10 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
+          <div className='absolute animation-delay-2000 top-5 left-[10%] w-36 md:w-96 h-10 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
+          <div className='absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
         </div>
         <div
           className={`flex justify-between items-center flex-wrap h-auto w-full z-50 max-w-7xl mx-auto `}
@@ -283,7 +283,7 @@ function Navbar({
           <ul className="lg:flex justify-center items-center space-x-6">
             {/* <NavItem title="Home" link="/" active={router.pathname === "/"} /> */}
             {name && email && (
-              <FloatingProfile position="initial" name={name} email={email} />
+              <FloatingProfile onTop position="initial" name={name} email={email} />
             )}
             {(!name || !email) && (
               <Link href="/login">

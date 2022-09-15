@@ -9,6 +9,7 @@ import {
   UserServiceStatus,
 } from "../../graphql/generated/graphql";
 import { useRouter } from "next/router";
+import useMediaQuery from '../../hooks/useMediaQuery'
 
 interface Props {
   service: UserServiceFinal;
@@ -68,10 +69,11 @@ function classNames(...classes: any) {
 function Accordion({ service, handleAccordionClick }: Props) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   return (
     <div
-      className=" bg-white/5 rounded-lg p-2 sm:p-3 lg:p-4 xl:p-6"
+      className="bg-white/5 rounded-lg p-3 lg:p-4 xl:p-6"
       key={service._id}
     >
       <div className="flex gap-4 items-center justify-between z-50">
@@ -82,8 +84,8 @@ function Accordion({ service, handleAccordionClick }: Props) {
           <Image
             className={`inline duration-300 transition-transform ${isOpen ? "rotate-180" : null
               }`}
-            height={30}
-            width={30}
+            height={isDesktop ? 30 : 15}
+            width={isDesktop ? 30 : 15}
             src={down}
           />
           <span className="text-md md:text-2xl">
@@ -110,7 +112,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
               router.push(`/upload?serviceId=${service._id}`);
             }
           }}
-          className={`${isOpen ? "hidden md:block" : null}`}
+          className={"hidden md:block"}
         >
           <Button>
             <>{getButtonText(service)}</>
@@ -121,7 +123,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
       {/* Expanded */}
 
       <div
-        className={`filter backdrop-blur-lg rounded-lg top-14 w-full transition-all duration-300 overflow-hidden
+        className={`filter  rounded-lg top-14 w-full transition-all duration-300 overflow-hidden
          ${isOpen
             ? "max-h-[100rem] duration-500 transition-all ease-in"
             : "max-h-0 duration-300 transition-all ease-out"

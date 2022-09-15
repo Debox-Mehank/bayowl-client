@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import ServiceCard from "../components/reusable/ServiceCard";
 import { allServices } from "../data/services";
 import { useMeQuery } from "../graphql/generated/graphql";
+import useElementSize from "../hooks/useElementSize";
 
 const Services = () => {
   const router = useRouter();
@@ -15,6 +16,8 @@ const Services = () => {
 
   const { data, loading, error } = useMeQuery();
 
+  // const navEl = useRef(null)
+  const [navEl, { width, height: navHeight }] = useElementSize()
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>();
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>();
   const [selectedService, setSelectedService] = useState<string>();
@@ -54,16 +57,18 @@ const Services = () => {
   return (
     <div>
       <Navbar name={data?.me.name} email={data?.me.email} />
-      <div className="-z-50 absolute top-0 left-0 right-0 bottom-0 bg-darkBlue min-h-screen" />
+      {/* <div className="-z-50 absolute top-0 left-0 right-0 bottom-0 bg-darkBlue min-h-screen" /> */}
       <div
-        style={{ height: "calc(100vh - 9rem)" }}
-        className="bg-transparent z-0 mt-36 flex relative flex-col justify-center items-center max-w-7-xl mx-auto text-white"
+        style={{ minHeight: `calc(100vh)` }}
+        className={`bg-transparent z-0 mt-28 sm:mt-20 md:mt-0 flex relative flex-col justify-center items-center max-w-7-xl mx-auto text-white `}
       >
+        {/* {console.log(navHeight)} */}
 
-        <div className='absolute animation-delay-4000 top-[40%] right-[22%] w-36 md:w-96 h-56 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-        <div className='absolute animation-delay-2000 top-[38%] right-[40%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-        <div className='absolute top-[42%] right-[58%] w-36 md:w-96 h-56 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden' />
-        <div className="flex flex-col gap-8">
+        <div className='absolute animation-delay-4000 top-[40%] right-[22%] w-36 md:w-96 h-56 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
+        <div className='absolute animation-delay-2000 top-[38%] right-[40%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
+        <div className='absolute top-[42%] right-[58%] w-36 md:w-96 h-56 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
+        <div className="flex flex-col gap-8 text-center">
+          {/* Rendering Main Categories if none are selected.  */}
           {!selectedMainCategory ? (
             <>
               <div className="flex justify-center items-center gap-8 flex-wrap relative">
@@ -102,11 +107,12 @@ const Services = () => {
                   );
                 })}
               </div>
-            </>
-          ) : !selectedSubCategory ? (
+
+            </> // {/* Rendering Sub Categories  */}
+          ) : !selectedSubCategory ? ( // Rendering Sub Categories if none are selected
             <>
               <div className="flex justify-center items-center gap-8 flex-wrap relative">
-                <svg onClick={() => router.back()} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 absolute left-0 top-1 cursor-pointer hover:fill-primary">
+                <svg onClick={() => router.back()} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 absolute left-1 -top-7 sm:top-1 cursor-pointer hover:fill-primary">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
                 </svg>
                 <p className="text-3xl font-bold">{selectedMainCategory}</p>
@@ -149,7 +155,7 @@ const Services = () => {
                   })}
               </div>
             </>
-          ) : !selectedService ? (
+          ) : !selectedService ? (// Rendering Services if none are selected
             <>
               <div className="flex justify-center items-center gap-8 flex-wrap relative">
                 <svg onClick={() => router.back()} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 absolute left-0 top-1 cursor-pointer hover:fill-primary">

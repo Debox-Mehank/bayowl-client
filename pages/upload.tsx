@@ -167,7 +167,7 @@ function Upload() {
   const [isAlertModalOpen, setIsAlertModalOpen] = useState<Boolean>(false);
   const [isRefModalOpen, setIsRefModalOpen] = useState<Boolean>(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState<Boolean>(false);
-  const [onLoadModalOpen, setOnLoadModalOpen] = useState<Boolean>(false);
+  const [onLoadModalOpen, setOnLoadModalOpen] = useState<Boolean>(true);
   const [summaryModalOpen, setSummaryModalOpen] = useState<Boolean>(false);
 
   // Main File State
@@ -278,6 +278,21 @@ function Upload() {
     <>
       {loading ? <>Loading...</> : null}
       <div className="md:h-[96vh] max-h-[48rem] bg-darkBlue text-white flex relative max-w-7xl mx-auto">
+        <svg
+          onClick={() => {
+            router.back();
+          }}
+          xmlns="http://www.w3.org/2000/svg"
+          width="27"
+          height="30"
+          className="fill-white hover:fill-primary duration-300 transition-colors cursor-pointer top-0 absolute -left-8"
+          viewBox="0 0 16 16"
+        >
+          <path
+            fillRule="evenodd"
+            d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
+          />
+        </svg>
         <Modal open={summaryModalOpen} setOpen={setSummaryModalOpen}>
           <div className="relative text-center">
             <svg onClick={() => setSummaryModalOpen(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="absolute right-0 -top-2 w-6 h-6 hover:text-primary cursor-pointer">
@@ -344,6 +359,51 @@ function Upload() {
             </p>
           </div>
         </Modal>
+        <Modal open={isErrorModalOpen} setOpen={() => setIsErrorModalOpen(true)}
+        >
+          <div className="text-center relative">
+            <svg
+              onClick={() => setIsErrorModalOpen(false)}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="absolute right-0 w-6 h-6 hover:text-primary duration-300 transition-colors cursor-pointer"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+
+            {(errorList.length > 0) && (
+              <>
+                <h4 className="text-lg">
+                  {"We've found some issues with your file(s)."}{" "}
+                </h4>
+                <h4>They will not be uploaded.</h4>
+              </>
+            )}
+            <div className="pt-7 pb-4 space-y-2">
+              {errorList.map((err) => (
+                <div
+                  key={err.fileName}
+                  className="flex gap-4 text-left"
+                >
+                  <span className="font-bold overflow-auto">
+                    {err.fileName}
+                  </span>
+                  <span className="flex-1">
+                    {err.issue.map((issue, index) => (
+                      <p key={`${issue} - ${index}`}>{issue}</p>
+                    ))}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Modal>
         <div className="absolute animation-delay-2000 top-[45%] left-[15%] w-36 md:w-96 h-96 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[60px] animate-blob overflow-hidden" />
         <div className="absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden" />
         <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden" />
@@ -364,23 +424,7 @@ function Upload() {
             </div>
             <div className="hidden md:flex px-8 py-10 relative w-full justify-center items-center gap-10">
 
-              <div className="w-2/6 relative flex flex-col gap-1">
-                <svg
-                  onClick={() => {
-                    // setAddOns(null)
-                    router.back();
-                  }}
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="27"
-                  height="30"
-                  className="fill-white hover:fill-primary duration-300 transition-colors cursor-pointer top-0"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
-                  />
-                </svg>
+              <div className="w-2/6 relative flex flex-col gap-1 h-full pb-24">
                 <div className="flex flex-col justify-center gap-6 flex-1">
                   <div>
                     <span className="text-4xl font-bold">
@@ -400,12 +444,17 @@ function Upload() {
                       {service.inputTrackLimit}
                     </span>
                   </div>
-                  <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
-                    No. of Reference Files
-                    <span className="block text-xl">
-                      {service.numberOfReferenceFileUploads}
-                    </span>
-                  </div>
+                  {
+                    service.numberOfReferenceFileUploads && (
+                      <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
+                        No. of Reference Files
+                        <span className="block text-xl">
+                          {service.numberOfReferenceFileUploads || 0}
+                        </span>
+                      </div>
+                    )
+                  }
+
 
                   <div className="rounded-lg text-center py-3 px-6 bg-white/20 inline">
                     Maximum Duration of Files
@@ -429,57 +478,6 @@ function Upload() {
               </div>
               <div className="mx-auto w-4/6 rounded-2xl h-full">
                 <form className="w-full h-full" name="File Upload Form">
-                  {/* Error Modal */}
-                  <Modal
-                    open={isErrorModalOpen}
-                    setOpen={() => {
-                      setIsErrorModalOpen(true);
-                      // setErrorList([]);
-                    }}
-                  >
-                    <div className="text-center relative">
-                      <svg
-                        onClick={() => setIsErrorModalOpen(false)}
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="absolute right-0 w-6 h-6 hover:text-primary duration-300 transition-colors cursor-pointer"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-
-                      {(errorList.length > 0) && (
-                        <>
-                          <h4 className="text-lg">
-                            {"We've found some issues with your file(s)."}{" "}
-                          </h4>
-                          <h4>They will not be uploaded.</h4>
-                        </>
-                      )}
-                      <div className="pt-7 pb-4 space-y-2">
-                        {errorList.map((err) => (
-                          <div
-                            key={err.fileName}
-                            className="flex gap-4 text-left"
-                          >
-                            <span className="font-bold overflow-auto">
-                              {err.fileName}
-                            </span>
-                            <span className="flex-1">
-                              {err.issue.map((issue, index) => (
-                                <p key={`${issue} - ${index}`}>{issue}</p>
-                              ))}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </Modal>
                   {/* Upload Section */}
                   <div className="flex flex-col gap-2 items-stretch justify-around h-full py-3">
                     <div className="h-[65%]">
@@ -890,7 +888,7 @@ function Upload() {
                         </div>
                       </Modal>
                       <textarea
-                        className="bg-darkBlue/20 rounded-xl w-full h-full my-2"
+                        className="bg-darkBlue/20 rounded-xl w-full h-[60%] my-2"
                         name="Remarks"
                         id="remarks"
                         placeholder="Please mention any preferences or special requests here."
@@ -931,9 +929,9 @@ function Upload() {
                         )}
                       </div>
                       <div className="flex justify-between z-50">
-                        <div className="space-x-4">
+                        <div className="space-x-4 flex">
                           {(service.numberOfReferenceFileUploads ?? 0) > 0 && (
-                            <span
+                            <div
                               onClick={() => {
                                 setIsRefModalOpen(true);
                               }}
@@ -943,12 +941,12 @@ function Upload() {
                                   <>Add References</>
                                 </Button>
                               </div>
-                            </span>
+                            </div>
                           )}
                           {filesArray.length > 0 &&
                             filesArray.length <
                             (service.inputTrackLimit ?? 0) && (
-                              <span>
+                              <div>
                                 <FileUploader
                                   key={key2.current}
                                   multiple={true}
@@ -1050,7 +1048,7 @@ function Upload() {
                                     </Button>
                                   </div>
                                 </FileUploader>
-                              </span>
+                              </div>
                             )}
                         </div>
 

@@ -8,8 +8,11 @@ import {
 import { useState } from "react";
 import { UserServiceFinal } from "./dashboard";
 import { getStatusNames } from "../components/reusable/Accordion";
+import Link from "next/link";
 
-
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
+}
 
 function ServiceTracking() {
   const { data, loading, error } = useMeQuery({
@@ -191,26 +194,47 @@ function ServiceTracking() {
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button disabled={getStatusNames(transaction.statusType) === "Pending Upload" ? false : true}>
-                              <div className="text-xs">Upload</div>
+                              <div className="text-xs">
+                                {(getStatusNames(transaction.statusType) === "Pending Upload" && transaction.reupload === null) ?
+                                  <Link href={"/upload?serviceId=" + transaction._id}>
+                                    Upload
+                                  </Link> :
+                                  (getStatusNames(transaction.statusType) === "Pending Upload" && transaction.reupload !== null) ?
+                                    <Link href={"/upload?serviceId=" + transaction._id + "&reupload=true"}>
+                                      Reupload
+                                    </Link>
+                                    : ""}
+                              </div>
                             </Button>
                           </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button>
+                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white relative">
+                            {/* DIsabled unless delivered / revision delivered / completed */}
+                            <Button disabled={
+                              !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered") || !(getStatusNames(transaction.statusType) === "Completed")
+                            }>
                               <div className="text-xs">Download</div>
                             </Button>
+
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button>
+                            {/* Disabled unless Delivered, Revision Delivered, or if there are revisions left. */}
+                            <Button disabled={
+                              !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered") ||
+                              !(transaction.setOfRevisions && transaction.setOfRevisions > transaction.revisionFiles.length)
+                            }>
                               <div className="text-xs">Request Revision</div>
                             </Button>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button>
+                            <Button disabled={
+                              !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered")
+                            }>
                               <div className="text-xs">Mark Completed</div>
                             </Button>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button>
+                            <Button disabled={getStatusNames(transaction.statusType) === "Completed" ? false : true}
+                            >
                               <div className="text-xs">Add Service</div>
                             </Button>
                           </td>

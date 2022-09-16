@@ -270,13 +270,14 @@ const Pricing = () => {
                           key={tier.subService2}
                           className="h-full py-2 px-6 align-top"
                         >
+
                           <div className="relative h-full table text-center text-sm mx-auto">
                             <p className="pt-4 text-white h-44 py-8 whitespace-pre-wrap ">
                               {tier.description}
                             </p>
-                            <p className="text-2xl">
+                            {/* <p className="text-2xl">
                               ₹{tier.price.toLocaleString("en-IN")}
-                            </p>
+                            </p> */}
                             <button
                               onClick={() => {
                                 //   setSelectedPlan(true);

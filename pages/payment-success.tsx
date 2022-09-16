@@ -10,6 +10,10 @@ const PaymentSuccess = () => {
       <div className="absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
 
       <div className="mx-auto w-4/6 bg-white/10 rounded-2xl p-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className=" mx-auto w-16 h-16 mb-1 text-green-600">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+
         <h4
           className={`text-2xl lg:text-4xl font-bold text-white text-center py-2`}
         >
@@ -20,10 +24,10 @@ const PaymentSuccess = () => {
           style={{ textAlignLast: "center" }}
         >
           {
-            "Thanks for purchasing our service, you can continue to dashboard by "
+            "Thanks for purchasing our service, you can continue to the dashboard by "
           }
           <span className="text-primary font-semibold">
-            <Link href={"/dashboard"}>clicking here</Link>
+            <Link href={"/dashboard"}>clicking here.</Link>
           </span>
         </p>
       </div>

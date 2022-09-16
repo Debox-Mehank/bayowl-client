@@ -131,7 +131,7 @@ function ServiceTracking() {
                           scope="col"
                           className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
                         >
-                          Re-Upload
+                          Upload
                         </th>
                         <th
                           scope="col"
@@ -190,8 +190,8 @@ function ServiceTracking() {
                             {/* Some date */}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button>
-                              <div className="text-xs">Reupload</div>
+                            <Button disabled={getStatusNames(transaction.statusType) === "Pending Upload" ? false : true}>
+                              <div className="text-xs">Upload</div>
                             </Button>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">

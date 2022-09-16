@@ -47,6 +47,29 @@ export enum AdminRole {
   Master = 'master'
 }
 
+export type FileUploadResponse = {
+  __typename?: 'FileUploadResponse';
+  fileId?: Maybe<Scalars['String']>;
+  fileKey?: Maybe<Scalars['String']>;
+};
+
+export type FinalMultipartUploadInput = {
+  fileId?: InputMaybe<Scalars['String']>;
+  fileKey?: InputMaybe<Scalars['String']>;
+  parts?: InputMaybe<FinalMultipartUploadPartsInput>;
+};
+
+export type FinalMultipartUploadPartsInput = {
+  ETag?: InputMaybe<Scalars['Float']>;
+  PartNumber?: InputMaybe<Scalars['String']>;
+};
+
+export type MultipartSignedUrlResponse = {
+  __typename?: 'MultipartSignedUrlResponse';
+  PartNumber?: Maybe<Scalars['Float']>;
+  signedUrl?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addService: Scalars['Boolean'];
@@ -61,10 +84,13 @@ export type Query = {
   __typename?: 'Query';
   addUserService: Scalars['Boolean'];
   completeAccount: Scalars['Boolean'];
+  finalizeMultipartUpload?: Maybe<Scalars['String']>;
   getAllService: Array<Services>;
+  getMultipartPreSignedUrls: Array<MultipartSignedUrlResponse>;
   getS3SignedURL: Scalars['String'];
   getServiceDetails: Array<Services>;
   getUserServiceDetailsById?: Maybe<UserServices>;
+  initFileUpload: FileUploadResponse;
   initiatePayment: Scalars['String'];
   login: Scalars['Boolean'];
   logout: Scalars['Boolean'];
@@ -90,6 +116,18 @@ export type QueryCompleteAccountArgs = {
 };
 
 
+export type QueryFinalizeMultipartUploadArgs = {
+  input: FinalMultipartUploadInput;
+};
+
+
+export type QueryGetMultipartPreSignedUrlsArgs = {
+  fileId: Scalars['String'];
+  fileKey: Scalars['String'];
+  parts: Scalars['Float'];
+};
+
+
 export type QueryGetS3SignedUrlArgs = {
   fileName: Scalars['String'];
 };
@@ -102,6 +140,11 @@ export type QueryGetServiceDetailsArgs = {
 
 export type QueryGetUserServiceDetailsByIdArgs = {
   serviceId: Scalars['String'];
+};
+
+
+export type QueryInitFileUploadArgs = {
+  fileName: Scalars['String'];
 };
 
 
@@ -409,6 +452,29 @@ export type GetS3SignedUrlQueryVariables = Exact<{
 
 
 export type GetS3SignedUrlQuery = { __typename?: 'Query', getS3SignedURL: string };
+
+export type InitFileUploadQueryVariables = Exact<{
+  fileName: Scalars['String'];
+}>;
+
+
+export type InitFileUploadQuery = { __typename?: 'Query', initFileUpload: { __typename?: 'FileUploadResponse', fileId?: string | null, fileKey?: string | null } };
+
+export type GetMultipartPreSignedUrlsQueryVariables = Exact<{
+  parts: Scalars['Float'];
+  fileKey: Scalars['String'];
+  fileId: Scalars['String'];
+}>;
+
+
+export type GetMultipartPreSignedUrlsQuery = { __typename?: 'Query', getMultipartPreSignedUrls: Array<{ __typename?: 'MultipartSignedUrlResponse', signedUrl?: string | null, PartNumber?: number | null }> };
+
+export type FinalizeMultipartUploadQueryVariables = Exact<{
+  input: FinalMultipartUploadInput;
+}>;
+
+
+export type FinalizeMultipartUploadQuery = { __typename?: 'Query', finalizeMultipartUpload?: string | null };
 
 export const UserServicesFragmentDoc = gql`
     fragment userServices on UserServices {
@@ -886,3 +952,110 @@ export function useGetS3SignedUrlLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetS3SignedUrlQueryHookResult = ReturnType<typeof useGetS3SignedUrlQuery>;
 export type GetS3SignedUrlLazyQueryHookResult = ReturnType<typeof useGetS3SignedUrlLazyQuery>;
 export type GetS3SignedUrlQueryResult = Apollo.QueryResult<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>;
+export const InitFileUploadDocument = gql`
+    query InitFileUpload($fileName: String!) {
+  initFileUpload(fileName: $fileName) {
+    fileId
+    fileKey
+  }
+}
+    `;
+
+/**
+ * __useInitFileUploadQuery__
+ *
+ * To run a query within a React component, call `useInitFileUploadQuery` and pass it any options that fit your needs.
+ * When your component renders, `useInitFileUploadQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useInitFileUploadQuery({
+ *   variables: {
+ *      fileName: // value for 'fileName'
+ *   },
+ * });
+ */
+export function useInitFileUploadQuery(baseOptions: Apollo.QueryHookOptions<InitFileUploadQuery, InitFileUploadQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<InitFileUploadQuery, InitFileUploadQueryVariables>(InitFileUploadDocument, options);
+      }
+export function useInitFileUploadLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<InitFileUploadQuery, InitFileUploadQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<InitFileUploadQuery, InitFileUploadQueryVariables>(InitFileUploadDocument, options);
+        }
+export type InitFileUploadQueryHookResult = ReturnType<typeof useInitFileUploadQuery>;
+export type InitFileUploadLazyQueryHookResult = ReturnType<typeof useInitFileUploadLazyQuery>;
+export type InitFileUploadQueryResult = Apollo.QueryResult<InitFileUploadQuery, InitFileUploadQueryVariables>;
+export const GetMultipartPreSignedUrlsDocument = gql`
+    query GetMultipartPreSignedUrls($parts: Float!, $fileKey: String!, $fileId: String!) {
+  getMultipartPreSignedUrls(parts: $parts, fileKey: $fileKey, fileId: $fileId) {
+    signedUrl
+    PartNumber
+  }
+}
+    `;
+
+/**
+ * __useGetMultipartPreSignedUrlsQuery__
+ *
+ * To run a query within a React component, call `useGetMultipartPreSignedUrlsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMultipartPreSignedUrlsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMultipartPreSignedUrlsQuery({
+ *   variables: {
+ *      parts: // value for 'parts'
+ *      fileKey: // value for 'fileKey'
+ *      fileId: // value for 'fileId'
+ *   },
+ * });
+ */
+export function useGetMultipartPreSignedUrlsQuery(baseOptions: Apollo.QueryHookOptions<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>(GetMultipartPreSignedUrlsDocument, options);
+      }
+export function useGetMultipartPreSignedUrlsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>(GetMultipartPreSignedUrlsDocument, options);
+        }
+export type GetMultipartPreSignedUrlsQueryHookResult = ReturnType<typeof useGetMultipartPreSignedUrlsQuery>;
+export type GetMultipartPreSignedUrlsLazyQueryHookResult = ReturnType<typeof useGetMultipartPreSignedUrlsLazyQuery>;
+export type GetMultipartPreSignedUrlsQueryResult = Apollo.QueryResult<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>;
+export const FinalizeMultipartUploadDocument = gql`
+    query FinalizeMultipartUpload($input: FinalMultipartUploadInput!) {
+  finalizeMultipartUpload(input: $input)
+}
+    `;
+
+/**
+ * __useFinalizeMultipartUploadQuery__
+ *
+ * To run a query within a React component, call `useFinalizeMultipartUploadQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFinalizeMultipartUploadQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFinalizeMultipartUploadQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useFinalizeMultipartUploadQuery(baseOptions: Apollo.QueryHookOptions<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>(FinalizeMultipartUploadDocument, options);
+      }
+export function useFinalizeMultipartUploadLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>(FinalizeMultipartUploadDocument, options);
+        }
+export type FinalizeMultipartUploadQueryHookResult = ReturnType<typeof useFinalizeMultipartUploadQuery>;
+export type FinalizeMultipartUploadLazyQueryHookResult = ReturnType<typeof useFinalizeMultipartUploadLazyQuery>;
+export type FinalizeMultipartUploadQueryResult = Apollo.QueryResult<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>;

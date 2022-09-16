@@ -121,3 +121,25 @@ query VerifyUser($token: String!) {
 query GetS3SignedURL($fileName: String!) {
   getS3SignedURL(fileName: $fileName)
 }
+
+query InitFileUpload($fileName: String!) {
+  initFileUpload(fileName: $fileName) {
+    fileId
+    fileKey
+  }
+}
+
+query GetMultipartPreSignedUrls(
+  $parts: Float!
+  $fileKey: String!
+  $fileId: String!
+) {
+  getMultipartPreSignedUrls(parts: $parts, fileKey: $fileKey, fileId: $fileId) {
+    signedUrl
+    PartNumber
+  }
+}
+
+query FinalizeMultipartUpload($input: FinalMultipartUploadInput!) {
+  finalizeMultipartUpload(input: $input)
+}

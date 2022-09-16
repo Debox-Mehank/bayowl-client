@@ -141,9 +141,14 @@ const Pricing = () => {
 
       const finalService = { ...selectedServiceFinal };
 
-      const clone = (({ __typename, _id, createdAt, updatedAt, ...o }) => o)(
-        finalService
-      );
+      const clone = (({
+        __typename,
+        _id,
+        createdAt,
+        updatedAt,
+        pricingArr,
+        ...o
+      }) => o)(finalService);
 
       setLoading(true);
       const { data, error } = await initiatePaymentQuery({

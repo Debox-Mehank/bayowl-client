@@ -41,6 +41,9 @@ fragment userServices on UserServices {
     state
   }
   reupload
+  notes
+  submissionDate
+  estDeliveryDate
 }
 
 query Login($password: String!, $email: String!, $token: String) {
@@ -145,13 +148,15 @@ query FinalizeMultipartUpload($input: FinalMultipartUploadInput!) {
 }
 
 query UploadFilesForService(
-  $referenceUploadedFiles: [String!]!
   $uplodedFiles: [String!]!
   $serviceId: String!
+  $referenceUploadedFiles: [String!]
+  $notes: String
 ) {
   uploadFilesForService(
-    referenceUploadedFiles: $referenceUploadedFiles
     uplodedFiles: $uplodedFiles
     serviceId: $serviceId
+    referenceUploadedFiles: $referenceUploadedFiles
+    notes: $notes
   )
 }

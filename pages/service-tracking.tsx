@@ -3,15 +3,17 @@ import DashNav from "../components/DashNav";
 import Button from "../components/reusable/Button";
 import {
   ServiceStatusObjectState,
-  useMeQuery, UserServiceStatus,
+  useMeQuery,
+  UserServiceStatus,
 } from "../graphql/generated/graphql";
 import { useState } from "react";
 import { UserServiceFinal } from "./dashboard";
 import { getStatusNames } from "../components/reusable/Accordion";
 import Link from "next/link";
+import moment from "moment";
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
 function ServiceTracking() {
@@ -173,10 +175,16 @@ function ServiceTracking() {
                           </td>
                           <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
                             {/* {transaction.notes} */}
-                            N/A
+                            {transaction.notes === "" || !transaction.notes
+                              ? "N/A"
+                              : transaction.notes}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            {/* {transaction.dateSubmitted} */}
+                            {transaction.submissionDate
+                              ? moment(transaction.submissionDate).format(
+                                  "MMM Do YY, h:mm a"
+                                )
+                              : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             <div className="flex items-center justify-center gap-2 h-full">
@@ -190,50 +198,118 @@ function ServiceTracking() {
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {/* {transaction.estimatedDelivery} */}
+                            {transaction.estDeliveryDate
+                              ? moment(transaction.estDeliveryDate).format(
+                                  "MMM Do YY, h:mm a"
+                                )
+                              : "N/A"}
                             {/* Some date */}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button disabled={getStatusNames(transaction.statusType) === "Pending Upload" ? false : true}>
+                            <Button
+                              disabled={
+                                getStatusNames(transaction.statusType) ===
+                                "Pending Upload"
+                                  ? false
+                                  : true
+                              }
+                            >
                               <div className="text-xs">
-                                {(getStatusNames(transaction.statusType) === "Pending Upload" && transaction.reupload === null) ?
-                                  <Link href={"/upload?serviceId=" + transaction._id}>
+                                {getStatusNames(transaction.statusType) ===
+                                  "Pending Upload" &&
+                                transaction.reupload === null ? (
+                                  <Link
+                                    href={
+                                      "/upload?serviceId=" + transaction._id
+                                    }
+                                  >
                                     Upload
-                                  </Link> :
-                                  (getStatusNames(transaction.statusType) === "Pending Upload" && transaction.reupload !== null) ?
-                                    <Link href={"/upload?serviceId=" + transaction._id + "&reupload=true"}>
-                                      Reupload
-                                    </Link>
-                                    : ""}
+                                  </Link>
+                                ) : getStatusNames(transaction.statusType) ===
+                                    "Pending Upload" &&
+                                  transaction.reupload !== null ? (
+                                  <Link
+                                    href={
+                                      "/upload?serviceId=" +
+                                      transaction._id +
+                                      "&reupload=true"
+                                    }
+                                  >
+                                    Reupload
+                                  </Link>
+                                ) : (
+                                  "Upload"
+                                )}
                               </div>
                             </Button>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white relative">
                             {/* DIsabled unless delivered / revision delivered / completed */}
-                            <Button disabled={
-                              !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered") || !(getStatusNames(transaction.statusType) === "Completed")
-                            }>
+                            <Button
+                              disabled={
+                                !(
+                                  getStatusNames(transaction.statusType) ===
+                                  "Delivered"
+                                ) ||
+                                !(
+                                  getStatusNames(transaction.statusType) ===
+                                  "Revision Delivered"
+                                ) ||
+                                !(
+                                  getStatusNames(transaction.statusType) ===
+                                  "Completed"
+                                )
+                              }
+                            >
                               <div className="text-xs">Download</div>
                             </Button>
-
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             {/* Disabled unless Delivered, Revision Delivered, or if there are revisions left. */}
-                            <Button disabled={
-                              !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered") ||
-                              !(transaction.setOfRevisions && transaction.setOfRevisions > transaction.revisionFiles.length)
-                            }>
+                            <Button
+                              disabled={
+                                !(
+                                  getStatusNames(transaction.statusType) ===
+                                  "Delivered"
+                                ) ||
+                                !(
+                                  getStatusNames(transaction.statusType) ===
+                                  "Revision Delivered"
+                                ) ||
+                                !(
+                                  transaction.setOfRevisions &&
+                                  transaction.setOfRevisions >
+                                    transaction.revisionFiles.length
+                                )
+                              }
+                            >
                               <div className="text-xs">Request Revision</div>
                             </Button>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button disabled={
-                              !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered")
-                            }>
+                            <Button
+                              disabled={
+                                !(
+                                  getStatusNames(transaction.statusType) ===
+                                  "Delivered"
+                                ) ||
+                                !(
+                                  getStatusNames(transaction.statusType) ===
+                                  "Revision Delivered"
+                                )
+                              }
+                            >
                               <div className="text-xs">Mark Completed</div>
                             </Button>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button disabled={getStatusNames(transaction.statusType) === "Completed" ? false : true}
+                            <Button
+                              disabled={
+                                getStatusNames(transaction.statusType) ===
+                                "Completed"
+                                  ? false
+                                  : true
+                              }
                             >
                               <div className="text-xs">Add Service</div>
                             </Button>

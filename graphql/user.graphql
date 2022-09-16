@@ -5,7 +5,6 @@ fragment userServices on UserServices {
   serviceName
   subService
   subService2
-  for
   description
   estimatedTime
   price
@@ -17,7 +16,8 @@ fragment userServices on UserServices {
   numberOfReferenceFileUploads
   setOfRevisions
   revisionsDelivery
-  mixVocalTuning
+  mixVocalTuningBasic
+  mixVocalTuningAdvanced
   mixProcessingReverbs
   mixProcessingDelays
   mixProcessingOtherFx

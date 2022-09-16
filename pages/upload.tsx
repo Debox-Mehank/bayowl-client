@@ -277,7 +277,7 @@ function Upload() {
   return (
     <>
       {loading ? <>Loading...</> : null}
-      <div className="md:h-[96vh] max-h-[48rem] bg-darkBlue text-white flex relative max-w-7xl mx-auto">
+      <div className="md:h-[96vh]  bg-darkBlue text-white flex relative max-w-7xl mx-auto">
         <svg
           onClick={() => {
             router.back();

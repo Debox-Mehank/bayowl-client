@@ -3,82 +3,13 @@ import DashNav from "../components/DashNav";
 import Button from "../components/reusable/Button";
 import {
   ServiceStatusObjectState,
-  useMeQuery,
+  useMeQuery, UserServiceStatus,
 } from "../graphql/generated/graphql";
 import { useState } from "react";
 import { UserServiceFinal } from "./dashboard";
 import { getStatusNames } from "../components/reusable/Accordion";
-const transactions = [
-  {
-    id: "001",
-    projName: "Dream",
-    serviceName: "Mix & Master - Pro Mix",
-    notes: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-    dateSubmitted: "12-Aug-2022",
-    estimatedDelivery: "14-Aug-2022",
-    status: [
-      { name: "Submitted", href: "#", status: "complete" },
-      { name: "Under Review", href: "#", status: "complete" },
-      { name: "Work In Progress", href: "#", status: "complete" },
-      { name: "Delivered", href: "#", status: "complete" },
-      { name: "Revision Request", href: "#", status: "complete" },
-      { name: "Revision Delivered", href: "#", status: "complete" },
-    ],
-    downloads: [
-      { name: "Download", href: "#", status: "complete", link: "/download1" },
-      { name: "Revision 1", href: "#", status: "complete", link: "/revision1" },
-      { name: "Revision 2", href: "#", status: "complete", link: "/revision2" },
-      { name: "Revision 3", href: "#", status: "complete", link: "/revision3" },
-    ],
-    revisionsRequested: 0,
-  },
-  {
-    id: "002",
-    projName: "Dreaming",
-    serviceName: "Mix & Master - Pro Mix",
-    notes: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-    dateSubmitted: "12-Aug-2022",
-    estimatedDelivery: "14-Aug-2022",
-    status: [
-      { name: "Submitted", href: "#", status: "complete" },
-      { name: "Under Review", href: "#", status: "complete" },
-      { name: "Work In Progress", href: "#", status: "complete" },
-      { name: "Delivered", href: "#", status: "complete" },
-      { name: "Revision Request", href: "#", status: "complete" },
-      { name: "Revision Delivered", href: "#", status: "complete" },
-    ],
-    downloads: [
-      { name: "Download", href: "#", status: "complete", link: "/download1" },
-      { name: "Revision 1", href: "#", status: "complete", link: "/revision1" },
-      { name: "Revision 2", href: "#", status: "complete", link: "/revision2" },
-      { name: "Revision 3", href: "#", status: "complete", link: "/revision3" },
-    ],
-    revisionsRequested: 0,
-  },
-  {
-    id: "002",
-    projName: "Sleep",
-    serviceName: "Mix & Master - Pro Mix",
-    notes: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
-    dateSubmitted: "12-Aug-2022",
-    estimatedDelivery: "14-Aug-2022",
-    status: [
-      { name: "Submitted", href: "#", status: "complete" },
-      { name: "Under Review", href: "#", status: "complete" },
-      { name: "Work In Progress", href: "#", status: "complete" },
-      { name: "Delivered", href: "#", status: "complete" },
-      { name: "Revision Request", href: "#", status: "complete" },
-      { name: "Revision Delivered", href: "#", status: "complete" },
-    ],
-    downloads: [
-      { name: "Download", href: "#", status: "complete", link: "/download1" },
-      { name: "Revision 1", href: "#", status: "complete", link: "/revision1" },
-      { name: "Revision 2", href: "#", status: "complete", link: "/revision2" },
-      { name: "Revision 3", href: "#", status: "complete", link: "/revision3" },
-    ],
-    revisionsRequested: 0,
-  },
-];
+
+
 
 function ServiceTracking() {
   const { data, loading, error } = useMeQuery({
@@ -108,7 +39,7 @@ function ServiceTracking() {
       <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
         {/* Scrollable Div Below, issue */}
         <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[60]">
-          <div className="w-80 md:w-full text-center text-xl sm:max-w-3xl text-white bg-white/10 rounded-md py-1 md:py-2 px-3 md:px-2 flex items-center gap-2 fixed">
+          <div className="w-full max-w-sm text-center text-xl sm:max-w-md text-white bg-white/10 rounded-md py-1 md:py-2 px-10 md:px-2 flex items-center gap-2 fixed">
             <input
               onChange={(e) => {
                 const input = e.target.value.toString().toLowerCase().trim();
@@ -154,7 +85,7 @@ function ServiceTracking() {
                     </div> */}
 
           <div className="mt-16 flex flex-col md:pt-8">
-            <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
+            <div className="-my-2 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                 <div className=" shadow ring-1 ring-black ring-opacity-5 md:rounded-lg block">
                   <table className="w-full">
@@ -243,7 +174,6 @@ function ServiceTracking() {
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             {/* {transaction.dateSubmitted} */}
-                            {/* Some date */}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             <div className="flex items-center justify-center gap-2 h-full">

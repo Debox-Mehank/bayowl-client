@@ -176,7 +176,7 @@ function Dashboard() {
 
         {/* Add */}
 
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-3 pb-8">
           <Link href={"/services"}>
             <div className="h-24 w-24 bg-white/10 hover:bg-white/20 transition-colors duration-100 rounded-full cursor-pointer mx-auto grid place-items-center z-10">
               <svg

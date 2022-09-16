@@ -64,7 +64,7 @@ function Navbar({
           <div className='absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
         </div>
         <div
-          className={`flex justify-between items-center flex-wrap h-auto w-full z-50 max-w-7xl mx-auto `}
+          className={`flex justify-between items-center flex-wrap h-auto w-full z-50 max-w-[85rem] mx-auto relative`}
         >
           {/* For Desktop */}
           <div className="hidden md:block">

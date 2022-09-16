@@ -178,15 +178,26 @@ const Services = () => {
                         onClick={() => {
                           if (a.subServices) {
                             setSelectedService(a.serviceName);
-                            router.push(
-                              `/services?mainCategory=${encodeURIComponent(
-                                selectedMainCategory
-                              )}&subCategory=${encodeURIComponent(
-                                selectedSubCategory
-                              )}&serviceName=${encodeURIComponent(
-                                a.serviceName
-                              )}`
+                            // router.push(
+                            //   `/services?mainCategory=${encodeURIComponent(
+                            //     selectedMainCategory
+                            //   )}&subCategory=${encodeURIComponent(
+                            //     selectedSubCategory
+                            //   )}&serviceName=${encodeURIComponent(
+                            //     a.serviceName
+                            //   )}`
+                            // )
+                            const data = {
+                              mainCategory: selectedMainCategory,
+                              subCategory: selectedSubCategory,
+                              serviceName: a.serviceName,
+                            };
+                            localStorage.setItem(
+                              "userService",
+                              JSON.stringify(data)
                             );
+                            router.push("/pricing");
+
                           } else {
                             const data = {
                               mainCategory: selectedMainCategory,
@@ -198,6 +209,7 @@ const Services = () => {
                               JSON.stringify(data)
                             );
                             router.push("/pricing");
+
                           }
                         }}
                         title={a.serviceName}
@@ -231,7 +243,7 @@ const Services = () => {
             </>
           ) : (
             <>
-              <div className="flex justify-center items-center gap-8 flex-wrap relative">
+              {/* <div className="flex justify-center items-center gap-8 flex-wrap relative">
                 <svg onClick={() => router.back()} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 absolute left-0 top-1 cursor-pointer hover:fill-primary">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
                 </svg>
@@ -269,19 +281,9 @@ const Services = () => {
                         }}
                         title={a.subService}
                       />
-                      // <button
-                      //   data-aos="fade-up"
-                      //   key={a.subService}
-                      //   onClick={() => {
-                      //     setSelectedSubService(a.subService);
-                      //   }}
-                      //   className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
-                      // >
-                      //   {a.subService}
-                      // </button>
                     );
                   })}
-              </div>
+              </div> */}
             </>
           )}
           {/* Core Services (4 buttons) */}

@@ -14,6 +14,11 @@ import Modal from "../components/reusable/Modal";
 import secondsToTime from "../utils/secsToTime";
 import { prepareServerlessUrl } from "next/dist/server/base-server";
 
+function classNames(...classes: any) {
+  return classes.filter(Boolean).join(' ')
+}
+
+
 
 const Pricing = () => {
   const router = useRouter();
@@ -25,8 +30,9 @@ const Pricing = () => {
   const [getServiceDetailsQuery] = useGetServiceDetailsLazyQuery();
   const [initiatePaymentQuery] = useInitiatePaymentLazyQuery();
   const [bottomBarEl, { width, height: bottomBarHeight }] = useElementSize()
-
+  const [isPlanModalOpen, setIsPlanModalOpen] = useState<boolean>(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   useEffect(() => {
     const userServiceLS = localStorage.getItem("userService");
@@ -165,10 +171,38 @@ const Pricing = () => {
 
   return (
     <div className="">
+      <Modal open={isPlanModalOpen} setOpen={setIsPlanModalOpen} >
+        <div className="relative text-center">
+          <svg onClick={() => setIsPlanModalOpen(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 absolute hover:text-primary cursor-pointer -top-3 -right-3 ">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <p className="font-bold">Please select how you would like to proceed.</p>
+
+
+          <div className="flex pt-8 gap-4">
+            {/*  setSelectedPlan(true);
+            setIsPlanModalOpen(true)
+            setSelectedServiceFinal(tier); */}
+            <Button>
+              <>Commercial Rate
+              </>
+            </Button>
+            <Button>
+              <>Independent Artist Rate
+              </>
+            </Button>
+          </div>
+          <div className="pt-4 space-y-2 text-sm">
+            <hr className="my-1 mb-4 h-px bg-gray-200 border-0 dark:bg-gray-700" />
+            <p><span className="font-bold"> Commercial Rate </span> - If backed by a label or management or using the file for commercial purposes.</p>
+            <p><span className="font-bold">Independent Rate</span> - For independent musicians and artists releasing their own music without an existing agreement to sell the song commercially</p>
+          </div>
+        </div>
+      </Modal>
       <div className="text-white relative">
         <div className="absolute animation-delay-2000 top-[35%] left-[35%] w-36 md:w-96 h-56 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="absolute top-[42%] right-[34%] w-36 md:w-80 h-72 bg-orange3 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-        <div className="w-[80rem] overflow-auto whitespace-nowrap mx-auto py-8 sm:px-6 lg:px-8 ">
+        <div className="max-w-7xl mx-auto py-8">
           {!selectedServiceFinal && (
             <div className="mt-8 mb-16 text-xl mx-auto space-y-2 md:sticky md:top-0 md:bg-darkBlue/30 md:backdrop-blur-xl z-20 px-4 pb-2 py-3">
               <svg
@@ -200,229 +234,484 @@ const Pricing = () => {
           {selectedService &&
             selectedService[0].subService2 &&
             !selectedServiceFinal ? (
-            <div className="hidden lg:block">
-              <table className="w-full table-fixed">
-                <caption className="sr-only">Pricing plan comparison</caption>
-                <thead className="sticky top-0  left-0 z-20 backdrop-blur-xl bg-darkBlue/30 divide-y divide-blueGradient-2">
-                  <tr>
-                    <th
-                      className="pb-4 px-6 text-md font-medium text-left"
-                      scope="col"
-                    >
-                      <span>Services</span>
-                    </th>
-                    {selectedService.map((tier) => (
+            <>
+              {/* Desktop View */}
+              <div className="hidden lg:block overflow-x-auto ">
+                <table className="w-full table-fixed">
+                  <caption className="sr-only">Pricing plan comparison</caption>
+                  <thead className=" top-0  left-0 z-20 backdrop-blur-xl bg-darkBlue/30 divide-y divide-blueGradient-2">
+                    <tr>
                       <th
-                        key={tier.serviceName}
-                        className="w-1/4 pb-4 px-6 text-lg leading-6 font-medium text-center"
+                        className="pb-4 px-6 text-md font-medium text-left w-60"
                         scope="col"
                       >
-                        {tier.subService}
+                        <span>Services</span>
                       </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="border-t border-gray-200 divide-y divide-blueGradient-2">
-                  <tr>
-                    <th
-                      className="py-8 px-6 text-sm font-medium text-left align-top"
-                      scope="row"
-                    ></th>
-                    {selectedService.map((tier) => (
-                      <td
-                        key={tier.subService2}
-                        className="h-full py-2 px-6 align-top"
-                      >
-                        <div className="relative h-full table text-center text-sm">
-                          <p className="pt-4 text-white h-36 whitespace-pre-wrap">
-                            {tier.description}
-                          </p>
-                          <p className="text-2xl">
-                            ₹{tier.price.toLocaleString("en-IN")}
-                          </p>
+                      {selectedService.map((tier) => (
+                        <th
+                          key={tier.serviceName}
+                          className="w-1/4 pb-4 px-6 text-lg leading-6 font-medium text-center"
+                          scope="col"
+                        >
+                          {tier.subService}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="border-t border-gray-200 divide-y divide-blueGradient-2">
+                    <tr>
+                      <th
+                        className="py-8 px-6 text-sm font-medium text-left align-top"
+                        scope="row"
+                      ></th>
+                      {selectedService.map((tier) => (
+                        <td
+                          key={tier.subService2}
+                          className="h-full py-2 px-6 align-top"
+                        >
+                          <div className="relative h-full table text-center text-sm mx-auto">
+                            <p className="pt-4 text-white h-44 py-8 whitespace-pre-wrap ">
+                              {tier.description}
+                            </p>
+                            <p className="text-2xl">
+                              ₹{tier.price.toLocaleString("en-IN")}
+                            </p>
+                            <button
+                              onClick={() => {
+                                //   setSelectedPlan(true);
+                                setIsPlanModalOpen(true)
+                                // setSelectedServiceFinal(tier);
+                              }}
+                              className="mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg"
+                            >
+                              Buy now
+                            </button>
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+                    {selectedService.every(tier => tier.estimatedTime != null) && (
+                      <tr className="text-center">
+                        <th
+                          className="py-5 px-6 text-sm font-normal text-white text-left"
+                          scope="row"
+                        >
+                          {"Estimated Time On Project"}
+                        </th>
+                        {selectedService.map((tier, tierIdx) => (
+                          <td key={tierIdx} className="py-5 px-6">
+                            <span className="block text-sm text-white">
+                              {tier.estimatedTime}
+                            </span>
+                          </td>
+                        ))}
+                      </tr>
+                    )}
+                    {
+                      selectedService.every(tier => tier.inputTrackLimit != null) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Track Count Limit"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.inputTrackLimit}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    }
+                    {
+                      selectedService.every(tier => tier.uploadFileFormat != null) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {
+                              "Upload File Format - .wav (sampling rate 44.1-96k, bit depth 16 or 24bit)"
+                            }
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.uploadFileFormat.join(", ")}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    }
+                    {
+                      selectedService.every(tier => tier.deliveryFileFormat != null) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Delivery Format"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.deliveryFileFormat.join(", ")}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    }
+                    {
+                      selectedService.every(tier => tier.deliveryDays != null) &&
+                      <tr className="text-center">
+                        <th
+                          className="py-5 px-6 text-sm font-normal text-white text-left"
+                          scope="row"
+                        >
+                          {"Delivery Days"}
+                        </th>
+                        {selectedService.map((tier, tierIdx) => (
+                          <td key={tierIdx} className="py-5 px-6">
+                            <span className="block text-sm text-white">
+                              {tier.deliveryDays}
+                            </span>
+                          </td>
+                        ))}
+                      </tr>
+                    }
+                    {
+                      selectedService.every(tier => tier.maxFileDuration != null) &&
+                      <tr className="text-center">
+                        <th
+                          className="py-5 px-6 text-sm font-normal text-white text-left"
+                          scope="row"
+                        >
+                          {"File(s) Duration Limit"}
+                        </th>
+                        {selectedService.map((tier, tierIdx) => (
+                          <td key={tierIdx} className="py-5 px-6">
+                            <span className="block text-sm text-white">
+                              {secondsToTime(tier.maxFileDuration!)}
+                            </span>
+                          </td>
+                        ))}
+                      </tr>
+                    }
+
+                    {selectedService.every(tier => tier.mixVocalTuning != null) &&
+                      <tr className="text-center">
+                        <th
+                          className="py-5 px-6 text-sm font-normal text-white text-left"
+                          scope="row"
+                        >
+                          {"Mix Processing: Vocal Tuning"}
+                        </th>
+                        {selectedService.map((tier, tierIdx) => (
+                          <td key={tierIdx} className="py-5 px-6">
+                            <span className="block text-sm text-white">
+                              {tier.mixVocalTuning}
+                            </span>
+                          </td>
+                        ))}
+                      </tr>}
+                    {
+                      selectedService.every(tier => tier.mixProcessingReverbs != null) &&
+                      <tr className="text-center">
+                        <th
+                          className="py-5 px-6 text-sm font-normal text-white text-left"
+                          scope="row"
+                        >
+                          {"Mix Processing: Reverbs"}
+                        </th>
+                        {selectedService.map((tier, tierIdx) => (
+                          <td key={tierIdx} className="py-5 px-6">
+                            <span className="block text-sm text-white">
+                              {tier.mixProcessingReverbs}
+                            </span>
+                          </td>
+                        ))}
+                      </tr>
+                    }
+                    {
+                      selectedService.every(tier => tier.mixProcessingDelays != null) &&
+                      <tr className="text-center">
+                        <th
+                          className="py-5 px-6 text-sm font-normal text-white text-left"
+                          scope="row"
+                        >
+                          {"Mix Processing: Delays"}
+                        </th>
+                        {selectedService.map((tier, tierIdx) => (
+                          <td key={tierIdx} className="py-5 px-6">
+                            <span className="block text-sm text-white">
+                              {tier.mixProcessingDelays}
+                            </span>
+                          </td>
+                        ))}
+                      </tr>
+                    }
+                    {
+                      selectedService.every(tier => tier.mixProcessingOtherFx != null) &&
+                      <tr className="text-center">
+                        <th
+                          className="py-5 px-6 text-sm font-normal text-white text-left"
+                          scope="row"
+                        >
+                          {"Mix Processing: Other Fx"}
+                        </th>
+                        {selectedService.map((tier, tierIdx) => (
+                          <td key={tierIdx} className="py-5 px-6">
+                            <span className="block text-sm text-white">
+                              {tier.mixProcessingOtherFx}
+                            </span>
+                          </td>
+                        ))}
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              {/* Mobile View */}
+              <div className="max-w-2xl mx-auto space-y-16 lg:hidden ">
+                {selectedService.map((tier, tierIdx) => (
+                  <section key={tier.serviceName}>
+                    <div className="px-4 mb-8">
+                      <div className="sticky top-0 left-0 backdrop-blur-sm pt-4 pb-2">
+                        <h2 className="text-lg leading-6 font-medium">{tier.subService ?? tier.serviceName} - ₹{tier.price.toLocaleString("en-IN")}</h2>
+                        <p className="mt-4 text-sm text-white">{tier.description}</p>
+                        <div className="text-center">
                           <button
                             onClick={() => {
-                              //   setSelectedPlan(true);
                               setSelectedServiceFinal(tier);
                             }}
-                            className="mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg"
-                          >
+                            className='mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg'>
                             Buy now
                           </button>
                         </div>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Hours Allocated"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.estimatedTime}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Price"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          ₹{tier.price.toLocaleString("en-IN")}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Track Count Limit"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.inputTrackLimit}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {
-                        "Upload File Format - .wav (sampling rate 44.1-96k, bit depth 16 or 24bit)"
-                      }
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.uploadFileFormat.join(", ")}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Delivery Format"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.deliveryFileFormat.join(", ")}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Delivery Days"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.deliveryDays}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"File(s) Duration Limit"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {secondsToTime(tier.maxFileDuration!)}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Mix Processing: Vocal Tuning"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.mixVocalTuning}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Mix Processing: Reverbs"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.mixProcessingReverbs}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Mix Processing: Delays"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.mixProcessingDelays}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Mix Processing: Other Fx"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.mixProcessingOtherFx}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                      </div>
+                      <table className="w-full">
+                        <thead>
+                          <tr>
+                            <th className="sr-only" scope="col">
+                              Feature
+                            </th>
+                            <th className="sr-only" scope="col">
+                              Included
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-blueGradient-2">
+                          {tier.estimatedTime && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Estimated Time On Project"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.estimatedTime}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.inputTrackLimit && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Track Count Limit"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.inputTrackLimit}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {
+                            tier.uploadFileFormat && (
+                              <tr className="text-center">
+                                <th
+                                  className="py-5 px-6 text-sm font-normal text-white text-left"
+                                  scope="row"
+                                >
+                                  {"Upload File Format"}
+                                </th>
+                                <td key={tierIdx} className="py-5 px-6">
+                                  <span className="block text-sm text-white">
+                                    {tier.uploadFileFormat}
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          }
+
+                          {tier.deliveryFileFormat && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Delivery Format"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.deliveryFileFormat}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {
+                            tier.deliveryDays && (
+                              <tr className="text-center">
+                                <th
+                                  className="py-5 px-6 text-sm font-normal text-white text-left"
+                                  scope="row"
+                                >
+                                  {"Delivery Days"}
+                                </th>
+                                <td key={tierIdx} className="py-5 px-6">
+                                  <span className="block text-sm text-white">
+                                    {tier.deliveryDays}
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          }
+                          {
+                            tier.maxFileDuration && (
+                              <tr className="text-center">
+                                <th
+                                  className="py-5 px-6 text-sm font-normal text-white text-left"
+                                  scope="row"
+                                >
+                                  {"File Duration Limit"}
+                                </th>
+                                <td key={tierIdx} className="py-5 px-6">
+                                  <span className="block text-sm text-white">
+                                    {secondsToTime(tier.maxFileDuration)}
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          }
+                          {
+                            tier.mixVocalTuning && (
+                              <tr className="text-center">
+                                <th
+                                  className="py-5 px-6 text-sm font-normal text-white text-left"
+                                  scope="row"
+                                >
+                                  {"Mix Processing: Vocal Tuning"}
+                                </th>
+                                <td key={tierIdx} className="py-5 px-6">
+                                  <span className="block text-sm text-white">
+                                    {tier.mixVocalTuning}
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          }
+                          {
+                            tier.mixProcessingReverbs && (
+                              <tr className="text-center">
+                                <th
+                                  className="py-5 px-6 text-sm font-normal text-white text-left"
+                                  scope="row"
+                                >
+                                  {"Mix Processing: Reverbs"}
+                                </th>
+                                <td key={tierIdx} className="py-5 px-6">
+                                  <span className="block text-sm text-white">
+                                    {tier.mixProcessingReverbs}
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          }
+                          {
+                            tier.mixProcessingDelays && (
+                              <tr className="text-center">
+                                <th
+                                  className="py-5 px-6 text-sm font-normal text-white text-left"
+                                  scope="row"
+                                >
+                                  {"Mix Processing: Delays"}
+                                </th>
+                                <td key={tierIdx} className="py-5 px-6">
+                                  <span className="block text-sm text-white">
+                                    {tier.mixProcessingDelays}
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          }
+                          {
+                            tier.mixProcessingOtherFx && (
+                              <tr className="text-center">
+                                <th
+                                  className="py-5 px-6 text-sm font-normal text-white text-left"
+                                  scope="row"
+                                >
+                                  {"Mix Processing: Other Fx"}
+                                </th>
+                                <td key={tierIdx} className="py-5 px-6">
+                                  <span className="block text-sm text-white">
+                                    {tier.mixProcessingOtherFx}
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          }
+
+                        </tbody>
+                      </table>
+                    </div>
+
+
+                    {/* {sections.map((section) => (
+                      <table key={section.features[0].name} className="w-full">
+                        <caption className="border-t border-gray-200 py-3 px-4 text-sm font-bold text-primary text-left">
+                          {section.name}
+                        </caption>
+                        <thead>
+                          <tr>
+                            <th className="sr-only" scope="col">
+                              Feature
+                            </th>
+                            <th className="sr-only" scope="col">
+                              Included
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gradient1">
+                          {section.features.map((feature) => (
+                            <tr key={feature.name} className="border-t border-gray-200">
+                              <th className="py-5 px-4 text-sm font-normal text-white text-left" scope="row">
+                                {feature.name}
+                              </th>
+                              <td className="py-5 pr-4">
+
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ))} */}
+
+
+                  </section>
+                ))}
+              </div>
+            </>
           ) : selectedService && !selectedServiceFinal ? (
             <div className="hidden lg:block">
               <table className="w-full table-fixed">
@@ -650,7 +939,7 @@ const Pricing = () => {
             </div>
           ) : null}
           {selectedServiceFinal && (
-            <div style={{ minHeight: `calc(100vh - ${bottomBarHeight}px)` }} className="relative text-center">
+            <div style={{ minHeight: `calc(100vh - ${bottomBarHeight}px)` }} className={`relative text-center`}>
               <svg
                 onClick={() => {
                   setSelectedServiceFinal(undefined);
@@ -667,7 +956,7 @@ const Pricing = () => {
                   d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
                 />
               </svg>
-              <div className=" flex w-full h-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 md:py-20">
+              <div className={`flex w-full h-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 md:py-20 mb-[${bottomBarHeight}px]`}>
                 <div className="mx-auto h-full w-full space-y-8 rounded-lg py-12 bg-blueGradient-2/30 backdrop-blur-lg relative">
                   <div className="text-2xl space-y-3">
                     <span className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r py-5 from-pink-600 to-primary">
@@ -679,8 +968,8 @@ const Pricing = () => {
                     </span>
                     <span className="block space-x-2">
                       <span>
-                        {selectedServiceFinal.subService2?.split("*")[0] ||
-                          selectedServiceFinal.serviceName.split("*")[0]}
+                        {selectedServiceFinal.subService2 ||
+                          selectedServiceFinal.serviceName}
                       </span>
                       <svg
                         onClick={() => setIsModalOpen(true)}
@@ -715,8 +1004,8 @@ const Pricing = () => {
                             />
                           </svg>
                           <h3 className="">
-                            {selectedServiceFinal.subService2?.split("*")[0] ||
-                              selectedServiceFinal.serviceName.split("*")[0]}
+                            {selectedServiceFinal.subService2 ||
+                              selectedServiceFinal.serviceName}
                           </h3>
                           <p>
                             {(
@@ -755,7 +1044,7 @@ const Pricing = () => {
                     </div>
                   </div>
                 </div>
-                <div className="mx-auto w-full md:text-left space-y-6 ">
+                <div className="mx-auto w-full md:text-left space-y-6 px-10 md:px-0">
                   <span className="text-xl md:text-3xl font-extrabold text-white">
                     Add Ons
                   </span>
@@ -880,17 +1169,17 @@ const Pricing = () => {
                 </div>
               </div>
               {/* Bottom Bar */}
-              <div ref={bottomBarEl} className="fixed z-50 bottom-0 p-4 filter md:flex w-full flex-1 items-center backdrop-blur-xl">
-                <div className="md:w-1/2 text-md md:text-xl relative">
-                  <div className="absolute animation-delay-4000 top-0 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
-                  <div className="absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
+              <div ref={bottomBarEl} className="fixed z-50 bottom-0 p-4 left-0 filter md:flex w-screen items-center backdrop-blur-xl">
+                {/* <div className="absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-40 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
+                <div className="absolute animation-delay-2000  left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-20 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
+                <div className="absolute right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-30 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" /> */}
+                <div className="md:w-1/2 w-10 text-md md:text-xl">
+
                   Estimated Delivery: {selectedServiceFinal.deliveryDays} days
                 </div>
-                <div className="md:w-1/2 text-left space-x-3 relative">
-                  <div className="absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-40 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
-                  <div className="absolute animation-delay-2000 top-20 left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-20 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
-                  <div className="absolute top-5 right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-30 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
-                  <div className="md:flex items-center gap-8">
+                <div className="md:w-1/2 text-left space-x-3">
+
+                  <div className="md:flex items-center justify-center gap-8">
                     {localStorage.getItem("loggedIn") ? (
                       // Add price here.
                       <div className="font-bold flex items-center justify-between text-xl md:text-2xl">

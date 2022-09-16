@@ -51,12 +51,12 @@ function FloatingProfile({
       <div
         onClick={() => setIsProfileOpen((prev) => !prev)}
         onBlur={() => setIsProfileOpen(false)}
-        className={`z-50 ${position} bottom-10 lg:bottom-auto lg:top-10 lg:right-0 overflow-clip flex justify-center items-center gap-1 md:gap-2 cursor-pointer duration-300 transition-colors text-white lg:px-8`}
+        className={`z-50 ${position} ${position === "absolute" && "mx-auto lg:mx-0 space-x-2 left-0 right-0 lg:left-auto lg:right-0"} bottom-10 lg:bottom-auto lg:top-10 lg:right-0 overflow-clip flex justify-center items-center gap-1 md:gap-2 cursor-pointer duration-300 transition-colors text-white lg:px-8`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
-          className="inline h-6 w-6 md:h-10 md:w-10"
+          className="inline h-8 w-8 md:h-10 md:w-10"
           viewBox="0 0 16 16"
         >
           <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
@@ -68,7 +68,7 @@ function FloatingProfile({
         <span>{name}</span>
         {/* Expanded */}
         <div
-          className={`fixed space-y-3 bg-blueGradient-2/70 filter backdrop-blur-lg p-3 rounded-lg ${onTop ? "top-20 right-2" : "bottom-20 left-4"} lg:bottom-auto lg:left-auto lg:top-24 lg:right-2 min-w-[20rem] transition-all duration-300 ${isProfileOpen
+          className={`fixed space-y-3 bg-blueGradient-2/70 filter backdrop-blur-lg p-3 rounded-lg ${onTop ? "top-20 right-2" : "bottom-20 left-4"} lg:bottom-auto lg:left-auto lg:top-[6.5rem] lg:right-10 min-w-[20rem] transition-all duration-300 ${isProfileOpen
             ? "opacity-100 translate-y-0"
             : "opacity-0 -translate-y-10 invisible"
             }`}

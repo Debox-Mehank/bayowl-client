@@ -208,7 +208,7 @@ function ServiceTracking() {
                             </Button>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white relative">
-
+                            {/* DIsabled unless delivered / revision delivered / completed */}
                             <Button disabled={
                               !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered") || !(getStatusNames(transaction.statusType) === "Completed")
                             }>
@@ -217,17 +217,24 @@ function ServiceTracking() {
 
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button>
+                            {/* Disabled unless Delivered, Revision Delivered, or if there are revisions left. */}
+                            <Button disabled={
+                              !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered") ||
+                              !(transaction.setOfRevisions && transaction.setOfRevisions > transaction.revisionFiles.length)
+                            }>
                               <div className="text-xs">Request Revision</div>
                             </Button>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button>
+                            <Button disabled={
+                              !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered")
+                            }>
                               <div className="text-xs">Mark Completed</div>
                             </Button>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button>
+                            <Button disabled={getStatusNames(transaction.statusType) === "Completed" ? false : true}
+                            >
                               <div className="text-xs">Add Service</div>
                             </Button>
                           </td>

@@ -31,13 +31,25 @@ export type AddOnInput = {
 
 export type Admin = {
   __typename?: 'Admin';
-  _id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  createdBy: Admin;
+  _id?: Maybe<Scalars['ID']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  createdBy?: Maybe<Admin>;
+  email?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  type?: Maybe<AdminRole>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+};
+
+export type AdminLoginInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type AdminRegisterInput = {
   email: Scalars['String'];
   name: Scalars['String'];
+  password: Scalars['String'];
   type: AdminRole;
-  updatedAt: Scalars['DateTime'];
 };
 
 /** Enum For Type of Admin Roles i.e. Master, Admin & Normal */
@@ -47,9 +59,34 @@ export enum AdminRole {
   Master = 'master'
 }
 
+export type FileUploadResponse = {
+  __typename?: 'FileUploadResponse';
+  fileId?: Maybe<Scalars['String']>;
+  fileKey?: Maybe<Scalars['String']>;
+};
+
+export type FinalMultipartUploadInput = {
+  fileId?: InputMaybe<Scalars['String']>;
+  fileKey?: InputMaybe<Scalars['String']>;
+  parts?: InputMaybe<Array<FinalMultipartUploadPartsInput>>;
+};
+
+export type FinalMultipartUploadPartsInput = {
+  ETag?: InputMaybe<Scalars['String']>;
+  PartNumber?: InputMaybe<Scalars['Float']>;
+};
+
+export type MultipartSignedUrlResponse = {
+  __typename?: 'MultipartSignedUrlResponse';
+  PartNumber?: Maybe<Scalars['Float']>;
+  signedUrl?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addService: Scalars['Boolean'];
+  addUser: Scalars['String'];
+  assignService: Scalars['Boolean'];
 };
 
 
@@ -57,18 +94,55 @@ export type MutationAddServiceArgs = {
   input: Array<ServicesInput>;
 };
 
+
+export type MutationAddUserArgs = {
+  input: AdminRegisterInput;
+};
+
+
+export type MutationAssignServiceArgs = {
+  adminId: Scalars['String'];
+  serviceId: Scalars['String'];
+};
+
+export type Payment = {
+  __typename?: 'Payment';
+  _id: Scalars['ID'];
+  amount: Scalars['Float'];
+  createdAt: Scalars['DateTime'];
+  email: Scalars['String'];
+  orderId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  paymentLinkId?: Maybe<Scalars['String']>;
+  signature?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['DateTime'];
+  userServiceId?: Maybe<Scalars['String']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   addUserService: Scalars['Boolean'];
+  adminLogin: Scalars['Boolean'];
+  adminLogout: Scalars['Boolean'];
+  allAdmins: Array<Admin>;
+  allEmployee: Array<Admin>;
   completeAccount: Scalars['Boolean'];
+  finalizeMultipartUpload?: Maybe<Scalars['String']>;
+  getAllPayment: Array<Payment>;
   getAllService: Array<Services>;
+  getAllServiceForEmployee: Array<UserServices>;
+  getAllUser: Array<User>;
+  getMultipartPreSignedUrls: Array<MultipartSignedUrlResponse>;
   getS3SignedURL: Scalars['String'];
   getServiceDetails: Array<Services>;
   getUserServiceDetailsById?: Maybe<UserServices>;
+  initFileUpload: FileUploadResponse;
   initiatePayment: Scalars['String'];
   login: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   me: User;
+  meAdmin: Scalars['String'];
   register: Scalars['Boolean'];
   updatePorjectName: Scalars['Boolean'];
   uploadFilesForService: Scalars['Boolean'];
@@ -81,12 +155,34 @@ export type QueryAddUserServiceArgs = {
 };
 
 
+export type QueryAdminLoginArgs = {
+  input: AdminLoginInput;
+};
+
+
 export type QueryCompleteAccountArgs = {
   email: Scalars['String'];
   name: Scalars['String'];
   number: Scalars['String'];
   password: Scalars['String'];
   token: Scalars['String'];
+};
+
+
+export type QueryFinalizeMultipartUploadArgs = {
+  input: FinalMultipartUploadInput;
+};
+
+
+export type QueryGetMultipartPreSignedUrlsArgs = {
+  fileId: Scalars['String'];
+  fileKey: Scalars['String'];
+  parts: Scalars['Float'];
+};
+
+
+export type QueryGetS3SignedUrlArgs = {
+  fileName: Scalars['String'];
 };
 
 
@@ -97,6 +193,11 @@ export type QueryGetServiceDetailsArgs = {
 
 export type QueryGetUserServiceDetailsByIdArgs = {
   serviceId: Scalars['String'];
+};
+
+
+export type QueryInitFileUploadArgs = {
+  fileName: Scalars['String'];
 };
 
 
@@ -163,7 +264,7 @@ export type Services = {
   __typename?: 'Services';
   _id: Scalars['ID'];
   addOn: Array<AddOn>;
-  createdAt: Scalars['DateTime'];
+  createdAt?: Maybe<Scalars['DateTime']>;
   deliveryDays?: Maybe<Scalars['Float']>;
   /** File formats for delivery file */
   deliveryFileFormat: Array<Scalars['String']>;
@@ -185,7 +286,7 @@ export type Services = {
   subCategory: Scalars['String'];
   subService?: Maybe<Scalars['String']>;
   subService2?: Maybe<Scalars['String']>;
-  updatedAt: Scalars['DateTime'];
+  updatedAt?: Maybe<Scalars['DateTime']>;
   /** File formats for uploading file */
   uploadFileFormat: Array<Scalars['String']>;
 };
@@ -255,7 +356,7 @@ export type UserServices = {
   addOn: Array<AddOn>;
   assignedBy?: Maybe<Admin>;
   assignedTo?: Maybe<Admin>;
-  createdAt: Scalars['DateTime'];
+  createdAt?: Maybe<Scalars['DateTime']>;
   deliveryDays?: Maybe<Scalars['Float']>;
   /** File formats for delivery file */
   deliveryFileFormat: Array<Scalars['String']>;
@@ -284,7 +385,7 @@ export type UserServices = {
   subCategory: Scalars['String'];
   subService?: Maybe<Scalars['String']>;
   subService2?: Maybe<Scalars['String']>;
-  updatedAt: Scalars['DateTime'];
+  updatedAt?: Maybe<Scalars['DateTime']>;
   /** File formats for uploading file */
   uploadFileFormat: Array<Scalars['String']>;
   uploadedFiles: Array<Scalars['String']>;
@@ -323,7 +424,7 @@ export type GetServiceDetailsQueryVariables = Exact<{
 }>;
 
 
-export type GetServiceDetailsQuery = { __typename?: 'Query', getServiceDetails: Array<{ __typename?: 'Services', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, createdAt: any, updatedAt: any, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null }> }> };
+export type GetServiceDetailsQuery = { __typename?: 'Query', getServiceDetails: Array<{ __typename?: 'Services', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, createdAt?: any | null, updatedAt?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null }> }> };
 
 export type UserServicesFragment = { __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> };
 
@@ -398,10 +499,44 @@ export type VerifyUserQueryVariables = Exact<{
 
 export type VerifyUserQuery = { __typename?: 'Query', verifyUser: boolean };
 
-export type GetS3SignedUrlQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetS3SignedUrlQueryVariables = Exact<{
+  fileName: Scalars['String'];
+}>;
 
 
 export type GetS3SignedUrlQuery = { __typename?: 'Query', getS3SignedURL: string };
+
+export type InitFileUploadQueryVariables = Exact<{
+  fileName: Scalars['String'];
+}>;
+
+
+export type InitFileUploadQuery = { __typename?: 'Query', initFileUpload: { __typename?: 'FileUploadResponse', fileId?: string | null, fileKey?: string | null } };
+
+export type GetMultipartPreSignedUrlsQueryVariables = Exact<{
+  parts: Scalars['Float'];
+  fileKey: Scalars['String'];
+  fileId: Scalars['String'];
+}>;
+
+
+export type GetMultipartPreSignedUrlsQuery = { __typename?: 'Query', getMultipartPreSignedUrls: Array<{ __typename?: 'MultipartSignedUrlResponse', signedUrl?: string | null, PartNumber?: number | null }> };
+
+export type FinalizeMultipartUploadQueryVariables = Exact<{
+  input: FinalMultipartUploadInput;
+}>;
+
+
+export type FinalizeMultipartUploadQuery = { __typename?: 'Query', finalizeMultipartUpload?: string | null };
+
+export type UploadFilesForServiceQueryVariables = Exact<{
+  referenceUploadedFiles: Array<Scalars['String']> | Scalars['String'];
+  uplodedFiles: Array<Scalars['String']> | Scalars['String'];
+  serviceId: Scalars['String'];
+}>;
+
+
+export type UploadFilesForServiceQuery = { __typename?: 'Query', uploadFilesForService: boolean };
 
 export const UserServicesFragmentDoc = gql`
     fragment userServices on UserServices {
@@ -847,8 +982,8 @@ export type VerifyUserQueryHookResult = ReturnType<typeof useVerifyUserQuery>;
 export type VerifyUserLazyQueryHookResult = ReturnType<typeof useVerifyUserLazyQuery>;
 export type VerifyUserQueryResult = Apollo.QueryResult<VerifyUserQuery, VerifyUserQueryVariables>;
 export const GetS3SignedUrlDocument = gql`
-    query GetS3SignedURL {
-  getS3SignedURL
+    query GetS3SignedURL($fileName: String!) {
+  getS3SignedURL(fileName: $fileName)
 }
     `;
 
@@ -864,10 +999,11 @@ export const GetS3SignedUrlDocument = gql`
  * @example
  * const { data, loading, error } = useGetS3SignedUrlQuery({
  *   variables: {
+ *      fileName: // value for 'fileName'
  *   },
  * });
  */
-export function useGetS3SignedUrlQuery(baseOptions?: Apollo.QueryHookOptions<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>) {
+export function useGetS3SignedUrlQuery(baseOptions: Apollo.QueryHookOptions<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>(GetS3SignedUrlDocument, options);
       }
@@ -878,3 +1014,149 @@ export function useGetS3SignedUrlLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetS3SignedUrlQueryHookResult = ReturnType<typeof useGetS3SignedUrlQuery>;
 export type GetS3SignedUrlLazyQueryHookResult = ReturnType<typeof useGetS3SignedUrlLazyQuery>;
 export type GetS3SignedUrlQueryResult = Apollo.QueryResult<GetS3SignedUrlQuery, GetS3SignedUrlQueryVariables>;
+export const InitFileUploadDocument = gql`
+    query InitFileUpload($fileName: String!) {
+  initFileUpload(fileName: $fileName) {
+    fileId
+    fileKey
+  }
+}
+    `;
+
+/**
+ * __useInitFileUploadQuery__
+ *
+ * To run a query within a React component, call `useInitFileUploadQuery` and pass it any options that fit your needs.
+ * When your component renders, `useInitFileUploadQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useInitFileUploadQuery({
+ *   variables: {
+ *      fileName: // value for 'fileName'
+ *   },
+ * });
+ */
+export function useInitFileUploadQuery(baseOptions: Apollo.QueryHookOptions<InitFileUploadQuery, InitFileUploadQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<InitFileUploadQuery, InitFileUploadQueryVariables>(InitFileUploadDocument, options);
+      }
+export function useInitFileUploadLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<InitFileUploadQuery, InitFileUploadQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<InitFileUploadQuery, InitFileUploadQueryVariables>(InitFileUploadDocument, options);
+        }
+export type InitFileUploadQueryHookResult = ReturnType<typeof useInitFileUploadQuery>;
+export type InitFileUploadLazyQueryHookResult = ReturnType<typeof useInitFileUploadLazyQuery>;
+export type InitFileUploadQueryResult = Apollo.QueryResult<InitFileUploadQuery, InitFileUploadQueryVariables>;
+export const GetMultipartPreSignedUrlsDocument = gql`
+    query GetMultipartPreSignedUrls($parts: Float!, $fileKey: String!, $fileId: String!) {
+  getMultipartPreSignedUrls(parts: $parts, fileKey: $fileKey, fileId: $fileId) {
+    signedUrl
+    PartNumber
+  }
+}
+    `;
+
+/**
+ * __useGetMultipartPreSignedUrlsQuery__
+ *
+ * To run a query within a React component, call `useGetMultipartPreSignedUrlsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMultipartPreSignedUrlsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMultipartPreSignedUrlsQuery({
+ *   variables: {
+ *      parts: // value for 'parts'
+ *      fileKey: // value for 'fileKey'
+ *      fileId: // value for 'fileId'
+ *   },
+ * });
+ */
+export function useGetMultipartPreSignedUrlsQuery(baseOptions: Apollo.QueryHookOptions<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>(GetMultipartPreSignedUrlsDocument, options);
+      }
+export function useGetMultipartPreSignedUrlsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>(GetMultipartPreSignedUrlsDocument, options);
+        }
+export type GetMultipartPreSignedUrlsQueryHookResult = ReturnType<typeof useGetMultipartPreSignedUrlsQuery>;
+export type GetMultipartPreSignedUrlsLazyQueryHookResult = ReturnType<typeof useGetMultipartPreSignedUrlsLazyQuery>;
+export type GetMultipartPreSignedUrlsQueryResult = Apollo.QueryResult<GetMultipartPreSignedUrlsQuery, GetMultipartPreSignedUrlsQueryVariables>;
+export const FinalizeMultipartUploadDocument = gql`
+    query FinalizeMultipartUpload($input: FinalMultipartUploadInput!) {
+  finalizeMultipartUpload(input: $input)
+}
+    `;
+
+/**
+ * __useFinalizeMultipartUploadQuery__
+ *
+ * To run a query within a React component, call `useFinalizeMultipartUploadQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFinalizeMultipartUploadQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFinalizeMultipartUploadQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useFinalizeMultipartUploadQuery(baseOptions: Apollo.QueryHookOptions<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>(FinalizeMultipartUploadDocument, options);
+      }
+export function useFinalizeMultipartUploadLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>(FinalizeMultipartUploadDocument, options);
+        }
+export type FinalizeMultipartUploadQueryHookResult = ReturnType<typeof useFinalizeMultipartUploadQuery>;
+export type FinalizeMultipartUploadLazyQueryHookResult = ReturnType<typeof useFinalizeMultipartUploadLazyQuery>;
+export type FinalizeMultipartUploadQueryResult = Apollo.QueryResult<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>;
+export const UploadFilesForServiceDocument = gql`
+    query UploadFilesForService($referenceUploadedFiles: [String!]!, $uplodedFiles: [String!]!, $serviceId: String!) {
+  uploadFilesForService(
+    referenceUploadedFiles: $referenceUploadedFiles
+    uplodedFiles: $uplodedFiles
+    serviceId: $serviceId
+  )
+}
+    `;
+
+/**
+ * __useUploadFilesForServiceQuery__
+ *
+ * To run a query within a React component, call `useUploadFilesForServiceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUploadFilesForServiceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUploadFilesForServiceQuery({
+ *   variables: {
+ *      referenceUploadedFiles: // value for 'referenceUploadedFiles'
+ *      uplodedFiles: // value for 'uplodedFiles'
+ *      serviceId: // value for 'serviceId'
+ *   },
+ * });
+ */
+export function useUploadFilesForServiceQuery(baseOptions: Apollo.QueryHookOptions<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>(UploadFilesForServiceDocument, options);
+      }
+export function useUploadFilesForServiceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>(UploadFilesForServiceDocument, options);
+        }
+export type UploadFilesForServiceQueryHookResult = ReturnType<typeof useUploadFilesForServiceQuery>;
+export type UploadFilesForServiceLazyQueryHookResult = ReturnType<typeof useUploadFilesForServiceLazyQuery>;
+export type UploadFilesForServiceQueryResult = Apollo.QueryResult<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>;

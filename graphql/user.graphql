@@ -118,6 +118,40 @@ query VerifyUser($token: String!) {
   verifyUser(token: $token)
 }
 
-query GetS3SignedURL {
-  getS3SignedURL
+query GetS3SignedURL($fileName: String!) {
+  getS3SignedURL(fileName: $fileName)
+}
+
+query InitFileUpload($fileName: String!) {
+  initFileUpload(fileName: $fileName) {
+    fileId
+    fileKey
+  }
+}
+
+query GetMultipartPreSignedUrls(
+  $parts: Float!
+  $fileKey: String!
+  $fileId: String!
+) {
+  getMultipartPreSignedUrls(parts: $parts, fileKey: $fileKey, fileId: $fileId) {
+    signedUrl
+    PartNumber
+  }
+}
+
+query FinalizeMultipartUpload($input: FinalMultipartUploadInput!) {
+  finalizeMultipartUpload(input: $input)
+}
+
+query UploadFilesForService(
+  $referenceUploadedFiles: [String!]!
+  $uplodedFiles: [String!]!
+  $serviceId: String!
+) {
+  uploadFilesForService(
+    referenceUploadedFiles: $referenceUploadedFiles
+    uplodedFiles: $uplodedFiles
+    serviceId: $serviceId
+  )
 }

@@ -12,14 +12,14 @@ import {
 } from "../graphql/generated/graphql";
 import Modal from "../components/reusable/Modal";
 import secondsToTime from "../utils/secsToTime";
-import { prepareServerlessUrl } from "next/dist/server/base-server";
+import _ from "lodash";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 interface PricingServices extends Services {
-  pricingArr: { name: string; price: number }[];
+  pricingArr: { name: string; price: number; id: string }[];
 }
 
 const Pricing = () => {
@@ -35,6 +35,11 @@ const Pricing = () => {
   const [bottomBarEl, { width, height: bottomBarHeight }] = useElementSize();
   const [isPlanModalOpen, setIsPlanModalOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [types, setTypes] = useState<
+    { name: string; price: number; id: string }[]
+  >([]);
+  const [selectedServiceForType, setSelectedServiceForType] =
+    useState<PricingServices>();
 
   useEffect(() => {
     const userServiceLS = localStorage.getItem("userService");
@@ -66,7 +71,11 @@ const Pricing = () => {
       }
 
       let arr: PricingServices[] = [];
-      let priceArr: any[] = [];
+      let priceArr: {
+        id: string;
+        name: string;
+        price: number;
+      }[] = [];
 
       data.getServiceDetails.forEach((elem: Services) => {
         const check = arr.findIndex(
@@ -76,11 +85,24 @@ const Pricing = () => {
             el.serviceName === elem.serviceName &&
             el.subService === elem.subService
         );
+        priceArr.push({
+          id:
+            elem.mainCategory +
+            "-" +
+            elem.subCategory +
+            "-" +
+            elem.serviceName +
+            "-" +
+            elem.subService,
+          name: elem.subService2 ? elem.subService2 : elem.serviceName,
+          price: elem.price,
+        });
         if (check < 0) {
           arr.push({
             ...elem,
             pricingArr: [
               {
+                id: elem._id,
                 name: elem.subService2 ? elem.subService2 : elem.serviceName,
                 price: elem.price,
               },
@@ -88,13 +110,16 @@ const Pricing = () => {
           });
         } else {
           arr[check].pricingArr.push({
+            id: elem._id,
             name: elem.subService2 ? elem.subService2 : elem.serviceName,
             price: elem.price,
           });
         }
       });
 
-      console.log(arr);
+      setTypes(priceArr);
+
+      // console.log(_.uniqBy(priceArr, (el) => el.name));
 
       setSelectedService(arr);
     };
@@ -212,10 +237,74 @@ const Pricing = () => {
             {/*  setSelectedPlan(true);
             setIsPlanModalOpen(true)
             setSelectedServiceFinal(tier); */}
-            <Button>
+            <Button
+              onClick={() => {
+                if (!selectedServiceForType) {
+                  return;
+                }
+
+                if (
+                  selectedServiceForType?.subService &&
+                  selectedServiceForType.subService2
+                ) {
+                  const pricArr = [...types];
+                  console.log(pricArr);
+                  const findPrice = pricArr.find(
+                    (el) =>
+                      el.id ===
+                        `${selectedServiceForType.mainCategory}-${selectedServiceForType.subCategory}-${selectedServiceForType.serviceName}-${selectedServiceForType.subService}` &&
+                      el.name === "Commercial Rate"
+                  );
+                  if (!findPrice) {
+                    return;
+                  }
+                  setIsPlanModalOpen(false);
+                  setSelectedServiceFinal({
+                    ...selectedServiceForType,
+                    subService2: "Commercial Rate",
+                    price: findPrice.price,
+                  });
+                } else {
+                  setIsPlanModalOpen(false);
+                  setSelectedServiceFinal(selectedServiceForType);
+                }
+              }}
+            >
               <>Commercial Rate</>
             </Button>
-            <Button>
+            <Button
+              onClick={() => {
+                if (!selectedServiceForType) {
+                  return;
+                }
+
+                if (
+                  selectedServiceForType?.subService &&
+                  selectedServiceForType.subService2
+                ) {
+                  const pricArr = [...types];
+                  console.log(pricArr);
+                  const findPrice = pricArr.find(
+                    (el) =>
+                      el.id ===
+                        `${selectedServiceForType.mainCategory}-${selectedServiceForType.subCategory}-${selectedServiceForType.serviceName}-${selectedServiceForType.subService}` &&
+                      el.name === "Independent Artist Rate"
+                  );
+                  if (!findPrice) {
+                    return;
+                  }
+                  setIsPlanModalOpen(false);
+                  setSelectedServiceFinal({
+                    ...selectedServiceForType,
+                    subService2: "Independent Artist Rate",
+                    price: findPrice.price,
+                  });
+                } else {
+                  setIsPlanModalOpen(false);
+                  setSelectedServiceFinal(selectedServiceForType);
+                }
+              }}
+            >
               <>Independent Artist Rate</>
             </Button>
           </div>
@@ -312,7 +401,7 @@ const Pricing = () => {
                               onClick={() => {
                                 //   setSelectedPlan(true);
                                 setIsPlanModalOpen(true);
-                                // setSelectedServiceFinal(tier);
+                                setSelectedServiceForType(tier);
                               }}
                               className="mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg"
                             >
@@ -322,6 +411,35 @@ const Pricing = () => {
                         </td>
                       ))}
                     </tr>
+                    {selectedService.every(
+                      (tier) => tier.subService && tier.subService2
+                    ) && (
+                      <>
+                        {_.uniqBy(types, (el) => el.name).map((el, elIdx) => {
+                          return (
+                            <tr key={el.id} className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {el.name}
+                              </th>
+                              {selectedService.map((tier, tierIdx) => (
+                                <td key={tierIdx} className="py-5 px-6">
+                                  <span className="block text-sm text-white">
+                                    ₹{" "}
+                                    {tier.pricingArr
+                                      .find((e) => e.name === el.name)
+                                      ?.price.toLocaleString("en-IN")}
+                                  </span>
+                                </td>
+                              ))}
+                            </tr>
+                          );
+                        })}
+                      </>
+                    )}
+
                     {selectedService.every(
                       (tier) => tier.estimatedTime != null
                     ) && (
@@ -599,8 +717,7 @@ const Pricing = () => {
                     <div className="px-4 mb-8">
                       <div className="sticky top-0 left-0 backdrop-blur-sm pt-4 pb-2">
                         <h2 className="text-lg leading-6 font-medium">
-                          {tier.subService ?? tier.serviceName} - ₹
-                          {tier.price.toLocaleString("en-IN")}
+                          {tier.subService ?? tier.serviceName}
                         </h2>
                         <p className="mt-4 text-sm text-white">
                           {tier.description}
@@ -628,6 +745,33 @@ const Pricing = () => {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-blueGradient-2">
+                          {tier.subService && tier.subService2 && (
+                            <>
+                              {_.uniqBy(types, (el) => el.name).map(
+                                (el, elIdx) => {
+                                  return (
+                                    <tr key={elIdx} className="text-center">
+                                      <th
+                                        className="py-5 px-6 text-sm font-normal text-white text-left"
+                                        scope="row"
+                                      >
+                                        {el.name}
+                                      </th>
+                                      <td key={tierIdx} className="py-5 px-6">
+                                        <span className="block text-sm text-white">
+                                          ₹{" "}
+                                          {tier.pricingArr
+                                            .find((e) => e.name === el.name)
+                                            ?.price.toLocaleString("en-IN")}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  );
+                                }
+                              )}
+                            </>
+                          )}
+
                           {tier.estimatedTime && (
                             <tr className="text-center">
                               <th
@@ -1142,64 +1286,61 @@ const Pricing = () => {
                 <div className="mx-auto h-full w-full space-y-8 rounded-lg py-12 bg-blueGradient-2/30 backdrop-blur-lg relative">
                   <div className="text-2xl space-y-3">
                     <span className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r py-5 from-pink-600 to-primary">
-                      {selectedService && selectedService[0].subService2
-                        ? selectedService[0].subService
-                        : selectedService
-                        ? selectedService[0].serviceName
-                        : ""}
+                      {selectedServiceFinal.subService
+                        ? selectedServiceFinal.subService
+                        : selectedServiceFinal.serviceName}
                     </span>
-                    <span className="block space-x-2">
-                      <span>
-                        {selectedServiceFinal.subService2 ||
-                          selectedServiceFinal.serviceName}
+                    {selectedServiceFinal.subService && (
+                      <span className="block space-x-2">
+                        <span>{selectedServiceFinal.subService2}</span>
+                        <svg
+                          onClick={() => setIsModalOpen(true)}
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6 inline hover:stroke-primary cursor-pointer"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                          />
+                        </svg>
+                        <Modal open={isModalOpen} setOpen={setIsModalOpen}>
+                          <div className="text-center relative ">
+                            <svg
+                              onClick={() => setIsModalOpen(false)}
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="w-6 h-6 absolute right-0 -top-3 hover:text-primary cursor-pointer"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                            <h3 className="">
+                              {selectedServiceFinal.subService2 ||
+                                selectedServiceFinal.serviceName}
+                            </h3>
+                            <p>
+                              {(
+                                selectedServiceFinal.subService2 ||
+                                selectedServiceFinal.serviceName
+                              ).includes("Commercial")
+                                ? "If backed by a label or management or using the file for commercial purposes"
+                                : "For independent musicians and artists releasing their own music without an existing agreement to sell the song commercially"}
+                            </p>
+                          </div>
+                        </Modal>
                       </span>
-                      <svg
-                        onClick={() => setIsModalOpen(true)}
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6 inline hover:stroke-primary cursor-pointer"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                        />
-                      </svg>
-                      <Modal open={isModalOpen} setOpen={setIsModalOpen}>
-                        <div className="text-center relative ">
-                          <svg
-                            onClick={() => setIsModalOpen(false)}
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6 absolute right-0 -top-3 hover:text-primary cursor-pointer"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                          <h3 className="">
-                            {selectedServiceFinal.subService2 ||
-                              selectedServiceFinal.serviceName}
-                          </h3>
-                          <p>
-                            {(
-                              selectedServiceFinal.subService2 ||
-                              selectedServiceFinal.serviceName
-                            ).includes("Commercial")
-                              ? "If backed by a label or management or using the file for commercial purposes"
-                              : "For independent musicians and artists releasing their own music without an existing agreement to sell the song commercially"}
-                          </p>
-                        </div>
-                      </Modal>
-                    </span>
+                    )}
                   </div>
                   <div className="text-xl space-y-3">
                     <div>
@@ -1272,7 +1413,6 @@ const Pricing = () => {
                                           const objIndex = arr.findIndex(
                                             (el) => el.type === addOn.type
                                           );
-                                          console.log(objIndex);
                                           if (objIndex < 0) {
                                           } else {
                                             const qt = arr[objIndex].qty!;
@@ -1287,7 +1427,6 @@ const Pricing = () => {
                                                   "1 day"
                                                 )
                                               ) {
-                                                // @ts-ignore
                                                 setSelectedServiceFinal(
                                                   (prev) => ({
                                                     ...prev!,
@@ -1371,38 +1510,6 @@ const Pricing = () => {
                                         />
                                       </svg>
                                     </div>
-                                    {/* <input
-                                    id={addOn.type}
-                                    aria-describedby="comments-description"
-                                    name={addOn.type}
-                                    type="checkbox"
-                                    defaultChecked={
-                                      selectedAddons.find(
-                                        (el) => el.type === addOn.type
-                                      )
-                                        ? true
-                                        : false
-                                    }
-                                    onChange={(e) => {
-                                      const elem = selectedAddons.find(
-                                        (el) => el.type === addOn.type
-                                      );
-                                      let arr = [...selectedAddons];
-
-                                      if (elem) {
-                                        console.log("remove");
-                                        arr = arr.filter(
-                                          (el) => el.type !== addOn.type
-                                        );
-                                      } else {
-                                        console.log("add");
-                                        arr.push(addOn);
-                                      }
-
-                                      setSelectedAddons(arr);
-                                    }}
-                                    className="focus:ring-primary h-4 w-4 text-primary border-gray-300 rounded"
-                                  /> */}
                                   </div>
                                 </div>
                               </label>

@@ -14,7 +14,7 @@ import { useRef } from "react";
 
 import { MusicNoteIcon, TrashIcon } from "@heroicons/react/solid/";
 
-const maxFileSize = 104857600;
+const maxFileSize = 209715200;
 
 // Utils
 import secondsToTime from "../utils/secsToTime";
@@ -545,7 +545,7 @@ function Upload() {
           </div>
         </Modal>
         <Modal open={onLoadModalOpen} setOpen={setOnLoadModalOpen}>
-          <div>
+          <div className="pt-2">
             <svg
               onClick={() => setOnLoadModalOpen(false)}
               xmlns="http://www.w3.org/2000/svg"
@@ -565,32 +565,29 @@ function Upload() {
             <h4 className="font-bold text-primary text-center">
               Before you proceed, and to avoid an error with your upload, please check the following:
             </h4>
-
-            <p className="pt-2">
-              Please ensure that there is no white noise / silence in the
-              beginning or towards the end of your tracks, and they match the
-              following conditions.
-            </p>
-
-            <p className="pt-3 pb-2 px-4">
-              <ul className="list-disc">
+            <div className="pt-3 pb-2 px-4">
+              <ul className="list-decimal">
                 <li>
-                  Your input track limit is {service?.inputTrackLimit} track(s)
-                </li>
-                <li>
-                  Accepted file format(s) are: {service?.uploadFileFormat}
-                </li>
-                <li>
-                  The maximum duration for your plan is{" "}
+                  Each file duration is within your chosen limit - {" "}
                   {secondsToTime(service?.maxFileDuration ?? 0)}{" "}
                 </li>
                 <li>
-                  The maximum file size for one track is{" "}
+                  Number of files are within the selected service limit - {service?.inputTrackLimit}
+                </li>
+                <li>
+                  No file is more than {" "}
                   {formatBytes(maxFileSize)}{" "}
                 </li>
+                <li>
+                  Each file format(s) is: {service?.uploadFileFormat.join(" , ")}
+                </li>
+                <li>
+                  Remove unwanted silence from the beginning and end of your files.
+                </li>
+
                 {/* <li></li> */}
               </ul>
-            </p>
+            </div>
           </div>
         </Modal>
         <Modal

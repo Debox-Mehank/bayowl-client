@@ -209,7 +209,9 @@ function ServiceTracking() {
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white relative">
 
-                            <Button>
+                            <Button disabled={
+                              !(getStatusNames(transaction.statusType) === "Delivered") || !(getStatusNames(transaction.statusType) === "Revision Delivered") || !(getStatusNames(transaction.statusType) === "Completed")
+                            }>
                               <div className="text-xs">Download</div>
                             </Button>
 

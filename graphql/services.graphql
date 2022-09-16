@@ -6,7 +6,6 @@ query GetServiceDetails($input: ServicesDetailInput!) {
     serviceName
     subService
     subService2
-    for
     description
     estimatedTime
     price
@@ -18,7 +17,8 @@ query GetServiceDetails($input: ServicesDetailInput!) {
     numberOfReferenceFileUploads
     setOfRevisions
     revisionsDelivery
-    mixVocalTuning
+    mixVocalTuningBasic
+    mixVocalTuningAdvanced
     mixProcessingReverbs
     mixProcessingDelays
     mixProcessingOtherFx

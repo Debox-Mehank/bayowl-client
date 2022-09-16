@@ -17,7 +17,7 @@ const Services = () => {
   const { data, loading, error } = useMeQuery();
 
   // const navEl = useRef(null)
-  const [navEl, { width, height: navHeight }] = useElementSize()
+  const [navEl, { width, height: navHeight }] = useElementSize();
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>();
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>();
   const [selectedService, setSelectedService] = useState<string>();
@@ -52,7 +52,7 @@ const Services = () => {
     }
   }, [mainCategoryRoute, subCategoryRoute, serviceNameRoute]);
 
-  const finalPageHandler = () => { };
+  const finalPageHandler = () => {};
 
   return (
     <div>
@@ -64,9 +64,9 @@ const Services = () => {
       >
         {/* {console.log(navHeight)} */}
 
-        <div className='absolute animation-delay-4000 top-[40%] right-[22%] w-36 md:w-96 h-56 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
-        <div className='absolute animation-delay-2000 top-[38%] right-[40%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
-        <div className='absolute top-[42%] right-[58%] w-36 md:w-96 h-56 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none' />
+        <div className="absolute animation-delay-4000 top-[40%] right-[22%] w-36 md:w-96 h-56 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none" />
+        <div className="absolute animation-delay-2000 top-[38%] right-[40%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none" />
+        <div className="absolute top-[42%] right-[58%] w-36 md:w-96 h-56 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none" />
         <div className="flex flex-col gap-8 text-center">
           {/* Rendering Main Categories if none are selected.  */}
           {!selectedMainCategory ? (
@@ -107,13 +107,24 @@ const Services = () => {
                   );
                 })}
               </div>
-
             </> // {/* Rendering Sub Categories  */}
           ) : !selectedSubCategory ? ( // Rendering Sub Categories if none are selected
             <>
               <div className="flex justify-center items-center gap-8 flex-wrap relative">
-                <svg onClick={() => router.back()} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 absolute left-1 -top-7 sm:top-1 cursor-pointer hover:fill-primary">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                <svg
+                  onClick={() => router.back()}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 absolute left-1 -top-7 sm:top-1 cursor-pointer hover:fill-primary"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+                  />
                 </svg>
                 <p className="text-3xl font-bold">{selectedMainCategory}</p>
               </div>
@@ -128,11 +139,27 @@ const Services = () => {
                         key={a.subCategory}
                         onClick={() => {
                           setSelectedSubCategory(a.subCategory);
-                          router.push(
-                            `/services?mainCategory=${encodeURIComponent(
-                              selectedMainCategory
-                            )}&subCategory=${encodeURIComponent(a.subCategory)}`
-                          );
+                          if (
+                            selectedMainCategory === "Voice Overs & Dialogue"
+                          ) {
+                            const data = {
+                              mainCategory: selectedMainCategory,
+                              subCategory: a.subCategory,
+                            };
+                            localStorage.setItem(
+                              "userService",
+                              JSON.stringify(data)
+                            );
+                            router.push("/pricing");
+                          } else {
+                            router.push(
+                              `/services?mainCategory=${encodeURIComponent(
+                                selectedMainCategory
+                              )}&subCategory=${encodeURIComponent(
+                                a.subCategory
+                              )}`
+                            );
+                          }
                         }}
                         title={a.subCategory}
                       />
@@ -155,11 +182,23 @@ const Services = () => {
                   })}
               </div>
             </>
-          ) : !selectedService ? (// Rendering Services if none are selected
+          ) : !selectedService ? ( // Rendering Services if none are selected
             <>
               <div className="flex justify-center items-center gap-8 flex-wrap relative">
-                <svg onClick={() => router.back()} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 absolute left-0 top-1 cursor-pointer hover:fill-primary">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                <svg
+                  onClick={() => router.back()}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 absolute left-0 top-1 cursor-pointer hover:fill-primary"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+                  />
                 </svg>
                 <p className="text-3xl font-bold">{selectedSubCategory}</p>
               </div>
@@ -197,7 +236,6 @@ const Services = () => {
                               JSON.stringify(data)
                             );
                             router.push("/pricing");
-
                           } else {
                             const data = {
                               mainCategory: selectedMainCategory,
@@ -209,7 +247,6 @@ const Services = () => {
                               JSON.stringify(data)
                             );
                             router.push("/pricing");
-
                           }
                         }}
                         title={a.serviceName}

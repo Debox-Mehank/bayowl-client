@@ -8,8 +8,11 @@ import {
 import { useState } from "react";
 import { UserServiceFinal } from "./dashboard";
 import { getStatusNames } from "../components/reusable/Accordion";
+import Link from "next/link";
 
-
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
+}
 
 function ServiceTracking() {
   const { data, loading, error } = useMeQuery({
@@ -191,13 +194,25 @@ function ServiceTracking() {
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button disabled={getStatusNames(transaction.statusType) === "Pending Upload" ? false : true}>
-                              <div className="text-xs">Upload</div>
+                              <div className="text-xs">
+                                {(getStatusNames(transaction.statusType) === "Pending Upload" && transaction.reupload === null) ?
+                                  <Link href={"/upload?serviceId=" + transaction._id}>
+                                    Upload
+                                  </Link> :
+                                  (getStatusNames(transaction.statusType) === "Pending Upload" && transaction.reupload !== null) ?
+                                    <Link href={"/upload?serviceId=" + transaction._id + "&reupload=true"}>
+                                      Reupload
+                                    </Link>
+                                    : ""}
+                              </div>
                             </Button>
                           </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white relative">
+
                             <Button>
                               <div className="text-xs">Download</div>
                             </Button>
+
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button>

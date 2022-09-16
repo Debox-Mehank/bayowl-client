@@ -172,34 +172,7 @@ const Pricing = () => {
 
   return (
     <div className="">
-      <Modal open={isPlanModalOpen} setOpen={setIsPlanModalOpen} >
-        <div className="relative text-center">
-          <svg onClick={() => setIsPlanModalOpen(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 absolute hover:text-primary cursor-pointer -top-3 -right-3 ">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          <p className="font-bold">Please select how you would like to proceed.</p>
 
-
-          <div className="flex pt-8 gap-4">
-            {/*  setSelectedPlan(true);
-            setIsPlanModalOpen(true)
-            setSelectedServiceFinal(tier); */}
-            <Button>
-              <>Commercial Rate
-              </>
-            </Button>
-            <Button>
-              <>Independent Artist Rate
-              </>
-            </Button>
-          </div>
-          <div className="pt-4 space-y-2 text-sm">
-            <hr className="my-1 mb-4 h-px bg-gray-200 border-0 dark:bg-gray-700" />
-            <p><span className="font-bold"> Commercial Rate </span> - If backed by a label or management or using the file for commercial purposes.</p>
-            <p><span className="font-bold">Independent Rate</span> - For independent musicians and artists releasing their own music without an existing agreement to sell the song commercially</p>
-          </div>
-        </div>
-      </Modal>
       <div className="text-white relative">
         <div className="absolute animation-delay-2000 top-[35%] left-[35%] w-36 md:w-96 h-56 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="absolute top-[42%] right-[34%] w-36 md:w-80 h-72 bg-orange3 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
@@ -270,6 +243,36 @@ const Pricing = () => {
                           key={tier.subService2}
                           className="h-full py-2 px-6 align-top"
                         >
+                          <Modal open={isPlanModalOpen} setOpen={setIsPlanModalOpen} >
+                            <div className="relative text-center">
+                              <svg onClick={() => setIsPlanModalOpen(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 absolute hover:text-primary cursor-pointer -top-3 -right-3 ">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                              <p className="font-bold">Please select how you would like to proceed.</p>
+
+
+                              <div className="flex pt-8 gap-4">
+                                {/*  setSelectedPlan(true);
+            setIsPlanModalOpen(true)
+            setSelectedServiceFinal(tier); */}
+                                <Button onClick={() => {
+                                  setSelectedServiceFinal(tier)
+                                }}>
+                                  <>Commercial Rate
+                                  </>
+                                </Button>
+                                <Button>
+                                  <>Independent Artist Rate
+                                  </>
+                                </Button>
+                              </div>
+                              <div className="pt-4 space-y-2 text-sm">
+                                <hr className="my-1 mb-4 h-px bg-gray-200 border-0 dark:bg-gray-700" />
+                                <p><span className="font-bold"> Commercial Rate </span> - If backed by a label or management or using the file for commercial purposes.</p>
+                                <p><span className="font-bold">Independent Rate</span> - For independent musicians and artists releasing their own music without an existing agreement to sell the song commercially</p>
+                              </div>
+                            </div>
+                          </Modal>
 
                           <div className="relative h-full table text-center text-sm mx-auto">
                             <p className="pt-4 text-white h-44 py-8 whitespace-pre-wrap ">

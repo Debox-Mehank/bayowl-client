@@ -18,7 +18,7 @@ const maxFileSize = 104857600;
 
 // Utils
 import secondsToTime from "../utils/secsToTime";
-import formatBytes from "../utils/formatBytes";
+import { formatBytes, formatBytesNumber } from "../utils/formatBytes";
 import isValidHttpUrl from "../utils/isValidURL";
 import { getClickableLink } from "../utils/getClickableLink";
 
@@ -28,12 +28,19 @@ import Button from "../components/reusable/Button";
 import { FileUploader } from "react-drag-drop-files";
 import toast from "react-hot-toast";
 import {
+  FinalMultipartUploadPartsInput,
+  MultipartSignedUrlResponse,
+  useFinalizeMultipartUploadLazyQuery,
+  useGetMultipartPreSignedUrlsLazyQuery,
   useGetS3SignedUrlLazyQuery,
   useGetUserServiceDetailsByIdLazyQuery,
   useGetUserServiceDetailsByIdQuery,
   useInitFileUploadLazyQuery,
+  UserServiceStatus,
+  useUploadFilesForServiceLazyQuery,
 } from "../graphql/generated/graphql";
 import { UserServiceFinal } from "./dashboard";
+import axios from "axios";
 
 // const fileTypes = ["wav", "mp3"];
 // const service = {
@@ -142,6 +149,9 @@ function Upload() {
     useGetUserServiceDetailsByIdLazyQuery();
   const [getS3URL] = useGetS3SignedUrlLazyQuery();
   const [initFileUploadQuery] = useInitFileUploadLazyQuery();
+  const [multipartPresignedQuery] = useGetMultipartPreSignedUrlsLazyQuery();
+  const [finalizeMultipartUploadQuery] = useFinalizeMultipartUploadLazyQuery();
+  const [uploadFilesForServiceQuery] = useUploadFilesForServiceLazyQuery();
 
   useEffect(() => {
     const fetchFunc = async () => {
@@ -163,6 +173,14 @@ function Upload() {
       }
 
       setService(data.getUserServiceDetailsById);
+
+      if (
+        data.getUserServiceDetailsById.statusType !==
+        UserServiceStatus.Pendingupload
+      ) {
+        router.back();
+        toast.error("You have already uploaded the files");
+      }
     };
     if (serviceId) {
       fetchFunc();
@@ -252,43 +270,183 @@ function Upload() {
     e.preventDefault();
 
     try {
+      // For showing the upload progess
       let percentage: number | undefined = undefined;
-
+      // Final zip file name uploaded to aws
       const finalFileName = `uploadedFiles_${serviceId}`;
 
+      // Creating the zip file
       const zip = new JSZip();
-
       filesArray.forEach((file) => {
         zip.file(`${file.name}`, file);
       });
-
       const file = await zip.generateAsync({ type: "blob" });
 
-      const { data: initData, error: initError } = await initFileUploadQuery({
-        variables: { fileName: finalFileName + ".zip" },
-      });
+      let finalUploadedUrl: undefined | string = undefined;
 
-      if (initError) {
-        setLoading(false);
-        toast.error(initError.message);
-        return;
+      // Check if file size is bigger than 5 MB
+      if (formatBytesNumber(file.size) > 5) {
+        // Initializing the upload from server
+        setLoading(true);
+        const { data: initData, error: initError } = await initFileUploadQuery({
+          variables: { fileName: finalFileName + ".zip" },
+        });
+
+        // Handling Errors
+        if (initError) {
+          setLoading(false);
+          toast.error(initError.message);
+          return;
+        }
+        if (!initData || !initData.initFileUpload) {
+          setLoading(false);
+          toast.error("Something went wrong, try again later.");
+          return;
+        }
+
+        // Multipart upload part (dividing the file into chunks and upload the chunks)
+        const chunkSize = 10 * 1024 * 1024; // 10 MiB
+        const chunkCount = Math.floor(file.size / chunkSize) + 1;
+
+        // Getting multiple urls
+        const { data: multipleSignedUrlData, error: multipleSignedUrlError } =
+          await multipartPresignedQuery({
+            variables: {
+              fileId: initData.initFileUpload.fileId ?? "",
+              fileKey: initData.initFileUpload.fileKey ?? "",
+              parts: chunkCount,
+            },
+          });
+
+        // Handling Errors
+        if (multipleSignedUrlError) {
+          setLoading(false);
+          toast.error(multipleSignedUrlError.message);
+          return;
+        }
+        if (
+          !multipleSignedUrlData ||
+          !multipleSignedUrlData.getMultipartPreSignedUrls
+        ) {
+          setLoading(false);
+          toast.error("Something went wrong, try again later.");
+          return;
+        }
+
+        let multipartUrls: MultipartSignedUrlResponse[] =
+          multipleSignedUrlData.getMultipartPreSignedUrls.map((el) => ({
+            signedUrl: el.signedUrl,
+            PartNumber: el.PartNumber,
+          }));
+
+        let partsUploadArray: FinalMultipartUploadPartsInput[] = [];
+
+        for (let index = 1; index < chunkCount + 1; index++) {
+          let start = (index - 1) * chunkSize;
+          let end = index * chunkSize;
+          let fileBlob =
+            index < chunkCount ? file.slice(start, end) : file.slice(start);
+          let signedUrl = multipartUrls[index - 1].signedUrl ?? "";
+          let partNumber = multipartUrls[index - 1].PartNumber ?? 0;
+
+          let uploadChunk = await fetch(signedUrl, {
+            method: "PUT",
+            body: fileBlob,
+          });
+          let etag = uploadChunk.headers.get("etag");
+          partsUploadArray.push({
+            ETag: etag ?? "",
+            PartNumber: partNumber,
+          });
+        }
+
+        // Finalize multipart upload
+        const { data: finalMultipartData, error: finalMultipartError } =
+          await finalizeMultipartUploadQuery({
+            variables: {
+              input: {
+                fileId: initData.initFileUpload.fileId ?? "",
+                fileKey: initData.initFileUpload.fileKey ?? "",
+                parts: partsUploadArray,
+              },
+            },
+          });
+
+        // Handling Errors
+        if (finalMultipartError) {
+          setLoading(false);
+          toast.error(finalMultipartError.message);
+          return;
+        }
+        if (
+          !finalMultipartData ||
+          !finalMultipartData.finalizeMultipartUpload
+        ) {
+          setLoading(false);
+          toast.error("Something went wrong, try again later.");
+          return;
+        }
+
+        finalUploadedUrl = finalMultipartData.finalizeMultipartUpload;
+      } else {
+        // Direct Upload The Zip File To S3 using pre signed url
+        const { data: s3Url, error: s3Error } = await getS3URL({
+          variables: { fileName: finalFileName },
+        });
+
+        // Handling Errors
+        if (s3Error) {
+          setLoading(false);
+          toast.error(s3Error.message);
+          return;
+        }
+        if (!s3Url || !s3Url.getS3SignedURL) {
+          setLoading(false);
+          toast.error("Something went wrong, try again later.");
+          return;
+        }
+
+        await fetch(s3Url.getS3SignedURL, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: file,
+        });
+        const imageUrl = s3Url.getS3SignedURL.split("?")[0];
+
+        finalUploadedUrl = imageUrl;
       }
 
-      if (!initData || !initData.initFileUpload) {
+      // Update user status and uploadedFiles Array
+      if (!finalUploadedUrl) {
         setLoading(false);
         toast.error("Something went wrong, try again later.");
         return;
       }
 
-      console.log(
-        initData.initFileUpload.fileId,
-        initData.initFileUpload.fileKey
-      );
+      const { data, error } = await uploadFilesForServiceQuery({
+        variables: {
+          referenceUploadedFiles: [],
+          serviceId: serviceId?.toString() ?? "",
+          uplodedFiles: [finalUploadedUrl],
+        },
+      });
 
-      const chunkSize = 100 * 1024 * 1024; // 10 MB
-      const chunkCount = Math.floor(file.size / chunkSize) + 1;
+      // Handling Errors
+      if (error) {
+        setLoading(false);
+        toast.error(error.message);
+        return;
+      }
+      if (!data || !data.uploadFilesForService) {
+        setLoading(false);
+        toast.error("Something went wrong, try again later.");
+        return;
+      }
 
-      console.log("Chunks : ", chunkCount);
+      setLoading(false);
+      router.push("/dashboard");
     } catch (error: any) {
       setLoading(false);
       toast.error(error.toString());
@@ -355,7 +513,32 @@ function Upload() {
             <div className="pt-4">
               <span className="w-fit mx-auto block pt-4">
                 <Button onClick={handleSubmit}>
-                  <>{"Proceed & Upload"}</>
+                  <>
+                    {loading ? (
+                      <svg
+                        className="animate-spin h-8 w-8 text-primary"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      "Proceed & Upload"
+                    )}
+                  </>
                 </Button>
               </span>
             </div>

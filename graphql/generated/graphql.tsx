@@ -31,13 +31,25 @@ export type AddOnInput = {
 
 export type Admin = {
   __typename?: 'Admin';
-  _id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  createdBy: Admin;
+  _id?: Maybe<Scalars['ID']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  createdBy?: Maybe<Admin>;
+  email?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  type?: Maybe<AdminRole>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+};
+
+export type AdminLoginInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type AdminRegisterInput = {
   email: Scalars['String'];
   name: Scalars['String'];
+  password: Scalars['String'];
   type: AdminRole;
-  updatedAt: Scalars['DateTime'];
 };
 
 /** Enum For Type of Admin Roles i.e. Master, Admin & Normal */
@@ -56,12 +68,12 @@ export type FileUploadResponse = {
 export type FinalMultipartUploadInput = {
   fileId?: InputMaybe<Scalars['String']>;
   fileKey?: InputMaybe<Scalars['String']>;
-  parts?: InputMaybe<FinalMultipartUploadPartsInput>;
+  parts?: InputMaybe<Array<FinalMultipartUploadPartsInput>>;
 };
 
 export type FinalMultipartUploadPartsInput = {
-  ETag?: InputMaybe<Scalars['Float']>;
-  PartNumber?: InputMaybe<Scalars['String']>;
+  ETag?: InputMaybe<Scalars['String']>;
+  PartNumber?: InputMaybe<Scalars['Float']>;
 };
 
 export type MultipartSignedUrlResponse = {
@@ -73,6 +85,8 @@ export type MultipartSignedUrlResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   addService: Scalars['Boolean'];
+  addUser: Scalars['String'];
+  assignService: Scalars['Boolean'];
 };
 
 
@@ -80,12 +94,45 @@ export type MutationAddServiceArgs = {
   input: Array<ServicesInput>;
 };
 
+
+export type MutationAddUserArgs = {
+  input: AdminRegisterInput;
+};
+
+
+export type MutationAssignServiceArgs = {
+  adminId: Scalars['String'];
+  serviceId: Scalars['String'];
+};
+
+export type Payment = {
+  __typename?: 'Payment';
+  _id: Scalars['ID'];
+  amount: Scalars['Float'];
+  createdAt: Scalars['DateTime'];
+  email: Scalars['String'];
+  orderId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  paymentLinkId?: Maybe<Scalars['String']>;
+  signature?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['DateTime'];
+  userServiceId?: Maybe<Scalars['String']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   addUserService: Scalars['Boolean'];
+  adminLogin: Scalars['Boolean'];
+  adminLogout: Scalars['Boolean'];
+  allAdmins: Array<Admin>;
+  allEmployee: Array<Admin>;
   completeAccount: Scalars['Boolean'];
   finalizeMultipartUpload?: Maybe<Scalars['String']>;
+  getAllPayment: Array<Payment>;
   getAllService: Array<Services>;
+  getAllServiceForEmployee: Array<UserServices>;
+  getAllUser: Array<User>;
   getMultipartPreSignedUrls: Array<MultipartSignedUrlResponse>;
   getS3SignedURL: Scalars['String'];
   getServiceDetails: Array<Services>;
@@ -95,6 +142,7 @@ export type Query = {
   login: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   me: User;
+  meAdmin: Scalars['String'];
   register: Scalars['Boolean'];
   updatePorjectName: Scalars['Boolean'];
   uploadFilesForService: Scalars['Boolean'];
@@ -104,6 +152,11 @@ export type Query = {
 
 export type QueryAddUserServiceArgs = {
   input: UserServicesInput;
+};
+
+
+export type QueryAdminLoginArgs = {
+  input: AdminLoginInput;
 };
 
 
@@ -211,7 +264,7 @@ export type Services = {
   __typename?: 'Services';
   _id: Scalars['ID'];
   addOn: Array<AddOn>;
-  createdAt: Scalars['DateTime'];
+  createdAt?: Maybe<Scalars['DateTime']>;
   deliveryDays?: Maybe<Scalars['Float']>;
   /** File formats for delivery file */
   deliveryFileFormat: Array<Scalars['String']>;
@@ -233,7 +286,7 @@ export type Services = {
   subCategory: Scalars['String'];
   subService?: Maybe<Scalars['String']>;
   subService2?: Maybe<Scalars['String']>;
-  updatedAt: Scalars['DateTime'];
+  updatedAt?: Maybe<Scalars['DateTime']>;
   /** File formats for uploading file */
   uploadFileFormat: Array<Scalars['String']>;
 };
@@ -303,7 +356,7 @@ export type UserServices = {
   addOn: Array<AddOn>;
   assignedBy?: Maybe<Admin>;
   assignedTo?: Maybe<Admin>;
-  createdAt: Scalars['DateTime'];
+  createdAt?: Maybe<Scalars['DateTime']>;
   deliveryDays?: Maybe<Scalars['Float']>;
   /** File formats for delivery file */
   deliveryFileFormat: Array<Scalars['String']>;
@@ -332,7 +385,7 @@ export type UserServices = {
   subCategory: Scalars['String'];
   subService?: Maybe<Scalars['String']>;
   subService2?: Maybe<Scalars['String']>;
-  updatedAt: Scalars['DateTime'];
+  updatedAt?: Maybe<Scalars['DateTime']>;
   /** File formats for uploading file */
   uploadFileFormat: Array<Scalars['String']>;
   uploadedFiles: Array<Scalars['String']>;
@@ -371,7 +424,7 @@ export type GetServiceDetailsQueryVariables = Exact<{
 }>;
 
 
-export type GetServiceDetailsQuery = { __typename?: 'Query', getServiceDetails: Array<{ __typename?: 'Services', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, createdAt: any, updatedAt: any, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null }> }> };
+export type GetServiceDetailsQuery = { __typename?: 'Query', getServiceDetails: Array<{ __typename?: 'Services', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, createdAt?: any | null, updatedAt?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null }> }> };
 
 export type UserServicesFragment = { __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, for?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuning?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> };
 
@@ -475,6 +528,15 @@ export type FinalizeMultipartUploadQueryVariables = Exact<{
 
 
 export type FinalizeMultipartUploadQuery = { __typename?: 'Query', finalizeMultipartUpload?: string | null };
+
+export type UploadFilesForServiceQueryVariables = Exact<{
+  referenceUploadedFiles: Array<Scalars['String']> | Scalars['String'];
+  uplodedFiles: Array<Scalars['String']> | Scalars['String'];
+  serviceId: Scalars['String'];
+}>;
+
+
+export type UploadFilesForServiceQuery = { __typename?: 'Query', uploadFilesForService: boolean };
 
 export const UserServicesFragmentDoc = gql`
     fragment userServices on UserServices {
@@ -1059,3 +1121,42 @@ export function useFinalizeMultipartUploadLazyQuery(baseOptions?: Apollo.LazyQue
 export type FinalizeMultipartUploadQueryHookResult = ReturnType<typeof useFinalizeMultipartUploadQuery>;
 export type FinalizeMultipartUploadLazyQueryHookResult = ReturnType<typeof useFinalizeMultipartUploadLazyQuery>;
 export type FinalizeMultipartUploadQueryResult = Apollo.QueryResult<FinalizeMultipartUploadQuery, FinalizeMultipartUploadQueryVariables>;
+export const UploadFilesForServiceDocument = gql`
+    query UploadFilesForService($referenceUploadedFiles: [String!]!, $uplodedFiles: [String!]!, $serviceId: String!) {
+  uploadFilesForService(
+    referenceUploadedFiles: $referenceUploadedFiles
+    uplodedFiles: $uplodedFiles
+    serviceId: $serviceId
+  )
+}
+    `;
+
+/**
+ * __useUploadFilesForServiceQuery__
+ *
+ * To run a query within a React component, call `useUploadFilesForServiceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUploadFilesForServiceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUploadFilesForServiceQuery({
+ *   variables: {
+ *      referenceUploadedFiles: // value for 'referenceUploadedFiles'
+ *      uplodedFiles: // value for 'uplodedFiles'
+ *      serviceId: // value for 'serviceId'
+ *   },
+ * });
+ */
+export function useUploadFilesForServiceQuery(baseOptions: Apollo.QueryHookOptions<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>(UploadFilesForServiceDocument, options);
+      }
+export function useUploadFilesForServiceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>(UploadFilesForServiceDocument, options);
+        }
+export type UploadFilesForServiceQueryHookResult = ReturnType<typeof useUploadFilesForServiceQuery>;
+export type UploadFilesForServiceLazyQueryHookResult = ReturnType<typeof useUploadFilesForServiceLazyQuery>;
+export type UploadFilesForServiceQueryResult = Apollo.QueryResult<UploadFilesForServiceQuery, UploadFilesForServiceQueryVariables>;

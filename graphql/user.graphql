@@ -143,3 +143,15 @@ query GetMultipartPreSignedUrls(
 query FinalizeMultipartUpload($input: FinalMultipartUploadInput!) {
   finalizeMultipartUpload(input: $input)
 }
+
+query UploadFilesForService(
+  $referenceUploadedFiles: [String!]!
+  $uplodedFiles: [String!]!
+  $serviceId: String!
+) {
+  uploadFilesForService(
+    referenceUploadedFiles: $referenceUploadedFiles
+    uplodedFiles: $uplodedFiles
+    serviceId: $serviceId
+  )
+}

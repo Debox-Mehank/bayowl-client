@@ -96,7 +96,7 @@ function Dashboard() {
   return (
     <div className="bg-darkBlue text-white flex">
       <DashNav name={data?.me.name} email={data?.me.email} />
-      <div className="px-8 relative">
+      <div className="px-8 relative z-0">
         <div className="absolute animation-delay-2000 top-[55%] left-[20%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
         <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
         <div className="mt-28">

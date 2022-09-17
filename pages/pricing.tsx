@@ -137,7 +137,7 @@ const Pricing = () => {
       }
       const total =
         selectedServiceFinal.price +
-        selectedAddons.reduce((acc, o) => acc + o.value!, 0);
+        selectedAddons.reduce((acc, o) => acc + o.value! * o.qty!, 0);
 
       const finalService = { ...selectedServiceFinal };
 

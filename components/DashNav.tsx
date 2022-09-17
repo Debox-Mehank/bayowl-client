@@ -28,7 +28,7 @@ function DashNav({
     <div >
       <div
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed top-6 right-2 text-white lg:hidden inline-block z-[120]"
+        className="fixed top-6 right-3 text-white lg:hidden inline-block z-[120]"
       >
         <div
           id="nav-icon3"

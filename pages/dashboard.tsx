@@ -178,12 +178,9 @@ function Dashboard() {
 
         <div className="text-center space-y-3 pb-8">
           <Link href={"/services"}>
-            <div className="h-24 w-24 bg-white/10 hover:bg-white/20 transition-colors duration-100 rounded-full cursor-pointer mx-auto grid place-items-center">
+            <div className="h-14 w-14 md:h-24 md:w-24 bg-white/10 hover:bg-white/20 transition-colors duration-100 rounded-full cursor-pointer mx-auto grid place-items-center">
               <svg
-                className="z-0 fill-primary"
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="40"
+                className="z-0 fill-primary h-7 w-7 md:w-10 md:h-10"
                 viewBox="0 0 16 16"
               >
                 <path

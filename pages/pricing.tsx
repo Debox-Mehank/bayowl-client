@@ -340,7 +340,7 @@ const Pricing = () => {
             xmlns="http://www.w3.org/2000/svg"
             width="27"
             height="30"
-            className="fill-white hover:fill-primary duration-300 transition-colors cursor-pointer absolute left-4 top-0 z-10 lg:top-10 xl:-left-8"
+            className="fill-white hover:fill-primary duration-300 transition-colors cursor-pointer absolute left-4 top-4 z-10 lg:top-10 xl:-left-8"
             viewBox="0 0 16 16"
           >
             <path
@@ -1419,9 +1419,30 @@ const Pricing = () => {
                         <div className="text-center">
                           <button
                             onClick={() => {
-                              //   setSelectedPlan(true);
-                              setIsPlanModalOpen(true);
                               setSelectedServiceForType(tier);
+                              if (
+                                selectedServiceForType?.subService &&
+                                selectedServiceForType.subService2
+                              ) {
+                                const pricArr = [...types];
+                                console.log(pricArr);
+                                const findPrice = pricArr.find(
+                                  (el) =>
+                                    el.id ===
+                                    `${selectedServiceForType.mainCategory}-${selectedServiceForType.subCategory}-${selectedServiceForType.serviceName}-${selectedServiceForType.subService}` &&
+                                    el.name === "Commercial Rate"
+                                );
+                                if (!findPrice) {
+                                  return;
+                                }
+                                setSelectedServiceFinal({
+                                  ...selectedServiceForType,
+                                  subService2: "Commercial Rate",
+                                  price: findPrice.price,
+                                });
+                              } else {
+                                setSelectedServiceFinal(selectedServiceForType);
+                              }
 
                             }}
                             className="mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg"
@@ -1878,6 +1899,23 @@ const Pricing = () => {
                                                       1,
                                                   })
                                                 );
+
+                                                if (arr[objIndex].type.includes("30s")) {
+                                                  setSelectedServiceFinal(
+                                                    (prev) => ({
+                                                      ...prev!,
+                                                      maxFileDuration: (prev?.maxFileDuration ?? 0) - 30,
+                                                    })
+                                                  );
+                                                }
+                                                if (arr[objIndex].type.includes("10 Tracks")) {
+                                                  setSelectedServiceFinal(
+                                                    (prev) => ({
+                                                      ...prev!,
+                                                      inputTrackLimit: (prev?.inputTrackLimit ?? 0) - 10,
+                                                    })
+                                                  );
+                                                }
                                               }
 
                                               arr = arr.filter(
@@ -1899,6 +1937,22 @@ const Pricing = () => {
                                                     deliveryDays:
                                                       (prev?.deliveryDays ??
                                                         0) - 1,
+                                                  })
+                                                );
+                                              }
+                                              if (arr[objIndex].type.includes("10 Tracks")) {
+                                                setSelectedServiceFinal(
+                                                  (prev) => ({
+                                                    ...prev!,
+                                                    inputTrackLimit: (prev?.inputTrackLimit ?? 0) - 10,
+                                                  })
+                                                );
+                                              }
+                                              if (arr[objIndex].type.includes("30s")) {
+                                                setSelectedServiceFinal(
+                                                  (prev) => ({
+                                                    ...prev!,
+                                                    maxFileDuration: (prev?.maxFileDuration ?? 0) - 10,
                                                   })
                                                 );
                                               }
@@ -1963,6 +2017,23 @@ const Pricing = () => {
                                               );
                                             }
 
+                                            if (arr[objIndex].type.includes("30s")) {
+                                              setSelectedServiceFinal(
+                                                (prev) => ({
+                                                  ...prev!,
+                                                  maxFileDuration: (prev?.maxFileDuration ?? 0) + 30,
+                                                })
+                                              );
+                                            }
+                                            if (arr[objIndex].type.includes("Tracks")) {
+                                              setSelectedServiceFinal(
+                                                (prev) => ({
+                                                  ...prev!,
+                                                  inputTrackLimit: (prev?.inputTrackLimit ?? 0) + 10,
+                                                })
+                                              );
+                                            }
+
                                           } else {
                                             arr[objIndex].qty! += 1;
                                             if (
@@ -1982,6 +2053,23 @@ const Pricing = () => {
                                                 })
                                               );
                                             }
+                                            if (arr[objIndex].type.includes("30s")) {
+                                              setSelectedServiceFinal(
+                                                (prev) => ({
+                                                  ...prev!,
+                                                  maxFileDuration: (prev?.maxFileDuration ?? 0) + 30,
+                                                })
+                                              );
+                                            }
+                                            if (arr[objIndex].type.includes("10 Tracks")) {
+                                              setSelectedServiceFinal(
+                                                (prev) => ({
+                                                  ...prev!,
+                                                  inputTrackLimit: (prev?.inputTrackLimit ?? 0) + 10,
+                                                })
+                                              );
+                                            }
+
                                           }
                                           console.log(arr);
                                           setSelectedAddons(arr);

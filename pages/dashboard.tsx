@@ -162,7 +162,7 @@ function Dashboard() {
 
         {/* Paid Subscriptions */}
 
-        <div className="py-6 space-y-10 z-50">
+        <div className="py-6 space-y-10">
           {services
             .filter((el) => el.paid)
             .map((service, index) => (
@@ -178,7 +178,7 @@ function Dashboard() {
 
         <div className="text-center space-y-3 pb-8">
           <Link href={"/services"}>
-            <div className="h-24 w-24 bg-white/10 hover:bg-white/20 transition-colors duration-100 rounded-full cursor-pointer mx-auto grid place-items-center z-10">
+            <div className="h-24 w-24 bg-white/10 hover:bg-white/20 transition-colors duration-100 rounded-full cursor-pointer mx-auto grid place-items-center">
               <svg
                 className="z-0 fill-primary"
                 xmlns="http://www.w3.org/2000/svg"

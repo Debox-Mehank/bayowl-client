@@ -18,9 +18,9 @@ function Modal({ children, open, setOpen }: ModalProps) {
         as="div"
         className="fixed z-50 inset-0 overflow-y-auto text-white"
         initialFocus={cancelButtonRef}
-        onClose={setOpen}
+        onClose={() => null}
       >
-        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-40 text-center sm:block sm:pb-0">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -30,7 +30,7 @@ function Modal({ children, open, setOpen }: ModalProps) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 bg-darkBlue/10 filter backdrop-blur-xl transition-all" />
+            <Dialog.Overlay className="fixed inset-0 bg-darkBlue/10 filter backdrop-blur-md transition-all" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}

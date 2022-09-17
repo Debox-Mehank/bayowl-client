@@ -182,8 +182,8 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             {transaction.submissionDate
                               ? moment(transaction.submissionDate).format(
-                                  "MMM Do YY, h:mm a"
-                                )
+                                "MMM Do YY, h:mm a"
+                              )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
@@ -200,8 +200,8 @@ function ServiceTracking() {
                             {/* {transaction.estimatedDelivery} */}
                             {transaction.estDeliveryDate
                               ? moment(transaction.estDeliveryDate).format(
-                                  "MMM Do YY, h:mm a"
-                                )
+                                "MMM Do YY, h:mm a"
+                              )
                               : "N/A"}
                             {/* Some date */}
                           </td>
@@ -209,7 +209,7 @@ function ServiceTracking() {
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                "Pending Upload"
+                                  "Pending Upload"
                                   ? false
                                   : true
                               }
@@ -217,7 +217,7 @@ function ServiceTracking() {
                               <div className="text-xs">
                                 {getStatusNames(transaction.statusType) ===
                                   "Pending Upload" &&
-                                transaction.reupload === null ? (
+                                  transaction.reupload === null ? (
                                   <Link
                                     href={
                                       "/upload?serviceId=" + transaction._id
@@ -226,7 +226,7 @@ function ServiceTracking() {
                                     Upload
                                   </Link>
                                 ) : getStatusNames(transaction.statusType) ===
-                                    "Pending Upload" &&
+                                  "Pending Upload" &&
                                   transaction.reupload !== null ? (
                                   <Link
                                     href={
@@ -279,7 +279,7 @@ function ServiceTracking() {
                                 !(
                                   transaction.setOfRevisions &&
                                   transaction.setOfRevisions >
-                                    transaction.revisionFiles.length
+                                  transaction.revisionFiles.length
                                 )
                               }
                             >
@@ -306,7 +306,7 @@ function ServiceTracking() {
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                "Completed"
+                                  "Completed"
                                   ? false
                                   : true
                               }
@@ -314,11 +314,6 @@ function ServiceTracking() {
                               <div className="text-xs">Add Service</div>
                             </Button>
                           </td>
-                          {/* <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                                            Edit<span className="sr-only">, {transaction.id}</span>
-                                                        </a>
-                                                    </td> */}
                         </tr>
                       ))}
                     </tbody>

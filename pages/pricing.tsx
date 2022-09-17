@@ -257,7 +257,7 @@ const Pricing = () => {
                   const findPrice = pricArr.find(
                     (el) =>
                       el.id ===
-                        `${selectedServiceForType.mainCategory}-${selectedServiceForType.subCategory}-${selectedServiceForType.serviceName}-${selectedServiceForType.subService}` &&
+                      `${selectedServiceForType.mainCategory}-${selectedServiceForType.subCategory}-${selectedServiceForType.serviceName}-${selectedServiceForType.subService}` &&
                       el.name === "Commercial Rate"
                   );
                   if (!findPrice) {
@@ -292,7 +292,7 @@ const Pricing = () => {
                   const findPrice = pricArr.find(
                     (el) =>
                       el.id ===
-                        `${selectedServiceForType.mainCategory}-${selectedServiceForType.subCategory}-${selectedServiceForType.serviceName}-${selectedServiceForType.subService}` &&
+                      `${selectedServiceForType.mainCategory}-${selectedServiceForType.subCategory}-${selectedServiceForType.serviceName}-${selectedServiceForType.subService}` &&
                       el.name === "Independent Artist Rate"
                   );
                   if (!findPrice) {
@@ -331,38 +331,35 @@ const Pricing = () => {
       <div className="text-white relative">
         <div className="absolute animation-delay-2000 top-[35%] left-[35%] w-36 md:w-96 h-56 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="absolute top-[42%] right-[34%] w-36 md:w-80 h-72 bg-orange3 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-        <div className="max-w-7xl mx-auto py-8">
+        <div className="max-w-7xl mx-auto lg:py-8 relative">
+          <svg
+            onClick={() => {
+              !selectedServiceFinal && router.back();
+              selectedServiceFinal && setSelectedServiceFinal(undefined);
+            }}
+            xmlns="http://www.w3.org/2000/svg"
+            width="27"
+            height="30"
+            className="fill-white hover:fill-primary duration-300 transition-colors cursor-pointer absolute left-4 top-0 z-10 lg:top-10 xl:-left-8"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fillRule="evenodd"
+              d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
+            />
+          </svg>
+          {/* Title */}
           {!selectedServiceFinal && (
-            <div className="mt-8 mb-16 text-xl mx-auto space-y-2 md:sticky md:top-0 md:bg-darkBlue/30 md:backdrop-blur-xl z-20 px-4 pb-2 py-3">
-              <svg
-                onClick={() => {
-                  router.back();
-                }}
-                xmlns="http://www.w3.org/2000/svg"
-                width="27"
-                height="30"
-                className="fill-white hover:fill-primary duration-300 transition-colors cursor-pointer"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
-                />
-              </svg>
-              {/* <h1 className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r py-5 from-pink-600 to-primary">
-                {selectedService && selectedService[0].subService2
-                  ? selectedService[0].subService
-                  : selectedService
-                    ? selectedService[0].serviceName
-                    : ""}
-              </h1>
-              <p>{selectedService && selectedService[0].for}</p>
-              <p>{selectedService && selectedService[0].description}</p> */}
+            <div className=" mt-6 text-center font-bold text-xl mb-8 mx-auto space-y-2 md:bg-darkBlue/30 md:backdrop-blur-xl z-20 px-4 pb-3">
+
+              {selectedService && selectedService[0].subService ? selectedService[0].serviceName : selectedService && selectedService[0].subCategory}
+
             </div>
           )}
           {selectedService &&
-          selectedService[0].subService2 &&
-          !selectedServiceFinal ? (
+            selectedService[0].subService2 &&
+            !selectedServiceFinal ? (
+            // For 4 level nesting
             <>
               {/* Desktop View */}
               <div className="hidden lg:block overflow-x-auto ">
@@ -419,304 +416,304 @@ const Pricing = () => {
                     {selectedService.every(
                       (tier) => tier.subService && tier.subService2
                     ) && (
-                      <>
-                        {_.uniqBy(types, (el) => el.name).map((el, elIdx) => {
-                          return (
-                            <tr key={el.id} className="text-center">
-                              <th
-                                className="py-5 px-6 text-sm font-normal text-white text-left"
-                                scope="row"
-                              >
-                                {el.name}
-                              </th>
-                              {selectedService.map((tier, tierIdx) => (
-                                <td key={tierIdx} className="py-5 px-6">
-                                  <span className="block text-sm text-white">
-                                    ₹{" "}
-                                    {tier.pricingArr
-                                      .find((e) => e.name === el.name)
-                                      ?.price.toLocaleString("en-IN")}
-                                  </span>
-                                </td>
-                              ))}
-                            </tr>
-                          );
-                        })}
-                      </>
-                    )}
+                        <>
+                          {_.uniqBy(types, (el) => el.name).map((el, elIdx) => {
+                            return (
+                              <tr key={el.id} className="text-center">
+                                <th
+                                  className="py-5 px-6 text-sm font-normal text-white text-left"
+                                  scope="row"
+                                >
+                                  {el.name}
+                                </th>
+                                {selectedService.map((tier, tierIdx) => (
+                                  <td key={tierIdx} className="py-5 px-6">
+                                    <span className="block text-sm text-white">
+                                      ₹{" "}
+                                      {tier.pricingArr
+                                        .find((e) => e.name === el.name)
+                                        ?.price.toLocaleString("en-IN")}
+                                    </span>
+                                  </td>
+                                ))}
+                              </tr>
+                            );
+                          })}
+                        </>
+                      )}
 
                     {selectedService.every(
                       (tier) => tier.estimatedTime != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Estimated Time On Project"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.estimatedTime}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Estimated Time On Project"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.estimatedTime}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.inputTrackLimit != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Track Count Limit"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.inputTrackLimit}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Track Count Limit"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.inputTrackLimit}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.uploadFileFormat != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Upload File Format"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.uploadFileFormat.join(", ")}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Upload File Format"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.uploadFileFormat.join(", ")}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.deliveryFileFormat != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Delivery Format"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.deliveryFileFormat.join(", ")}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Delivery Format"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.deliveryFileFormat.join(", ")}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.deliveryDays != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Delivery Days"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.deliveryDays}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Delivery Days"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.deliveryDays}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.maxFileDuration != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"File(s) Duration Limit"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {secondsToTime(tier.maxFileDuration!)}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"File(s) Duration Limit"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {secondsToTime(tier.maxFileDuration!)}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.numberOfReferenceFileUploads != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Additional Reference Files"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.numberOfReferenceFileUploads}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Additional Reference Files"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.numberOfReferenceFileUploads}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.setOfRevisions != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Revisions"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.setOfRevisions}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Revisions"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.setOfRevisions}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.revisionsDelivery != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Revision Delivery Days"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.revisionsDelivery}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Revision Delivery Days"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.revisionsDelivery}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
 
                     {selectedService.every(
                       (tier) => tier.mixVocalTuningBasic != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Mix Processing: Basic Vocal Tuning"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.mixVocalTuningBasic}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Basic Vocal Tuning"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixVocalTuningBasic}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.mixVocalTuningAdvanced != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Mix Processing: Advanced Vocal Tuning"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.mixVocalTuningAdvanced}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Advanced Vocal Tuning"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixVocalTuningAdvanced}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.mixProcessingReverbs != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Mix Processing: Reverbs"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.mixProcessingReverbs}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Reverbs"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixProcessingReverbs}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.mixProcessingDelays != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Mix Processing: Delays"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.mixProcessingDelays}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Delays"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixProcessingDelays}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                     {selectedService.every(
                       (tier) => tier.mixProcessingOtherFx != null
                     ) && (
-                      <tr className="text-center">
-                        <th
-                          className="py-5 px-6 text-sm font-normal text-white text-left"
-                          scope="row"
-                        >
-                          {"Mix Processing: Other Fx"}
-                        </th>
-                        {selectedService.map((tier, tierIdx) => (
-                          <td key={tierIdx} className="py-5 px-6">
-                            <span className="block text-sm text-white">
-                              {tier.mixProcessingOtherFx}
-                            </span>
-                          </td>
-                        ))}
-                      </tr>
-                    )}
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Other Fx"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixProcessingOtherFx}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
                   </tbody>
                 </table>
               </div>
               {/* Mobile View */}
-              <div className="max-w-2xl mx-auto space-y-16 lg:hidden ">
+              <div className="max-w-2xl mx-auto lg:hidden ">
                 {selectedService.map((tier, tierIdx) => (
                   <section key={tierIdx}>
                     <div className="px-4 mb-8">
@@ -730,7 +727,9 @@ const Pricing = () => {
                         <div className="text-center">
                           <button
                             onClick={() => {
-                              setSelectedServiceFinal(tier);
+                              //   setSelectedPlan(true);
+                              setIsPlanModalOpen(true);
+                              setSelectedServiceForType(tier);
                             }}
                             className="mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg"
                           >
@@ -1026,269 +1025,710 @@ const Pricing = () => {
               </div>
             </>
           ) : selectedService && !selectedServiceFinal ? (
-            <div className="hidden lg:block">
-              <table className="w-full table-fixed">
-                <caption className="sr-only">Pricing plan comparison</caption>
-                <thead className="sticky top-[14.6rem] left-0 z-20 backdrop-blur-xl bg-darkBlue/30 divide-y divide-blueGradient-2">
-                  <tr>
-                    <th
-                      className="pb-4 px-6 text-md font-medium text-left"
-                      scope="col"
-                    >
-                      <span>Plans</span>
-                    </th>
-                    {selectedService.map((tier) => (
+            // For 3 level nesting
+            <>
+              {/* Desktop View */}
+              <div className="hidden lg:block">
+                <table className="w-full table-fixed">
+                  <caption className="sr-only">Pricing plan comparison</caption>
+                  <thead className="left-0 z-20 backdrop-blur-xl bg-darkBlue/30 divide-y divide-blueGradient-2">
+                    <tr>
                       <th
-                        key={tier.serviceName}
-                        className="w-1/4 pb-4 px-6 text-lg leading-6 font-medium text-center"
+                        className="pb-4 px-6 text-md font-medium text-left w-1/4"
                         scope="col"
                       >
-                        {tier.serviceName}
+                        <span>Services</span>
                       </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="border-t border-gray-200 divide-y divide-blueGradient-2">
-                  <tr>
-                    <th
-                      className="py-8 px-6 text-sm font-medium text-left align-top"
-                      scope="row"
-                    >
-                      {}
-                    </th>
-                    {selectedService.map((tier) => (
-                      <td
-                        key={tier.serviceName}
-                        className="h-full py-2 px-6 align-top"
+                      {selectedService.map((tier) => (
+                        <th
+                          key={tier.serviceName}
+                          className="w-1/4 pb-4 px-6 text-lg leading-6 font-medium text-center"
+                          scope="col"
+                        >
+                          {tier.serviceName}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="border-t border-gray-200 divide-y divide-blueGradient-2">
+                    <tr>
+                      <th
+                        className="py-8 px-6 text-sm font-medium text-left align-top"
+                        scope="row"
                       >
-                        <div className="relative h-full table text-center text-sm">
-                          <p className="pt-4 text-white h-36">
-                            {tier.description}
-                          </p>
-                          <p className="text-2xl">
-                            ₹{tier.price.toLocaleString("en-IN")}
-                          </p>
+                        { }
+                      </th>
+                      {selectedService.map((tier) => (
+                        <td
+                          key={tier.serviceName}
+                          className="h-full py-2 px-6 align-top"
+                        >
+                          <div className="relative table text-center text-sm mx-auto">
+                            <p className="pt-4 text-white h-48">
+                              {tier.description}
+                            </p>
+                            <p className="text-2xl">
+                              ₹{tier.price.toLocaleString("en-IN")}
+                            </p>
+                            <button
+                              onClick={() => {
+                                setSelectedServiceForType(tier);
+                                if (
+                                  selectedServiceForType?.subService &&
+                                  selectedServiceForType.subService2
+                                ) {
+                                  const pricArr = [...types];
+                                  console.log(pricArr);
+                                  const findPrice = pricArr.find(
+                                    (el) =>
+                                      el.id ===
+                                      `${selectedServiceForType.mainCategory}-${selectedServiceForType.subCategory}-${selectedServiceForType.serviceName}-${selectedServiceForType.subService}` &&
+                                      el.name === "Commercial Rate"
+                                  );
+                                  if (!findPrice) {
+                                    return;
+                                  }
+                                  setSelectedServiceFinal({
+                                    ...selectedServiceForType,
+                                    subService2: "Commercial Rate",
+                                    price: findPrice.price,
+                                  });
+                                } else {
+                                  setSelectedServiceFinal(selectedServiceForType);
+                                }
+                              }}
+                              className="mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg"
+                            >
+                              Buy now
+                            </button>
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+                    {selectedService.every(
+                      (tier) => tier.subService && tier.subService2
+                    ) && (
+                        <>
+                          {_.uniqBy(types, (el) => el.name).map((el, elIdx) => {
+                            return (
+                              <tr key={el.id} className="text-center">
+                                <th
+                                  className="py-5 px-6 text-sm font-normal text-white text-left"
+                                  scope="row"
+                                >
+                                  {el.name}
+                                </th>
+                                {selectedService.map((tier, tierIdx) => (
+                                  <td key={tierIdx} className="py-5 px-6">
+                                    <span className="block text-sm text-white">
+                                      ₹{" "}
+                                      {tier.pricingArr
+                                        .find((e) => e.name === el.name)
+                                        ?.price.toLocaleString("en-IN")}
+                                    </span>
+                                  </td>
+                                ))}
+                              </tr>
+                            );
+                          })}
+                        </>
+                      )}
+
+                    {selectedService.every(
+                      (tier) => tier.estimatedTime != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Estimated Time On Project"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.estimatedTime}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.inputTrackLimit != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Track Count Limit"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.inputTrackLimit}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.uploadFileFormat != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Upload File Format"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.uploadFileFormat.join(", ")}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.deliveryFileFormat != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Delivery Format"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.deliveryFileFormat.join(", ")}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.deliveryDays != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Delivery Days"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.deliveryDays}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.maxFileDuration != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"File(s) Duration Limit"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {secondsToTime(tier.maxFileDuration!)}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.numberOfReferenceFileUploads != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Additional Reference Files"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.numberOfReferenceFileUploads}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.setOfRevisions != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Revisions"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.setOfRevisions}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.revisionsDelivery != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Revision Delivery Days"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.revisionsDelivery}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+
+                    {selectedService.every(
+                      (tier) => tier.mixVocalTuningBasic != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Basic Vocal Tuning"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixVocalTuningBasic}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.mixVocalTuningAdvanced != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Advanced Vocal Tuning"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixVocalTuningAdvanced}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.mixProcessingReverbs != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Reverbs"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixProcessingReverbs}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.mixProcessingDelays != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Delays"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixProcessingDelays}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    {selectedService.every(
+                      (tier) => tier.mixProcessingOtherFx != null
+                    ) && (
+                        <tr className="text-center">
+                          <th
+                            className="py-5 px-6 text-sm font-normal text-white text-left"
+                            scope="row"
+                          >
+                            {"Mix Processing: Other Fx"}
+                          </th>
+                          {selectedService.map((tier, tierIdx) => (
+                            <td key={tierIdx} className="py-5 px-6">
+                              <span className="block text-sm text-white">
+                                {tier.mixProcessingOtherFx}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                  </tbody>
+                </table>
+              </div>
+              {/* Mobile View */}
+              <div className="max-w-2xl mx-auto lg:hidden ">
+                {selectedService.map((tier, tierIdx) => (
+                  <section key={tierIdx}>
+                    <div className="px-4 mb-8">
+                      <div className="sticky top-0 left-0 backdrop-blur-sm pt-4 pb-2">
+                        <h2 className="text-lg leading-6 font-medium">
+                          {tier.subService ?? tier.serviceName}
+                        </h2>
+                        <p className="mt-4 text-sm text-white">
+                          {tier.description}
+                        </p>
+                        <div className="text-center">
                           <button
                             onClick={() => {
                               //   setSelectedPlan(true);
+                              setIsPlanModalOpen(true);
+                              setSelectedServiceForType(tier);
+
                             }}
                             className="mt-6 mb-4 text-lg bg-blueGradient-3/60 hover:bg-gradient1 transition-colors duration-300 font-bold py-2 px-5 rounded-lg"
                           >
                             Buy now
                           </button>
                         </div>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Hours allocated"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.estimatedTime}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Price"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          ₹{tier.price.toLocaleString("en-IN")}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Track Count Limit"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.inputTrackLimit}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Upload File Format"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.uploadFileFormat.join(", ")}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Delivery Format"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.deliveryFileFormat.join(", ")}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Delivery Days"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.deliveryDays}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"File(s) Duration Limit"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {secondsToTime(tier.maxFileDuration!)}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Mix Processing: Basic Vocal Tuning"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.mixVocalTuningBasic}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Mix Processing: Advanced Vocal Tuning"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.mixVocalTuningAdvanced}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Mix Processing: Reverbs"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.mixProcessingReverbs}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Mix Processing: Delays"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.mixProcessingDelays}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="text-center">
-                    <th
-                      className="py-5 px-6 text-sm font-normal text-white text-left"
-                      scope="row"
-                    >
-                      {"Mix Processing: Other Fx"}
-                    </th>
-                    {selectedService.map((tier, tierIdx) => (
-                      <td key={tierIdx} className="py-5 px-6">
-                        <span className="block text-sm text-white">
-                          {tier.mixProcessingOtherFx}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                      </div>
+                      <table className="w-full">
+                        <thead>
+                          <tr>
+                            <th className="sr-only" scope="col">
+                              Feature
+                            </th>
+                            <th className="sr-only" scope="col">
+                              Included
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-blueGradient-2">
+                          {tier.subService && tier.subService2 && (
+                            <>
+                              {_.uniqBy(types, (el) => el.name).map(
+                                (el, elIdx) => {
+                                  return (
+                                    <tr key={elIdx} className="text-center">
+                                      <th
+                                        className="py-5 px-6 text-sm font-normal text-white text-left"
+                                        scope="row"
+                                      >
+                                        {el.name}
+                                      </th>
+                                      <td key={tierIdx} className="py-5 px-6">
+                                        <span className="block text-sm text-white">
+                                          ₹{" "}
+                                          {tier.pricingArr
+                                            .find((e) => e.name === el.name)
+                                            ?.price.toLocaleString("en-IN")}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  );
+                                }
+                              )}
+                            </>
+                          )}
+
+                          {tier.estimatedTime && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Estimated Time On Project"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.estimatedTime}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.inputTrackLimit && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Track Count Limit"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.inputTrackLimit}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.uploadFileFormat && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Upload File Format"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.uploadFileFormat}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+
+                          {tier.deliveryFileFormat && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Delivery Format"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.deliveryFileFormat}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.deliveryDays && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Delivery Days"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.deliveryDays}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.maxFileDuration && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"File Duration Limit"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {secondsToTime(tier.maxFileDuration)}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.numberOfReferenceFileUploads && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Additional Reference Files"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.numberOfReferenceFileUploads}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.setOfRevisions && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Revisions"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.setOfRevisions}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.revisionsDelivery && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Revision Delivery Days"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.revisionsDelivery}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.mixVocalTuningBasic && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Mix Processing: Basic Vocal Tuning"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.mixVocalTuningBasic}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.mixVocalTuningAdvanced && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Mix Processing: Advanced Vocal Tuning"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.mixVocalTuningAdvanced}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.mixProcessingReverbs && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Mix Processing: Reverbs"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.mixProcessingReverbs}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.mixProcessingDelays && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Mix Processing: Delays"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.mixProcessingDelays}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                          {tier.mixProcessingOtherFx && (
+                            <tr className="text-center">
+                              <th
+                                className="py-5 px-6 text-sm font-normal text-white text-left"
+                                scope="row"
+                              >
+                                {"Mix Processing: Other Fx"}
+                              </th>
+                              <td key={tierIdx} className="py-5 px-6">
+                                <span className="block text-sm text-white">
+                                  {tier.mixProcessingOtherFx}
+                                </span>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* {sections.map((section) => (
+                      <table key={section.features[0].name} className="w-full">
+                        <caption className="border-t border-gray-200 py-3 px-4 text-sm font-bold text-primary text-left">
+                          {section.name}
+                        </caption>
+                        <thead>
+                          <tr>
+                            <th className="sr-only" scope="col">
+                              Feature
+                            </th>
+                            <th className="sr-only" scope="col">
+                              Included
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gradient1">
+                          {section.features.map((feature) => (
+                            <tr key={feature.name} className="border-t border-gray-200">
+                              <th className="py-5 px-4 text-sm font-normal text-white text-left" scope="row">
+                                {feature.name}
+                              </th>
+                              <td className="py-5 pr-4">
+
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ))} */}
+                  </section>
+                ))}
+              </div>
+            </>
           ) : null}
+          {/* Add On / Summary Screen */}
           {selectedServiceFinal && (
             <div
               style={{ minHeight: `calc(100vh - ${bottomBarHeight}px)` }}
-              className={`relative text-center`}
+              className={`relative text-center grid place-items-center`}
             >
-              <svg
-                onClick={() => {
-                  setSelectedServiceFinal(undefined);
-                  // setAddOns(null)
-                }}
-                xmlns="http://www.w3.org/2000/svg"
-                width="27"
-                height="30"
-                className="fill-white hover:fill-primary duration-300 transition-colors cursor-pointer absolute -left-8 top-10"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
-                />
-              </svg>
+
               <div
-                className={`flex w-full h-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 md:py-20 mb-[${bottomBarHeight}px]`}
+                className={`flex w-full h-full justify-center items-center flex-col md:flex-row gap-10 md:gap-20 md:py-20 mb-40 md:mb-0`}
               >
-                <div className="mx-auto h-full w-full space-y-8 rounded-lg py-12 bg-blueGradient-2/30 backdrop-blur-lg relative">
+                <div className="mx-auto w-full space-y-8 rounded-lg py-12 bg-blueGradient-2/30 backdrop-blur-lg relative">
                   <div className="text-2xl space-y-3">
                     <span className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r py-5 from-pink-600 to-primary">
                       {selectedServiceFinal.subService
@@ -1389,13 +1829,12 @@ const Pricing = () => {
                               >
                                 <div
                                   className={`border-2 rounded-lg relative flex-1 flex items-start gap-4 py-4 px-3 justify-center 
-                              ${
-                                selectedAddons.find(
-                                  (el) => el.type === addOn.type
-                                )
-                                  ? "border-primary"
-                                  : "border-gray-400/60"
-                              }`}
+                              ${selectedAddons.find(
+                                    (el) => el.type === addOn.type
+                                  )
+                                      ? "border-primary"
+                                      : "border-gray-400/60"
+                                    }`}
                                 >
                                   <div className="min-w-0 flex-1 text-md">
                                     <p
@@ -1410,6 +1849,7 @@ const Pricing = () => {
                                   </div>
                                   <div className="flex gap-2 justify-center items-center my-auto">
                                     <div className="bg-white/10 p-[3px] rounded-full cursor-pointer">
+                                      {/* Subtract */}
                                       <svg
                                         onClick={() => {
                                           let arr: AddOn[] = [
@@ -1422,14 +1862,35 @@ const Pricing = () => {
                                           } else {
                                             const qt = arr[objIndex].qty!;
                                             if (qt === 1) {
+                                              if (
+                                                arr[objIndex].type.includes(
+                                                  "10 Tracks"
+                                                ) || arr[objIndex].type.includes(
+                                                  "30s"
+                                                )
+                                              ) {
+                                                // @ts-ignore
+                                                setSelectedServiceFinal(
+                                                  (prev) => ({
+                                                    ...prev!,
+                                                    deliveryDays:
+                                                      (prev?.deliveryDays ?? 0) -
+                                                      1,
+                                                  })
+                                                );
+                                              }
+
                                               arr = arr.filter(
                                                 (el) => el.type !== addOn.type
                                               );
+
                                             } else {
                                               arr[objIndex].qty! -= 1;
                                               if (
                                                 arr[objIndex].type.includes(
-                                                  "1 day"
+                                                  "10 Tracks"
+                                                ) || arr[objIndex].type.includes(
+                                                  "30s"
                                                 )
                                               ) {
                                                 setSelectedServiceFinal(
@@ -1464,11 +1925,12 @@ const Pricing = () => {
                                         (el) => el.type === addOn.type
                                       )
                                         ? selectedAddons.find(
-                                            (el) => el.type === addOn.type
-                                          )?.qty
+                                          (el) => el.type === addOn.type
+                                        )?.qty
                                         : 0}
                                     </span>
                                     <div className="bg-white/10 p-[3px] rounded-full cursor-pointer">
+                                      {/* Add */}
                                       <svg
                                         onClick={() => {
                                           const arr: AddOn[] = [
@@ -1479,12 +1941,35 @@ const Pricing = () => {
                                           );
                                           if (objIndex < 0) {
                                             arr.push({ ...addOn, qty: 1 });
-                                          } else {
-                                            arr[objIndex].qty! += 1;
-
+                                            // @ts-ignore
+                                            const objIndex = arr.findIndex(
+                                              (el) => el.type === addOn.type
+                                            );
                                             if (
                                               arr[objIndex].type.includes(
-                                                "1 day"
+                                                "10 Tracks"
+                                              ) || arr[objIndex].type.includes(
+                                                "30s"
+                                              )
+                                            ) {
+                                              // @ts-ignore
+                                              setSelectedServiceFinal(
+                                                (prev) => ({
+                                                  ...prev!,
+                                                  deliveryDays:
+                                                    (prev?.deliveryDays ?? 0) +
+                                                    1,
+                                                })
+                                              );
+                                            }
+
+                                          } else {
+                                            arr[objIndex].qty! += 1;
+                                            if (
+                                              arr[objIndex].type.includes(
+                                                "10 Tracks"
+                                              ) || arr[objIndex].type.includes(
+                                                "30s"
                                               )
                                             ) {
                                               // @ts-ignore
@@ -1528,12 +2013,12 @@ const Pricing = () => {
               {/* Bottom Bar */}
               <div
                 ref={bottomBarEl}
-                className="fixed z-50 bottom-0 p-4 left-0 filter md:flex w-screen items-center backdrop-blur-xl"
+                className="fixed z-50 bottom-0 p-4 left-0 filter flex flex-col gap-4 md:flex-row w-screen md:items-center backdrop-blur-xl"
               >
                 {/* <div className="absolute animation-delay-4000 top-2 right-[20%] w-36 md:w-96 h-20 bg-primary opacity-40 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
                 <div className="absolute animation-delay-2000  left-[10%] w-36 md:w-96 h-20 bg-blueGradient-0 opacity-20 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" />
                 <div className="absolute right-[5%] w-36 md:w-96 h-10 bg-pink-700 opacity-30 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden" /> */}
-                <div className="md:w-1/2 w-10 text-md md:text-xl">
+                <div className="md:w-1/2 text-md md:text-xl">
                   Estimated Delivery: {selectedServiceFinal.deliveryDays} days
                 </div>
                 <div className="md:w-1/2 text-left space-x-3">

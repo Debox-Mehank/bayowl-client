@@ -51,7 +51,7 @@ function FloatingProfile({
       <div
         onClick={() => setIsProfileOpen((prev) => !prev)}
         onBlur={() => setIsProfileOpen(false)}
-        className={`z-50 ${position} ${position === "absolute" && "mx-auto lg:mx-0 space-x-2 left-0 right-0 lg:left-auto lg:right-0"} bottom-10 lg:bottom-auto lg:top-10 lg:right-0 overflow-clip flex justify-center items-center gap-1 md:gap-2 cursor-pointer duration-300 transition-colors text-white lg:px-8`}
+        className={`z-50 ${position} ${position === "absolute" && "mx-auto lg:mx-0 space-x-2 left-0 right-0 lg:left-auto lg:-right-20 xl:right-0"} bottom-10 lg:bottom-auto lg:top-10 lg:right-0 overflow-clip flex justify-center items-center gap-1 md:gap-2 cursor-pointer duration-300 transition-colors text-white lg:px-8`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

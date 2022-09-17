@@ -59,6 +59,29 @@ export enum AdminRole {
   Master = 'master'
 }
 
+export type DashboardContent = {
+  __typename?: 'DashboardContent';
+  _id: Scalars['ID'];
+  active: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  createdBy: Admin;
+  image: Scalars['String'];
+  lastUpdatedBy: Admin;
+  text: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type DashboardContentInput = {
+  image: Scalars['String'];
+  text: Scalars['String'];
+};
+
+export type DashboardInterfaceClass = {
+  __typename?: 'DashboardInterfaceClass';
+  data: Scalars['Float'];
+  label: Scalars['String'];
+};
+
 export type FileUploadResponse = {
   __typename?: 'FileUploadResponse';
   fileId?: Maybe<Scalars['String']>;
@@ -122,12 +145,16 @@ export type Payment = {
 
 export type Query = {
   __typename?: 'Query';
-  addUserService: Scalars['Boolean'];
+  activeDashboardContent: Array<DashboardContent>;
+  addDashboardContent: DashboardContent;
   adminLogin: Scalars['Boolean'];
   adminLogout: Scalars['Boolean'];
   allAdmins: Array<Admin>;
+  allDashboardContent: Array<DashboardContent>;
   allEmployee: Array<Admin>;
   completeAccount: Scalars['Boolean'];
+  confirmUpload: Scalars['Boolean'];
+  dashboardMet: Array<DashboardInterfaceClass>;
   finalizeMultipartUpload?: Maybe<Scalars['String']>;
   getAllPayment: Array<Payment>;
   getAllService: Array<Services>;
@@ -144,14 +171,17 @@ export type Query = {
   me: User;
   meAdmin: Scalars['String'];
   register: Scalars['Boolean'];
+  requestReupload: Scalars['Boolean'];
+  toggleDashboardContent: DashboardContent;
+  updateDashboardContent: Scalars['Boolean'];
   updatePorjectName: Scalars['Boolean'];
   uploadFilesForService: Scalars['Boolean'];
   verifyUser: Scalars['Boolean'];
 };
 
 
-export type QueryAddUserServiceArgs = {
-  input: UserServicesInput;
+export type QueryAddDashboardContentArgs = {
+  input: DashboardContentInput;
 };
 
 
@@ -166,6 +196,12 @@ export type QueryCompleteAccountArgs = {
   number: Scalars['String'];
   password: Scalars['String'];
   token: Scalars['String'];
+};
+
+
+export type QueryConfirmUploadArgs = {
+  deliveryDays: Scalars['Float'];
+  serviceId: Scalars['String'];
 };
 
 
@@ -220,6 +256,23 @@ export type QueryRegisterArgs = {
   number: Scalars['String'];
   password: Scalars['String'];
   token?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryRequestReuploadArgs = {
+  reuploadNote: Scalars['String'];
+  serviceId: Scalars['String'];
+};
+
+
+export type QueryToggleDashboardContentArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryUpdateDashboardContentArgs = {
+  id: Scalars['String'];
+  input: DashboardContentInput;
 };
 
 
@@ -378,6 +431,7 @@ export type UserServices = {
   projectName?: Maybe<Scalars['String']>;
   referenceFiles: Array<Scalars['String']>;
   reupload?: Maybe<Scalars['DateTime']>;
+  reuploadNote?: Maybe<Scalars['String']>;
   revisionFiles: Array<RevisionFiles>;
   revisionsDelivery?: Maybe<Scalars['Float']>;
   serviceName: Scalars['String'];

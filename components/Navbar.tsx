@@ -178,7 +178,7 @@ function Navbar({
               <a className="items-center mx-2 my-4 inline-flex">
                 <svg
                   height={scrolled ? 40 : 50}
-                  width={scrolled ? 80 : 160}
+                  width={scrolled ? 135 : 160}
                   className={`${scrolled ? "fill-white" : "fill-white"
                     } hover:fill-primary transition-colors duration-300 cursor-pointer`}
                   xmlns="http://www.w3.org/2000/svg"

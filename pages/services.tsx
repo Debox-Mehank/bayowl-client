@@ -52,15 +52,14 @@ const Services = () => {
     }
   }, [mainCategoryRoute, subCategoryRoute, serviceNameRoute]);
 
-  const finalPageHandler = () => {};
+  const finalPageHandler = () => { };
 
   return (
     <div>
       <Navbar name={data?.me.name} email={data?.me.email} />
       {/* <div className="-z-50 absolute top-0 left-0 right-0 bottom-0 bg-darkBlue min-h-screen" /> */}
       <div
-        style={{ minHeight: `calc(100vh)` }}
-        className={`bg-transparent z-0 mt-28 sm:mt-20 md:mt-0 flex relative flex-col justify-center items-center max-w-7-xl mx-auto text-white `}
+        className={`min-h-screen bg-transparent z-0 mt-8 sm:mt-20 md:mt-0 flex relative flex-col justify-center items-center max-w-7-xl mx-auto text-white `}
       >
         {/* {console.log(navHeight)} */}
 

@@ -9,7 +9,7 @@ import {
   UserServiceStatus,
 } from "../../graphql/generated/graphql";
 import { useRouter } from "next/router";
-import useMediaQuery from '../../hooks/useMediaQuery'
+import useMediaQuery from "../../hooks/useMediaQuery";
 
 interface Props {
   service: UserServiceFinal;
@@ -38,6 +38,16 @@ const getButtonText = (service: UserServiceFinal): string => {
     } else {
       btnText = "Under Review";
     }
+  } else if (service.statusType === UserServiceStatus.Workinprogress) {
+    btnText = "Work In Progress";
+  } else if (service.statusType === UserServiceStatus.Delivered) {
+    btnText = "Delivered";
+  } else if (service.statusType === UserServiceStatus.Revisionrequest) {
+    btnText = "Revision Requested";
+  } else if (service.statusType === UserServiceStatus.Revisiondelivered) {
+    btnText = "Revision Delivered";
+  } else if (service.statusType === UserServiceStatus.Completed) {
+    btnText = "Completed";
   }
   return btnText;
 };
@@ -69,21 +79,19 @@ function classNames(...classes: any) {
 function Accordion({ service, handleAccordionClick }: Props) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   return (
-    <div
-      className="bg-white/5 rounded-lg p-3 lg:p-4 xl:p-6"
-      key={service._id}
-    >
+    <div className="bg-white/5 rounded-lg p-3 lg:p-4 xl:p-6" key={service._id}>
       <div className="flex gap-4 items-center justify-between z-50">
         <div
           className="gap-4 flex flex-1 w-full items-center cursor-pointer"
           onClick={() => setIsOpen((prev) => !prev)}
         >
           <Image
-            className={`inline duration-300 transition-transform ${isOpen ? "rotate-180" : null
-              }`}
+            className={`inline duration-300 transition-transform ${
+              isOpen ? "rotate-180" : null
+            }`}
             height={isDesktop ? 30 : 15}
             width={isDesktop ? 30 : 15}
             src={down}
@@ -91,7 +99,8 @@ function Accordion({ service, handleAccordionClick }: Props) {
           <span className="text-md md:text-2xl">
             {(service.projectName ? service.projectName : "Untitled Project") +
               " - " +
-              `${service.subService ? service.subService : service.serviceName
+              `${
+                service.subService ? service.subService : service.serviceName
               }`}
           </span>
         </div>
@@ -124,10 +133,11 @@ function Accordion({ service, handleAccordionClick }: Props) {
 
       <div
         className={`filter  rounded-lg top-14 w-full transition-all duration-300 overflow-hidden
-         ${isOpen
-            ? "max-h-[100rem] duration-500 transition-all ease-in"
-            : "max-h-0 duration-300 transition-all ease-out"
-          }`}
+         ${
+           isOpen
+             ? "max-h-[100rem] duration-500 transition-all ease-in"
+             : "max-h-0 duration-300 transition-all ease-out"
+         }`}
       >
         <div className="px-6 py-10">
           <hr className="border-1 drop-shadow-xl py-4" />

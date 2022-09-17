@@ -16,6 +16,21 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+const TABLE_HEADERS = [
+  "Service Name",
+  "Note to Engineer",
+  "Date of Submission",
+  "Current Status",
+  "Est. Delivery Date",
+  "Reupload Notes",
+  "Reupload Date",
+  "Upload",
+  "Download",
+  "Request Revision",
+  "Mark Completed",
+  "Add a Service",
+];
+
 function ServiceTracking() {
   const { data, loading, error } = useMeQuery({
     fetchPolicy: "network-only",
@@ -25,6 +40,7 @@ function ServiceTracking() {
   const [filteredServices, setFilteredServices] = useState<UserServiceFinal[]>(
     []
   );
+  const [tableHeaders, setTableHeaders] = useState<string[]>(TABLE_HEADERS);
 
   useEffect(() => {
     if (data?.me) {
@@ -102,66 +118,15 @@ function ServiceTracking() {
                         >
                           Project Name
                         </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
-                        >
-                          Service Name
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
-                        >
-                          Note to Engineer
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
-                        >
-                          Date of Submission
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
-                        >
-                          Current Status
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
-                        >
-                          Est. Delivery Date
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
-                        >
-                          Upload
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
-                        >
-                          Download
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
-                        >
-                          Request Revision
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
-                        >
-                          Mark Completed
-                        </th>
-                        <th
-                          scope="col"
-                          className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-white"
-                        >
-                          Add a Service
-                        </th>
+                        {tableHeaders.map((el, idx) => (
+                          <th
+                            key={idx}
+                            scope="col"
+                            className="whitespace-nowrap px-2 py-3.5 text-center text-sm font-semibold text-white"
+                          >
+                            {el}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody className=" ">
@@ -174,7 +139,6 @@ function ServiceTracking() {
                             {transaction.serviceName}
                           </td>
                           <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
-                            {/* {transaction.notes} */}
                             {transaction.notes === "" || !transaction.notes
                               ? "N/A"
                               : transaction.notes}
@@ -182,8 +146,8 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             {transaction.submissionDate
                               ? moment(transaction.submissionDate).format(
-                                "MMM Do YY, h:mm a"
-                              )
+                                  "MMM Do YY, h:mm a"
+                                )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
@@ -197,19 +161,29 @@ function ServiceTracking() {
                             </div>
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
-                            {/* {transaction.estimatedDelivery} */}
                             {transaction.estDeliveryDate
                               ? moment(transaction.estDeliveryDate).format(
-                                "MMM Do YY, h:mm a"
-                              )
+                                  "MMM Do YY, h:mm a"
+                                )
                               : "N/A"}
-                            {/* Some date */}
+                          </td>
+                          <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
+                            {transaction.reupload
+                              ? transaction.reuploadNote
+                              : "N/A"}
+                          </td>
+                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
+                            {transaction.reupload
+                              ? moment(transaction.reupload).format(
+                                  "MMM Do YY, h:mm a"
+                                )
+                              : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                  "Pending Upload"
+                                "Pending Upload"
                                   ? false
                                   : true
                               }
@@ -217,7 +191,7 @@ function ServiceTracking() {
                               <div className="text-xs">
                                 {getStatusNames(transaction.statusType) ===
                                   "Pending Upload" &&
-                                  transaction.reupload === null ? (
+                                transaction.reupload === null ? (
                                   <Link
                                     href={
                                       "/upload?serviceId=" + transaction._id
@@ -226,7 +200,7 @@ function ServiceTracking() {
                                     Upload
                                   </Link>
                                 ) : getStatusNames(transaction.statusType) ===
-                                  "Pending Upload" &&
+                                    "Pending Upload" &&
                                   transaction.reupload !== null ? (
                                   <Link
                                     href={
@@ -279,7 +253,7 @@ function ServiceTracking() {
                                 !(
                                   transaction.setOfRevisions &&
                                   transaction.setOfRevisions >
-                                  transaction.revisionFiles.length
+                                    transaction.revisionFiles.length
                                 )
                               }
                             >
@@ -306,7 +280,7 @@ function ServiceTracking() {
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                  "Completed"
+                                "Completed"
                                   ? false
                                   : true
                               }

@@ -41,6 +41,7 @@ fragment userServices on UserServices {
     state
   }
   reupload
+  reuploadNote
   notes
   submissionDate
   estDeliveryDate
@@ -152,11 +153,13 @@ query UploadFilesForService(
   $serviceId: String!
   $referenceUploadedFiles: [String!]
   $notes: String
+  $isReupload: Boolean
 ) {
   uploadFilesForService(
     uplodedFiles: $uplodedFiles
     serviceId: $serviceId
     referenceUploadedFiles: $referenceUploadedFiles
     notes: $notes
+    isReupload: $isReupload
   )
 }

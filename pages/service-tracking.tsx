@@ -58,6 +58,7 @@ function ServiceTracking() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [services, setServices] = useState<UserServiceFinal[]>([]);
+  const [selectedService, setSelectedService] = useState<UserServiceFinal>();
   const [filteredServices, setFilteredServices] = useState<UserServiceFinal[]>(
     []
   );
@@ -113,7 +114,7 @@ function ServiceTracking() {
     let lastRevisionNumber: number =
       service.revisionFiles.length > 0
         ? service.revisionFiles.sort((a, b) => a.revision - b.revision)[0]
-          .revision + 1
+            .revision + 1
         : 1;
     let revisionForNumber: number = revFor;
 
@@ -153,6 +154,7 @@ function ServiceTracking() {
             : el.statusType,
       }));
       setServices(arr);
+      setFilteredServices(arr);
     } catch (error: any) {
       setLoading(false);
       toast.error(error.toString());
@@ -165,7 +167,90 @@ function ServiceTracking() {
       <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden" />
       <div className="absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
       <DashNav name={data?.me.name} email={data?.me.email} />
-      {/* issue */}
+
+      {/* Revision Modal */}
+      <Modal open={isRevModalOpen} setOpen={setIsRevModalOpen}>
+        <>
+          {selectedService && (
+            <div className="relative text-center">
+              <h4 className="font-bold pb-4  text-primary text-lg">
+                Request a revision
+              </h4>
+              <svg
+                onClick={() => {
+                  setIsRevModalOpen(false);
+                  setRevNotes("");
+                }}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="absolute right-0 -top-3 w-6 h-6 hover:text-primary cursor-pointer"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+
+              {selectedService && selectedService.revisionFiles.length > 0 && (
+                <>
+                  <p className="mb-4">
+                    Which version are you requesting the revision for?
+                  </p>
+                  <div className="relative inline-flex mb-4">
+                    <svg
+                      className="w-2 h-2 absolute top-0 right-0 m-4 pointer-events-none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 412 232"
+                    >
+                      <path
+                        d="M206 171.144L42.678 7.822c-9.763-9.763-25.592-9.763-35.355 0-9.763 9.764-9.763 25.592 0 35.355l181 181c4.88 4.882 11.279 7.323 17.677 7.323s12.796-2.441 17.678-7.322l181-181c9.763-9.764 9.763-25.592 0-35.355-9.763-9.763-25.592-9.763-35.355 0L206 171.144z"
+                        fill="#648299"
+                        fillRule="nonzero"
+                      />
+                    </svg>
+                    <select
+                      value={revFor}
+                      onChange={(e) => setRevFor(parseInt(e.target.value))}
+                      className="border bg-white/5 border-gray-300 rounded-full text-gray-600 h-10 pl-5 pr-10 bg-white hover:border-gray-400 focus:outline-none appearance-none"
+                    >
+                      <option value={0}>Original Delivery</option>
+                      {selectedService.revisionFiles.map((version, index) => (
+                        <option key={version.revision} value={index + 1}>
+                          Revision {index + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
+
+              <textarea
+                className="bg-darkBlue/20  rounded-xl w-full h-[60%] my-2 placeholder:text-center"
+                name="Remarks"
+                id="remarks"
+                placeholder="Please enter notes for the engineer here."
+                value={revNotes}
+                onChange={(e) => setRevNotes(e.target.value)}
+              />
+
+              <Button
+                onClick={() => {
+                  handleRequestRevision(selectedService);
+                  // setIsRevModalOpen(false);
+                  // send revNotes to server
+                }}
+              >
+                <div className="max-w-xs mx-auto inline-block">Proceed</div>
+              </Button>
+            </div>
+          )}
+        </>
+      </Modal>
+
       <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
         {/* Scrollable Div Below, issue */}
         <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[49]">
@@ -255,8 +340,8 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             {transaction.submissionDate
                               ? moment(transaction.submissionDate).format(
-                                "MMM Do YY, h:mm a"
-                              )
+                                  "MMM Do YY, h:mm a"
+                                )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
@@ -272,8 +357,8 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.estDeliveryDate
                               ? moment(transaction.estDeliveryDate).format(
-                                "MMM Do, YYYY"
-                              )
+                                  "MMM Do, YYYY"
+                                )
                               : "N/A"}
                           </td>
                           <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
@@ -284,22 +369,22 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.reupload
                               ? moment(transaction.reupload).format(
-                                "MMM Do YY, h:mm a"
-                              )
+                                  "MMM Do YY, h:mm a"
+                                )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.completionDate
                               ? moment(transaction.completionDate).format(
-                                "MMM Do YY, h:mm a"
-                              )
+                                  "MMM Do YY, h:mm a"
+                                )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                  "Pending Upload"
+                                "Pending Upload"
                                   ? false
                                   : true
                               }
@@ -307,7 +392,7 @@ function ServiceTracking() {
                               <div className="text-xs">
                                 {getStatusNames(transaction.statusType) ===
                                   "Pending Upload" &&
-                                  transaction.reupload === null ? (
+                                transaction.reupload === null ? (
                                   <Link
                                     href={
                                       "/upload?serviceId=" + transaction._id
@@ -316,7 +401,7 @@ function ServiceTracking() {
                                     Upload
                                   </Link>
                                 ) : getStatusNames(transaction.statusType) ===
-                                  "Pending Upload" &&
+                                    "Pending Upload" &&
                                   transaction.reupload !== null ? (
                                   <Link
                                     href={
@@ -421,11 +506,11 @@ function ServiceTracking() {
                                 onClick={() => {
                                   if (
                                     getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
+                                      "Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered" ||
+                                      "Revision Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                    "Completed"
+                                      "Completed"
                                   ) {
                                     const downloadA =
                                       document.createElement("a");
@@ -439,11 +524,11 @@ function ServiceTracking() {
                                 disabled={
                                   !(
                                     getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
+                                      "Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered" ||
+                                      "Revision Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                    "Completed"
+                                      "Completed"
                                   )
                                 }
                               >
@@ -452,112 +537,23 @@ function ServiceTracking() {
                             )}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Modal
-                              open={isRevModalOpen}
-                              setOpen={setIsRevModalOpen}
-                            >
-                              <div className="relative text-center">
-                                <h4 className="font-bold pb-4  text-primary text-lg">
-                                  Request a revision
-                                </h4>
-                                <svg
-                                  onClick={() => {
-                                    setIsRevModalOpen(false);
-                                    setRevNotes("");
-                                  }}
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={1.5}
-                                  stroke="currentColor"
-                                  className="absolute right-0 -top-3 w-6 h-6 hover:text-primary cursor-pointer"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M6 18L18 6M6 6l12 12"
-                                  />
-                                </svg>
-
-                                {transaction.revisionFiles.length > 0 && (
-                                  <>
-                                    <p className="mb-4">
-                                      Which version are you requesting the
-                                      revision for?
-                                    </p>
-                                    <div className="relative inline-flex mb-4">
-                                      <svg
-                                        className="w-2 h-2 absolute top-0 right-0 m-4 pointer-events-none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 412 232"
-                                      >
-                                        <path
-                                          d="M206 171.144L42.678 7.822c-9.763-9.763-25.592-9.763-35.355 0-9.763 9.764-9.763 25.592 0 35.355l181 181c4.88 4.882 11.279 7.323 17.677 7.323s12.796-2.441 17.678-7.322l181-181c9.763-9.764 9.763-25.592 0-35.355-9.763-9.763-25.592-9.763-35.355 0L206 171.144z"
-                                          fill="#648299"
-                                          fillRule="nonzero"
-                                        />
-                                      </svg>
-                                      <select
-                                        value={revFor}
-                                        onChange={(e) =>
-                                          setRevFor(parseInt(e.target.value))
-                                        }
-                                        className="border bg-white/5 border-gray-300 rounded-full text-gray-600 h-10 pl-5 pr-10 bg-white hover:border-gray-400 focus:outline-none appearance-none"
-                                      >
-                                        <option value={0}>
-                                          Original Delivery
-                                        </option>
-                                        {transaction.revisionFiles.map(
-                                          (version, index) => (
-                                            <option
-                                              key={version.revision}
-                                              value={index + 1}
-                                            >
-                                              Revision {index + 1}
-                                            </option>
-                                          )
-                                        )}
-                                      </select>
-                                    </div>
-                                  </>
-                                )}
-
-                                <textarea
-                                  className="bg-darkBlue/20  rounded-xl w-full h-[60%] my-2 placeholder:text-center"
-                                  name="Remarks"
-                                  id="remarks"
-                                  placeholder="Please enter notes for the engineer here."
-                                  value={revNotes}
-                                  onChange={(e) => setRevNotes(e.target.value)}
-                                />
-
-                                <Button
-                                  onClick={() => {
-                                    handleRequestRevision(transaction);
-                                    // setIsRevModalOpen(false);
-                                    // send revNotes to server
-                                  }}
-                                >
-                                  <div className="max-w-xs mx-auto inline-block">
-                                    Proceed
-                                  </div>
-                                </Button>
-                              </div>
-                            </Modal>
                             {/* Disabled unless Delivered, Revision Delivered, or if there are revisions left. */}
                             <Button
-                              onClick={() => setIsRevModalOpen(true)}
+                              onClick={() => {
+                                setIsRevModalOpen(true);
+                                setSelectedService(transaction);
+                              }}
                               disabled={
                                 !(
                                   getStatusNames(transaction.statusType) ===
-                                  "Delivered" ||
+                                    "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
+                                    "Revision Delivered"
                                 ) ||
                                 !(
                                   transaction.setOfRevisions &&
                                   transaction.setOfRevisions >
-                                  transaction.revisionFiles.length
+                                    transaction.revisionFiles.length
                                 )
                               }
                             >
@@ -570,9 +566,9 @@ function ServiceTracking() {
                               onClick={() => {
                                 if (
                                   getStatusNames(transaction.statusType) ===
-                                  "Delivered" ||
+                                    "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
+                                    "Revision Delivered"
                                 ) {
                                   handleMarkComplete(transaction._id);
                                 }
@@ -580,9 +576,9 @@ function ServiceTracking() {
                               disabled={
                                 !(
                                   getStatusNames(transaction.statusType) ===
-                                  "Delivered" ||
+                                    "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
+                                    "Revision Delivered"
                                 )
                               }
                             >
@@ -593,7 +589,7 @@ function ServiceTracking() {
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                  "Delivered"
+                                "Delivered"
                                   ? false
                                   : true
                               }

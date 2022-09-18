@@ -115,7 +115,7 @@ function ServiceTracking() {
     let lastRevisionNumber: number =
       service.revisionFiles.length > 0
         ? service.revisionFiles.sort((a, b) => a.revision - b.revision)[0]
-            .revision + 1
+          .revision + 1
         : 1;
     let revisionForNumber: number = revFor;
 
@@ -201,26 +201,16 @@ function ServiceTracking() {
                   <p className="mb-4">
                     Which version are you requesting the revision for?
                   </p>
-                  <div className="relative inline-flex mb-4">
-                    <svg
-                      className="w-2 h-2 absolute top-0 right-0 m-4 pointer-events-none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 412 232"
-                    >
-                      <path
-                        d="M206 171.144L42.678 7.822c-9.763-9.763-25.592-9.763-35.355 0-9.763 9.764-9.763 25.592 0 35.355l181 181c4.88 4.882 11.279 7.323 17.677 7.323s12.796-2.441 17.678-7.322l181-181c9.763-9.764 9.763-25.592 0-35.355-9.763-9.763-25.592-9.763-35.355 0L206 171.144z"
-                        fill="#648299"
-                        fillRule="nonzero"
-                      />
-                    </svg>
+                  <div className="relative inline-flex mb-4 w-full max-w-sm">
+
                     <select
                       value={revFor}
                       onChange={(e) => setRevFor(parseInt(e.target.value))}
-                      className="border bg-white/5 border-gray-300 rounded-full text-gray-600 h-10 pl-5 pr-10 bg-white hover:border-gray-400 focus:outline-none appearance-none"
+                      className="border bg-white/10 border-gray-300 rounded-lg w-full text-white h-10 pl-5 pr-10  hover:border-gray-800/10 outline-none border-none focus:outline-none appearance-none"
                     >
-                      <option value={0}>Original Delivery</option>
+                      <option className="text-black bg-white/10" value={0}>Original Delivery</option>
                       {selectedService.revisionFiles.map((version, index) => (
-                        <option key={version.revision} value={index + 1}>
+                        <option className="text-black" key={version.revision} value={index + 1}>
                           Revision {index + 1}
                         </option>
                       ))}
@@ -230,23 +220,25 @@ function ServiceTracking() {
               )}
 
               <textarea
-                className="bg-darkBlue/20  rounded-xl w-full h-[60%] my-2 placeholder:text-center"
+                className="bg-white/10 rounded-xl w-full h-[60%] my-2 placeholder:text-center max-w-sm outline-none border-none focus:outline-none"
                 name="Remarks"
                 id="remarks"
                 placeholder="Please enter notes for the engineer here."
                 value={revNotes}
                 onChange={(e) => setRevNotes(e.target.value)}
               />
+              <div className="w-fit mx-auto">
+                <Button
+                  onClick={() => {
+                    handleRequestRevision(selectedService);
+                    // setIsRevModalOpen(false);
+                    // send revNotes to server
+                  }}
+                >
+                  <div className=" mx-auto inline-block">Proceed</div>
+                </Button>
+              </div>
 
-              <Button
-                onClick={() => {
-                  handleRequestRevision(selectedService);
-                  // setIsRevModalOpen(false);
-                  // send revNotes to server
-                }}
-              >
-                <div className="max-w-xs mx-auto inline-block">Proceed</div>
-              </Button>
             </div>
           )}
         </>
@@ -341,8 +333,8 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             {transaction.submissionDate
                               ? moment(transaction.submissionDate).format(
-                                  "MMM Do YY, h:mm a"
-                                )
+                                "MMM Do YY, h:mm a"
+                              )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
@@ -358,8 +350,8 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.estDeliveryDate
                               ? moment(transaction.estDeliveryDate).format(
-                                  "MMM Do, YYYY"
-                                )
+                                "MMM Do, YYYY"
+                              )
                               : "N/A"}
                           </td>
                           <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
@@ -370,22 +362,22 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.reupload
                               ? moment(transaction.reupload).format(
-                                  "MMM Do YY, h:mm a"
-                                )
+                                "MMM Do YY, h:mm a"
+                              )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.completionDate
                               ? moment(transaction.completionDate).format(
-                                  "MMM Do YY, h:mm a"
-                                )
+                                "MMM Do YY, h:mm a"
+                              )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                "Pending Upload"
+                                  "Pending Upload"
                                   ? false
                                   : true
                               }
@@ -393,7 +385,7 @@ function ServiceTracking() {
                               <div className="text-xs">
                                 {getStatusNames(transaction.statusType) ===
                                   "Pending Upload" &&
-                                transaction.reupload === null ? (
+                                  transaction.reupload === null ? (
                                   <Link
                                     href={
                                       "/upload?serviceId=" + transaction._id
@@ -402,7 +394,7 @@ function ServiceTracking() {
                                     Upload
                                   </Link>
                                 ) : getStatusNames(transaction.statusType) ===
-                                    "Pending Upload" &&
+                                  "Pending Upload" &&
                                   transaction.reupload !== null ? (
                                   <Link
                                     href={
@@ -432,7 +424,7 @@ function ServiceTracking() {
                               >
                                 <div>
                                   <Menu.Button className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white/5 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-50/10 gradient-border-2 border-gradient-btn">
-                                    Options
+                                    Downloads
                                     <ChevronDownIcon
                                       className="-mr-1 ml-2 h-5 w-5"
                                       aria-hidden="true"
@@ -449,7 +441,7 @@ function ServiceTracking() {
                                   leaveFrom="transform opacity-100 scale-100"
                                   leaveTo="transform opacity-0 scale-95"
                                 >
-                                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white/5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-darkBlue/70 backdrop-blur-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1">
                                       <Menu.Item>
                                         {({ active }) => (
@@ -472,32 +464,33 @@ function ServiceTracking() {
                                           </a>
                                         )}
                                       </Menu.Item>
-                                      {transaction.revisionFiles.map(
-                                        (version, index) => (
-                                          <Menu.Item key={version.revision}>
-                                            {({ active }) => (
-                                              <a
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                href={
-                                                  version.file
-                                                    ? version.file
-                                                    : ""
-                                                }
-                                                className={classNames(
-                                                  active
-                                                    ? "bg-gray-100/20 text-white/80"
-                                                    : "text-white",
-                                                  "block px-4 py-2 text-sm"
-                                                )}
-                                              >
-                                                Revision {index + 1}
-                                              </a>
-                                            )}
-                                          </Menu.Item>
-                                          // <option key={version.revision}>Revision {index + 1}</option>
-                                        )
-                                      )}
+                                      {transaction.revisionFiles.filter((el) => el.file)
+                                        .map(
+                                          (version, index) => (
+                                            <Menu.Item key={version.revision}>
+                                              {({ active }) => (
+                                                <a
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  href={
+                                                    version.file
+                                                      ? version.file
+                                                      : ""
+                                                  }
+                                                  className={classNames(
+                                                    active
+                                                      ? "bg-gray-100/20 text-white/80"
+                                                      : "text-white",
+                                                    "block px-4 py-2 text-sm"
+                                                  )}
+                                                >
+                                                  Revision {index + 1}
+                                                </a>
+                                              )}
+                                            </Menu.Item>
+                                            // <option key={version.revision}>Revision {index + 1}</option>
+                                          )
+                                        )}
                                     </div>
                                   </Menu.Items>
                                 </Transition>
@@ -507,11 +500,14 @@ function ServiceTracking() {
                                 onClick={() => {
                                   if (
                                     getStatusNames(transaction.statusType) ===
-                                      "Delivered" ||
+                                    "Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                      "Revision Delivered" ||
+                                    "Revision Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                      "Completed"
+                                    "Completed" ||
+                                    getStatusNames(transaction.statusType) ===
+                                    "Revision Requested"
+
                                   ) {
                                     const downloadA =
                                       document.createElement("a");
@@ -525,11 +521,11 @@ function ServiceTracking() {
                                 disabled={
                                   !(
                                     getStatusNames(transaction.statusType) ===
-                                      "Delivered" ||
+                                    "Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                      "Revision Delivered" ||
+                                    "Revision Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                      "Completed"
+                                    "Completed"
                                   )
                                 }
                               >
@@ -547,14 +543,14 @@ function ServiceTracking() {
                               disabled={
                                 !(
                                   getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
+                                  "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered"
+                                  "Revision Delivered"
                                 ) ||
                                 !(
                                   transaction.setOfRevisions &&
                                   transaction.setOfRevisions >
-                                    transaction.revisionFiles.length
+                                  transaction.revisionFiles.length
                                 )
                               }
                             >
@@ -567,9 +563,9 @@ function ServiceTracking() {
                               onClick={() => {
                                 if (
                                   getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
+                                  "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered"
+                                  "Revision Delivered"
                                 ) {
                                   handleMarkComplete(transaction._id);
                                 }
@@ -577,9 +573,9 @@ function ServiceTracking() {
                               disabled={
                                 !(
                                   getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
+                                  "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered"
+                                  "Revision Delivered"
                                 )
                               }
                             >
@@ -590,7 +586,7 @@ function ServiceTracking() {
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                "Delivered"
+                                  "Delivered"
                                   ? false
                                   : true
                               }

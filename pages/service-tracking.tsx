@@ -98,12 +98,13 @@ function ServiceTracking() {
       setLoading(false);
       toast.success("Project Marked As Completed");
       let arr = [...services];
-      setServices(
-        arr.map((el) => ({
-          ...el,
-          statusType: UserServiceStatus.Completed,
-        }))
-      );
+      arr = arr.map((el) => ({
+        ...el,
+        statusType:
+          el._id === serviceId ? UserServiceStatus.Completed : el.statusType,
+      }));
+      setServices(arr);
+      setFilteredServices(arr);
     } catch (error: any) {
       setLoading(false);
       toast.error(error.toString());

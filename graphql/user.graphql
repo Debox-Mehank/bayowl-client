@@ -190,3 +190,7 @@ query RequestRevision(
     revisionForNumber: $revisionForNumber
   )
 }
+
+query RemoveService($serviceId: String!) {
+  removeService(serviceId: $serviceId)
+}

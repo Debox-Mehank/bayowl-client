@@ -183,6 +183,7 @@ export type Query = {
   me: User;
   meAdmin?: Maybe<Admin>;
   register: Scalars['Boolean'];
+  removeService: Scalars['Boolean'];
   requestReupload: Scalars['Boolean'];
   requestRevision: Scalars['Boolean'];
   toggleDashboardContent: DashboardContent;
@@ -296,6 +297,11 @@ export type QueryRegisterArgs = {
   number: Scalars['String'];
   password: Scalars['String'];
   token?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryRemoveServiceArgs = {
+  serviceId: Scalars['String'];
 };
 
 
@@ -676,6 +682,13 @@ export type RequestRevisionQueryVariables = Exact<{
 
 
 export type RequestRevisionQuery = { __typename?: 'Query', requestRevision: boolean };
+
+export type RemoveServiceQueryVariables = Exact<{
+  serviceId: Scalars['String'];
+}>;
+
+
+export type RemoveServiceQuery = { __typename?: 'Query', removeService: boolean };
 
 export const UserServicesFragmentDoc = gql`
     fragment userServices on UserServices {
@@ -1418,3 +1431,36 @@ export function useRequestRevisionLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type RequestRevisionQueryHookResult = ReturnType<typeof useRequestRevisionQuery>;
 export type RequestRevisionLazyQueryHookResult = ReturnType<typeof useRequestRevisionLazyQuery>;
 export type RequestRevisionQueryResult = Apollo.QueryResult<RequestRevisionQuery, RequestRevisionQueryVariables>;
+export const RemoveServiceDocument = gql`
+    query RemoveService($serviceId: String!) {
+  removeService(serviceId: $serviceId)
+}
+    `;
+
+/**
+ * __useRemoveServiceQuery__
+ *
+ * To run a query within a React component, call `useRemoveServiceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRemoveServiceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRemoveServiceQuery({
+ *   variables: {
+ *      serviceId: // value for 'serviceId'
+ *   },
+ * });
+ */
+export function useRemoveServiceQuery(baseOptions: Apollo.QueryHookOptions<RemoveServiceQuery, RemoveServiceQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<RemoveServiceQuery, RemoveServiceQueryVariables>(RemoveServiceDocument, options);
+      }
+export function useRemoveServiceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<RemoveServiceQuery, RemoveServiceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<RemoveServiceQuery, RemoveServiceQueryVariables>(RemoveServiceDocument, options);
+        }
+export type RemoveServiceQueryHookResult = ReturnType<typeof useRemoveServiceQuery>;
+export type RemoveServiceLazyQueryHookResult = ReturnType<typeof useRemoveServiceLazyQuery>;
+export type RemoveServiceQueryResult = Apollo.QueryResult<RemoveServiceQuery, RemoveServiceQueryVariables>;

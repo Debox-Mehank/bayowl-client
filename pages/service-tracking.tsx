@@ -109,7 +109,7 @@ function ServiceTracking() {
     let lastRevisionNumber: number =
       service.revisionFiles.length > 0
         ? service.revisionFiles.sort((a, b) => a.revision - b.revision)[0]
-            .revision + 1
+          .revision + 1
         : 1;
     let revisionForNumber: number = revFor;
 
@@ -165,8 +165,8 @@ function ServiceTracking() {
       {/* issue */}
       <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
         {/* Scrollable Div Below, issue */}
-        <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[50]">
-          <div className="w-full max-w-sm text-center text-xl sm:max-w-md text-white bg-white/10 rounded-md py-1 md:py-2 px-10 md:px-2 flex items-center gap-2 fixed">
+        <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[49]">
+          <div className="w-full max-w-sm text-center text-xl sm:max-w-md text-white bg-white/10 rounded-md py-1 md:py-2 pl-2 pr-3 md:px-2 flex items-center gap-2 fixed">
             <input
               onChange={(e) => {
                 const input = e.target.value.toString().toLowerCase().trim();
@@ -252,8 +252,8 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             {transaction.submissionDate
                               ? moment(transaction.submissionDate).format(
-                                  "MMM Do YY, h:mm a"
-                                )
+                                "MMM Do YY, h:mm a"
+                              )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
@@ -269,8 +269,8 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.estDeliveryDate
                               ? moment(transaction.estDeliveryDate).format(
-                                  "MMM Do, YYYY"
-                                )
+                                "MMM Do, YYYY"
+                              )
                               : "N/A"}
                           </td>
                           <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
@@ -281,22 +281,22 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.reupload
                               ? moment(transaction.reupload).format(
-                                  "MMM Do YY, h:mm a"
-                                )
+                                "MMM Do YY, h:mm a"
+                              )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.completionDate
                               ? moment(transaction.completionDate).format(
-                                  "MMM Do YY, h:mm a"
-                                )
+                                "MMM Do YY, h:mm a"
+                              )
                               : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                "Pending Upload"
+                                  "Pending Upload"
                                   ? false
                                   : true
                               }
@@ -304,7 +304,7 @@ function ServiceTracking() {
                               <div className="text-xs">
                                 {getStatusNames(transaction.statusType) ===
                                   "Pending Upload" &&
-                                transaction.reupload === null ? (
+                                  transaction.reupload === null ? (
                                   <Link
                                     href={
                                       "/upload?serviceId=" + transaction._id
@@ -313,7 +313,7 @@ function ServiceTracking() {
                                     Upload
                                   </Link>
                                 ) : getStatusNames(transaction.statusType) ===
-                                    "Pending Upload" &&
+                                  "Pending Upload" &&
                                   transaction.reupload !== null ? (
                                   <Link
                                     href={
@@ -417,11 +417,11 @@ function ServiceTracking() {
                                 onClick={() => {
                                   if (
                                     getStatusNames(transaction.statusType) ===
-                                      "Delivered" ||
+                                    "Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                      "Revision Delivered" ||
+                                    "Revision Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                      "Completed"
+                                    "Completed"
                                   ) {
                                     window.open(
                                       transaction.deliveredFiles
@@ -549,14 +549,14 @@ function ServiceTracking() {
                               disabled={
                                 !(
                                   getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
+                                  "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered"
+                                  "Revision Delivered"
                                 ) ||
                                 !(
                                   transaction.setOfRevisions &&
                                   transaction.setOfRevisions >
-                                    transaction.revisionFiles.length
+                                  transaction.revisionFiles.length
                                 )
                               }
                             >
@@ -569,9 +569,9 @@ function ServiceTracking() {
                               onClick={() => {
                                 if (
                                   getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
+                                  "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered"
+                                  "Revision Delivered"
                                 ) {
                                   handleMarkComplete(transaction._id);
                                 }
@@ -579,9 +579,9 @@ function ServiceTracking() {
                               disabled={
                                 !(
                                   getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
+                                  "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered"
+                                  "Revision Delivered"
                                 )
                               }
                             >
@@ -592,7 +592,7 @@ function ServiceTracking() {
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                "Delivered"
+                                  "Delivered"
                                   ? false
                                   : true
                               }

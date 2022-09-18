@@ -141,15 +141,14 @@ function ServiceTracking() {
       setIsRevModalOpen(false);
       toast.success("Revision requested successfully");
       let arr = [...services];
-      setServices(
-        arr.map((el) => ({
-          ...el,
-          statusType:
-            el._id === service._id
-              ? UserServiceStatus.Revisionrequest
-              : el.statusType,
-        }))
-      );
+      arr = arr.map((el) => ({
+        ...el,
+        statusType:
+          el._id === service._id
+            ? UserServiceStatus.Revisionrequest
+            : el.statusType,
+      }));
+      setServices(arr);
     } catch (error: any) {
       setLoading(false);
       toast.error(error.toString());
@@ -335,7 +334,8 @@ function ServiceTracking() {
                           >
                             {/* DIsabled unless delivered / revision delivered / completed */}
 
-                            {transaction.revisionFiles.length > 0 ? (
+                            {transaction.revisionFiles.filter((el) => el.file)
+                              .length > 0 ? (
                               <Menu
                                 as="div"
                                 className="relative inline-block text-left"
@@ -423,26 +423,23 @@ function ServiceTracking() {
                                     getStatusNames(transaction.statusType) ===
                                       "Completed"
                                   ) {
-                                    window.open(
-                                      transaction.deliveredFiles
-                                        ? transaction.deliveredFiles[0]
-                                        : "",
-                                      "_blank"
-                                    );
+                                    const downloadA =
+                                      document.createElement("a");
+                                    (downloadA.href = transaction.deliveredFiles
+                                      ? transaction.deliveredFiles[0]
+                                      : ""),
+                                      (downloadA.download = "true");
+                                    downloadA.click();
                                   }
                                 }}
                                 disabled={
                                   !(
                                     getStatusNames(transaction.statusType) ===
-                                    "Delivered"
-                                  ) ||
-                                  !(
+                                      "Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered"
-                                  ) ||
-                                  !(
+                                      "Revision Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                    "Completed"
+                                      "Completed"
                                   )
                                 }
                               >

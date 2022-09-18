@@ -206,11 +206,12 @@ function ServiceTracking() {
                     <select
                       value={revFor}
                       onChange={(e) => setRevFor(parseInt(e.target.value))}
-                      className="border bg-white/10 border-gray-300 rounded-lg w-full text-white h-10 pl-5 pr-10  hover:border-gray-800/10 outline-none border-none focus:outline-none appearance-none"
+                      className="border block w-full bg-gray-800 border-gray-300 rounded-lg text-white h-10 pl-5 pr-10  hover:border-gray-800/10 outline-none border-none focus:outline-none appearance-none"
+
                     >
-                      <option className="text-black bg-white/10" value={0}>Original Delivery</option>
+                      <option value={0}>Original Delivery</option>
                       {selectedService.revisionFiles.map((version, index) => (
-                        <option className="text-black" key={version.revision} value={index + 1}>
+                        <option key={version.revision} value={index + 1}>
                           Revision {index + 1}
                         </option>
                       ))}
@@ -220,7 +221,7 @@ function ServiceTracking() {
               )}
 
               <textarea
-                className="bg-white/10 rounded-xl w-full h-[60%] my-2 placeholder:text-center max-w-sm outline-none border-none focus:outline-none"
+                className="bg-gray-800 rounded-xl w-full h-[60%] my-2 placeholder:text-center max-w-sm outline-none border-none focus:outline-none"
                 name="Remarks"
                 id="remarks"
                 placeholder="Please enter notes for the engineer here."

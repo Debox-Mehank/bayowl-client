@@ -782,11 +782,11 @@ function Upload() {
                 <h4>They will not be uploaded.</h4>
               </>
             )}
-            <div className="pt-7 pb-4 space-y-2">
+            <div className="pt-7 pb-4 space-y-2 max-h-[70vh] overflow-auto px-2">
               {errorList.map((err) => (
                 <div key={err.fileName} className="flex gap-4 text-left">
-                  <div className="font-bold max-w-[50%]">{err.fileName}</div>
-                  <div className="flex-1">
+                  <div className="font-bold w-1/2 break-words">{err.fileName}</div>
+                  <div className="flex-1 w-1/2">
                     {err.issue.map((issue, index) => (
                       <p key={`${issue} - ${index}`}>{issue}</p>
                     ))}
@@ -1108,7 +1108,7 @@ function Upload() {
                                       />
                                     </div>
                                   ))}
-
+                                {/* Reference File Button */}
                                 {!(
                                   refFilesArray.length >
                                   (service.numberOfReferenceFileUploads ?? 0)
@@ -1126,11 +1126,11 @@ function Upload() {
                                               prevFile.name === file.name
                                           )
                                         ) {
-                                          // alert()
+
                                           toast.error(
                                             `Upload Failed - Reference file named ${file.name} has already been selected.`
                                           );
-                                          return;
+                                          return
                                         }
                                         //
                                         if (
@@ -1391,8 +1391,8 @@ function Upload() {
                                           },
                                         ]);
                                         hasIssues = true;
-                                        // Break and don't run other checks
-                                        break;
+                                        // Don't run other checks, Skip this iteration.
+                                        continue;
                                       }
 
                                       const hasErrors =

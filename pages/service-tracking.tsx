@@ -15,6 +15,7 @@ import Modal from "../components/reusable/Modal";
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
+import { type } from "os";
 
 
 
@@ -226,26 +227,103 @@ function ServiceTracking() {
                               </div>
                             </Button>
                           </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white relative">
+                          <td className={`whitespace-nowrap px-2 py-2 text-sm text-white relative`}>
                             {/* DIsabled unless delivered / revision delivered / completed */}
-                            <Button
-                              disabled={
-                                !(
+
+
+                            {(transaction.revisionFiles.length > 0) ?
+                              <Menu as="div" className="relative inline-block text-left">
+                                <div>
+                                  <Menu.Button className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white/5 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-50/10 gradient-border-2 border-gradient-btn">
+                                    Options
+                                    <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
+                                  </Menu.Button>
+                                </div>
+
+                                <Transition
+                                  as={Fragment}
+                                  enter="transition ease-out duration-100"
+                                  enterFrom="transform opacity-0 scale-95"
+                                  enterTo="transform opacity-100 scale-100"
+                                  leave="transition ease-in duration-75"
+                                  leaveFrom="transform opacity-100 scale-100"
+                                  leaveTo="transform opacity-0 scale-95"
+                                >
+                                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white/5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div className="py-1">
+                                      <Menu.Item>
+                                        {({ active }) => (
+                                          <a
+                                            target="_blank" rel="noopener noreferrer"
+                                            href={transaction.deliveredFiles ? transaction.deliveredFiles[0] : ""}
+                                            className={classNames(
+                                              active ? 'bg-gray-100/20 text-white/80' : 'text-white',
+                                              'block px-4 py-2 text-sm'
+                                            )}
+                                          >
+                                            Original Delivery
+                                          </a>
+                                        )}
+                                      </Menu.Item>
+                                      {transaction.revisionFiles.map((version, index) => (
+                                        <Menu.Item key={version.revision}>
+                                          {({ active }) => (
+                                            <a
+                                              target="_blank" rel="noopener noreferrer"
+                                              href={version.file ? version.file : ""}
+                                              className={classNames(
+                                                active ? 'bg-gray-100/20 text-white/80' : 'text-white',
+                                                'block px-4 py-2 text-sm'
+                                              )}
+                                            >
+                                              Revision {index + 1}
+                                            </a>
+                                          )}
+                                        </Menu.Item>
+                                        // <option key={version.revision}>Revision {index + 1}</option>
+                                      ))}
+                                    </div>
+                                  </Menu.Items>
+                                </Transition>
+                              </Menu>
+                              :
+                              <Button onClick={() => {
+                                if ((
                                   getStatusNames(transaction.statusType) ===
                                   "Delivered"
                                 ) ||
-                                !(
-                                  getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
-                                ) ||
-                                !(
-                                  getStatusNames(transaction.statusType) ===
-                                  "Completed"
-                                )
-                              }
-                            >
-                              <div className="text-xs">Download</div>
-                            </Button>
+                                  (
+                                    getStatusNames(transaction.statusType) ===
+                                    "Revision Delivered"
+                                  ) ||
+                                  (
+                                    getStatusNames(transaction.statusType) ===
+                                    "Completed"
+                                  )) {
+                                  window.open(transaction.deliveredFiles ? transaction.deliveredFiles[0] : "", '_blank')
+                                }
+                              }}
+                                disabled={
+                                  !(
+                                    getStatusNames(transaction.statusType) ===
+                                    "Delivered"
+                                  ) ||
+                                  !(
+                                    getStatusNames(transaction.statusType) ===
+                                    "Revision Delivered"
+                                  ) ||
+                                  !(
+                                    getStatusNames(transaction.statusType) ===
+                                    "Completed"
+                                  )
+                                }
+                              ><div className="text-xs">Download</div>
+                              </Button>
+
+                            }
+
+
+
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Modal open={isRevModalOpen} setOpen={setIsRevModalOpen}>
@@ -298,7 +376,7 @@ function ServiceTracking() {
 
                                 <Button onClick={() => {
                                   setIsRevModalOpen(false)
-                                  // send revNotes to server
+                                  // send revNotes and revFor to server
 
                                 }}>
                                   <div className="max-w-xs mx-auto inline-block">

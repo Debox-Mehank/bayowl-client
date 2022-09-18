@@ -1952,7 +1952,7 @@ const Pricing = () => {
                                                 setSelectedServiceFinal(
                                                   (prev) => ({
                                                     ...prev!,
-                                                    maxFileDuration: (prev?.maxFileDuration ?? 0) - 10,
+                                                    maxFileDuration: (prev?.maxFileDuration ?? 0) - 30,
                                                   })
                                                 );
                                               }

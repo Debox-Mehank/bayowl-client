@@ -2125,7 +2125,7 @@ const Pricing = () => {
                           ).toLocaleString("en-IN")}
                         </span>
                         <div className="md:hidden">
-                          <Button>
+                          <Button onClick={handleProceed}>
                             <div>Proceed to Payment</div>
                           </Button>
                         </div>

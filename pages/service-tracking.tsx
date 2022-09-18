@@ -439,11 +439,11 @@ function ServiceTracking() {
                                 disabled={
                                   !(
                                     getStatusNames(transaction.statusType) ===
-                                      "Delivered" ||
+                                    "Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                      "Revision Delivered" ||
+                                    "Revision Delivered" ||
                                     getStatusNames(transaction.statusType) ===
-                                      "Completed"
+                                    "Completed"
                                   )
                                 }
                               >

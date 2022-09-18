@@ -45,6 +45,8 @@ fragment userServices on UserServices {
   notes
   submissionDate
   estDeliveryDate
+  deliveredFiles
+  completionDate
 }
 
 query Login($password: String!, $email: String!, $token: String) {
@@ -162,4 +164,14 @@ query UploadFilesForService(
     notes: $notes
     isReupload: $isReupload
   )
+}
+
+query MarkCompleted($serviceId: String!) {
+  markCompleted(serviceId: $serviceId)
+}
+
+query ActiveDashboardContent {
+  activeDashboardContent {
+    image
+  }
 }

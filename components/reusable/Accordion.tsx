@@ -32,7 +32,10 @@ const getButtonText = (service: UserServiceFinal): string => {
     } else {
       btnText = "Upload Files";
     }
-  } else if (service.statusType === UserServiceStatus.Underreview) {
+  } else if (
+    service.statusType === UserServiceStatus.Underreview ||
+    service.statusType === UserServiceStatus.Underreviewinternal
+  ) {
     if (service.reupload) {
       btnText = "Under Review For Reupload";
     } else {
@@ -58,7 +61,10 @@ export const getStatusNames = (s: UserServiceStatus): string => {
     txt = "Pending Upload";
   } else if (s === UserServiceStatus.Underreview) {
     txt = "Under Review";
-  } else if (s === UserServiceStatus.Workinprogress) {
+  } else if (
+    s === UserServiceStatus.Workinprogress ||
+    s === UserServiceStatus.Underreviewinternal
+  ) {
     txt = "Work In Progress";
   } else if (s === UserServiceStatus.Delivered) {
     txt = "Delivered";
@@ -89,8 +95,9 @@ function Accordion({ service, handleAccordionClick }: Props) {
           onClick={() => setIsOpen((prev) => !prev)}
         >
           <Image
-            className={`inline duration-300 transition-transform ${isOpen ? "rotate-180" : null
-              }`}
+            className={`inline duration-300 transition-transform ${
+              isOpen ? "rotate-180" : null
+            }`}
             height={isDesktop ? 30 : 15}
             width={isDesktop ? 30 : 15}
             src={down}
@@ -98,7 +105,8 @@ function Accordion({ service, handleAccordionClick }: Props) {
           <span className="text-lg md:text-2xl">
             {(service.projectName ? service.projectName : "Untitled Project") +
               " - " +
-              `${service.subService ? service.subService : service.serviceName
+              `${
+                service.subService ? service.subService : service.serviceName
               }`}
           </span>
         </div>
@@ -131,10 +139,11 @@ function Accordion({ service, handleAccordionClick }: Props) {
 
       <div
         className={`filter  rounded-lg top-14 w-full transition-all duration-300 overflow-hidden
-         ${isOpen
-            ? "max-h-[100rem] duration-500 transition-all ease-in"
-            : "max-h-0 duration-300 transition-all ease-out"
-          }`}
+         ${
+           isOpen
+             ? "max-h-[100rem] duration-500 transition-all ease-in"
+             : "max-h-0 duration-300 transition-all ease-out"
+         }`}
       >
         <div className="px-6 py-10">
           <hr className="border-1 drop-shadow-xl py-4" />

@@ -15,6 +15,7 @@ import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import {
   MeDocument,
   MeQuery,
+  useActiveDashboardContentQuery,
   useMeQuery,
   UserServices,
   UserServiceStatus,
@@ -34,6 +35,7 @@ function Dashboard() {
   const [services, setServices] = useState<UserServiceFinal[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [serviceId, setServiceId] = useState<string>("");
+  const [currentContent, setCurrentContent] = useState<number>(0);
 
   const [updateProjectName] = useUpdatePorjectNameLazyQuery();
 
@@ -87,26 +89,65 @@ function Dashboard() {
 
   const { data, loading, error } = useMeQuery({ fetchPolicy: "network-only" });
 
+  const {
+    data: dashboardContents,
+    loading: dashboardContentLoading,
+    error: dashboardContentError,
+  } = useActiveDashboardContentQuery({ fetchPolicy: "cache-and-network" });
+
   useEffect(() => {
     if (data?.me) {
       setServices(data.me.services);
     }
   }, [data]);
 
+  useEffect(() => {
+    var contentInterval: NodeJS.Timeout;
+    // Slider
+    if ((dashboardContents?.activeDashboardContent.length ?? 0) > 1) {
+      contentInterval = setInterval(() => {
+        setCurrentContent((prev) =>
+          (dashboardContents?.activeDashboardContent.length ?? 0) - 1 === prev
+            ? 0
+            : prev + 1
+        );
+      }, 10000);
+    }
+
+    return () => clearInterval(contentInterval);
+  }, [dashboardContents?.activeDashboardContent]);
+
   return (
     <div className="bg-darkBlue text-white flex">
       <DashNav name={data?.me.name} email={data?.me.email} />
-      <div className="px-8 relative z-0">
+      <div className="px-8 relative z-0 w-full">
         <div className="absolute animation-delay-2000 top-[55%] left-[20%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
         <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
-        <div className="mt-28">
-          <Image
-            objectFit="cover"
-            height={900}
-            className="rounded-xl"
-            src={PromoImg}
-          />
-        </div>
+        {dashboardContents?.activeDashboardContent.map((el, idx) => {
+          if (currentContent === idx) {
+            return (
+              <div
+                data-aos="fade-in"
+                data-aos-duration="500"
+                data-aos-easing="ease-in-out"
+                data-aos-mirror="true"
+                className="mt-28 w-full h-32 lg:h-40 relative"
+                key={idx}
+              >
+                <Image
+                  objectFit="cover"
+                  layout="fill"
+                  className="rounded-xl"
+                  src={
+                    dashboardContents?.activeDashboardContent[idx].image ?? ""
+                  }
+                />
+              </div>
+            );
+          } else {
+            return null;
+          }
+        })}
         {/* Modal Start */}
         <Modal open={open} setOpen={setOpen}>
           <div className="space-y-4 text-center">
@@ -144,16 +185,16 @@ function Dashboard() {
         </Modal>
         {/* Modal End */}
         <div className="py-4 space-y-3">
-          <span className="text-2xl md:text-3xl font-bold">
+          <span className="text-xl md:text-3xl font-bold">
             Good{" "}
             {hours < 12
               ? "Morning"
               : hours >= 12 && hours < 17
-                ? "Afternoon"
-                : "Evening"}
+              ? "Afternoon"
+              : "Evening"}
             , {data?.me.name}.
           </span>
-          <div className="text-md md:text-lg">
+          <div className="text-sm md:text-lg">
             {(data?.me.services.length ?? 0) > 0
               ? "You have the following paid subscriptions in your account."
               : "You don't have any paid services, click below to start with a new service."}

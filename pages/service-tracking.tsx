@@ -3,6 +3,7 @@ import DashNav from "../components/DashNav";
 import Button from "../components/reusable/Button";
 import {
   ServiceStatusObjectState,
+  useMarkCompletedLazyQuery,
   useMeQuery,
   UserServiceStatus,
 } from "../graphql/generated/graphql";
@@ -11,6 +12,7 @@ import { UserServiceFinal } from "./dashboard";
 import { getStatusNames } from "../components/reusable/Accordion";
 import Link from "next/link";
 import moment from "moment";
+import toast from "react-hot-toast";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -24,6 +26,7 @@ const TABLE_HEADERS = [
   "Est. Delivery Date",
   "Reupload Notes",
   "Reupload Date",
+  "Completed Date",
   "Upload",
   "Download",
   "Request Revision",
@@ -32,9 +35,16 @@ const TABLE_HEADERS = [
 ];
 
 function ServiceTracking() {
-  const { data, loading, error } = useMeQuery({
+  const {
+    data,
+    loading: meQueryLoading,
+    error,
+  } = useMeQuery({
     fetchPolicy: "network-only",
   });
+
+  const [markCompleteQuery] = useMarkCompletedLazyQuery();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [services, setServices] = useState<UserServiceFinal[]>([]);
   const [filteredServices, setFilteredServices] = useState<UserServiceFinal[]>(
@@ -49,6 +59,41 @@ function ServiceTracking() {
       setFilteredServices(servicesArr);
     }
   }, [data]);
+
+  const handleMarkComplete = async (serviceId: string) => {
+    try {
+      const { data, error } = await markCompleteQuery({
+        variables: {
+          serviceId: serviceId,
+        },
+      });
+
+      // Handling Errors
+      if (error) {
+        setLoading(false);
+        toast.error(error.message);
+        return;
+      }
+      if (!data || !data.markCompleted) {
+        setLoading(false);
+        toast.error("Something went wrong, try again later.");
+        return;
+      }
+
+      setLoading(false);
+      toast.success("Project Marked As Completed");
+      let arr = [...services];
+      setServices(
+        arr.map((el) => ({
+          ...el,
+          statusType: UserServiceStatus.Completed,
+        }))
+      );
+    } catch (error: any) {
+      setLoading(false);
+      toast.error(error.toString());
+    }
+  };
 
   return (
     <div className="min-h-screen bg-darkBlue text-white flex relative ">
@@ -179,6 +224,13 @@ function ServiceTracking() {
                                 )
                               : "N/A"}
                           </td>
+                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
+                            {transaction.completionDate
+                              ? moment(transaction.completionDate).format(
+                                  "MMM Do YY, h:mm a"
+                                )
+                              : "N/A"}
+                          </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button
                               disabled={
@@ -220,18 +272,32 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white relative">
                             {/* DIsabled unless delivered / revision delivered / completed */}
                             <Button
+                              onClick={() => {
+                                if (
+                                  getStatusNames(transaction.statusType) ===
+                                    "Delivered" ||
+                                  getStatusNames(transaction.statusType) ===
+                                    "Revision Delivered" ||
+                                  getStatusNames(transaction.statusType) ===
+                                    "Completed"
+                                ) {
+                                  const downloadA = document.createElement("a");
+                                  downloadA.href =
+                                    transaction.deliveredFiles?.length === 1
+                                      ? transaction.deliveredFiles[0]
+                                      : "";
+                                  downloadA.download = "true";
+                                  downloadA.click();
+                                }
+                              }}
                               disabled={
                                 !(
                                   getStatusNames(transaction.statusType) ===
-                                  "Delivered"
-                                ) ||
-                                !(
+                                    "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
-                                ) ||
-                                !(
+                                    "Revision Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                  "Completed"
+                                    "Completed"
                                 )
                               }
                             >
@@ -244,11 +310,9 @@ function ServiceTracking() {
                               disabled={
                                 !(
                                   getStatusNames(transaction.statusType) ===
-                                  "Delivered"
-                                ) ||
-                                !(
+                                    "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
+                                    "Revision Delivered"
                                 ) ||
                                 !(
                                   transaction.setOfRevisions &&
@@ -262,14 +326,22 @@ function ServiceTracking() {
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                             <Button
+                              onClick={() => {
+                                if (
+                                  getStatusNames(transaction.statusType) ===
+                                    "Delivered" ||
+                                  getStatusNames(transaction.statusType) ===
+                                    "Revision Delivered"
+                                ) {
+                                  handleMarkComplete(transaction._id);
+                                }
+                              }}
                               disabled={
                                 !(
                                   getStatusNames(transaction.statusType) ===
-                                  "Delivered"
-                                ) ||
-                                !(
+                                    "Delivered" ||
                                   getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
+                                    "Revision Delivered"
                                 )
                               }
                             >
@@ -280,7 +352,7 @@ function ServiceTracking() {
                             <Button
                               disabled={
                                 getStatusNames(transaction.statusType) ===
-                                "Completed"
+                                "Delivered"
                                   ? false
                                   : true
                               }

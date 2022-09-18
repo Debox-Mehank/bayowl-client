@@ -543,6 +543,7 @@ function Upload() {
 
         finalUploadedUrl = finalMultipartData.finalizeMultipartUpload;
       } else {
+        setLoading(true);
         // Direct Upload The Zip File To S3 using pre signed url
         const { data: s3Url, error: s3Error } = await getS3URL({
           variables: { fileName: finalFileName },

@@ -65,7 +65,8 @@ html {
     transition: 0.3s all linear;
 }
 
-.border-gradient-btn:hover {
+.border-gradient-btn:hover,
+.border-gradient-btn:hover:focus {
     background: linear-gradient(to right, #18181B, #18181B),
         linear-gradient(to bottom right, #4d1b98, purple, #331265);
     background-clip: padding-box, border-box;

@@ -25,6 +25,8 @@ import { FileUploader } from "react-drag-drop-files";
 import toast from "react-hot-toast";
 import {
   FinalMultipartUploadPartsInput,
+  MeDocument,
+  MeQuery,
   MultipartSignedUrlResponse,
   useFinalizeMultipartUploadLazyQuery,
   useGetMultipartPreSignedUrlsLazyQuery,
@@ -35,6 +37,8 @@ import {
   useUploadFilesForServiceLazyQuery,
 } from "../graphql/generated/graphql";
 import { UserServiceFinal } from "./dashboard";
+import { GetServerSideProps } from "next";
+import { addApolloState, initializeApollo } from "../lib/apolloClient";
 
 interface errorList {
   fileName: string;
@@ -1470,3 +1474,33 @@ function Upload() {
 }
 
 export default Upload;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const apolloClient = initializeApollo(null, context);
+
+  try {
+    const meQueryData = await apolloClient.query<MeQuery>({
+      query: MeDocument,
+    });
+
+    if (meQueryData.error || meQueryData.errors) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+
+    return addApolloState(apolloClient, {
+      props: {},
+    });
+  } catch (error: any) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+};

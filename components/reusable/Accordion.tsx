@@ -32,16 +32,16 @@ const getButtonText = (service: UserServiceFinal): string => {
     } else {
       btnText = "Upload Files";
     }
-  } else if (
-    service.statusType === UserServiceStatus.Underreview ||
-    service.statusType === UserServiceStatus.Underreviewinternal
-  ) {
+  } else if (service.statusType === UserServiceStatus.Underreview) {
     if (service.reupload) {
       btnText = "Under Review For Reupload";
     } else {
       btnText = "Under Review";
     }
-  } else if (service.statusType === UserServiceStatus.Workinprogress) {
+  } else if (
+    service.statusType === UserServiceStatus.Workinprogress ||
+    service.statusType === UserServiceStatus.Underreviewinternal
+  ) {
     btnText = "Work In Progress";
   } else if (service.statusType === UserServiceStatus.Delivered) {
     btnText = "Delivered";

@@ -5,6 +5,7 @@ import {
   ServiceStatusObjectState,
   useMarkCompletedLazyQuery,
   useMeQuery,
+  useRequestRevisionLazyQuery,
   UserServiceStatus,
 } from "../graphql/generated/graphql";
 import { useState } from "react";
@@ -48,6 +49,7 @@ function ServiceTracking() {
   });
 
   const [markCompleteQuery] = useMarkCompletedLazyQuery();
+  const [requestRevisionQuery] = useRequestRevisionLazyQuery();
   const [loading, setLoading] = useState<boolean>(false);
 
   const [services, setServices] = useState<UserServiceFinal[]>([]);
@@ -57,7 +59,7 @@ function ServiceTracking() {
   const [tableHeaders, setTableHeaders] = useState<string[]>(TABLE_HEADERS);
   const [isRevModalOpen, setIsRevModalOpen] = useState<boolean>(false);
   const [revNotes, setRevNotes] = useState<string>("");
-  const [revFor, setRevFor] = useState<string>("Original Delivery");
+  const [revFor, setRevFor] = useState<number>(0);
 
   useEffect(() => {
     if (data?.me) {
@@ -94,6 +96,57 @@ function ServiceTracking() {
         arr.map((el) => ({
           ...el,
           statusType: UserServiceStatus.Completed,
+        }))
+      );
+    } catch (error: any) {
+      setLoading(false);
+      toast.error(error.toString());
+    }
+  };
+
+  const handleRequestRevision = async (service: UserServiceFinal) => {
+    let lastRevisionNumber: number =
+      service.revisionFiles.length > 0
+        ? service.revisionFiles.sort((a, b) => a.revision - b.revision)[0]
+            .revision + 1
+        : 1;
+    let revisionForNumber: number = revFor;
+
+    console.log(lastRevisionNumber, revisionForNumber);
+
+    try {
+      const { data, error } = await requestRevisionQuery({
+        variables: {
+          description: revNotes,
+          revisionNumber: lastRevisionNumber,
+          serviceId: service._id,
+          revisionForNumber: revisionForNumber,
+        },
+      });
+
+      // Handling Errors
+      if (error) {
+        setLoading(false);
+        toast.error(error.message);
+        return;
+      }
+      if (!data || !data.requestRevision) {
+        setLoading(false);
+        toast.error("Something went wrong, try again later.");
+        return;
+      }
+
+      setLoading(false);
+      setIsRevModalOpen(false);
+      toast.success("Revision requested successfully");
+      let arr = [...services];
+      setServices(
+        arr.map((el) => ({
+          ...el,
+          statusType:
+            el._id === service._id
+              ? UserServiceStatus.Revisionrequest
+              : el.statusType,
         }))
       );
     } catch (error: any) {
@@ -215,7 +268,7 @@ function ServiceTracking() {
                           <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                             {transaction.estDeliveryDate
                               ? moment(transaction.estDeliveryDate).format(
-                                  "MMM Do YY, h:mm a"
+                                  "MMM Do, YYYY"
                                 )
                               : "N/A"}
                           </td>
@@ -321,7 +374,10 @@ function ServiceTracking() {
                                   Request a revision
                                 </h4>
                                 <svg
-                                  onClick={() => setIsRevModalOpen(false)}
+                                  onClick={() => {
+                                    setIsRevModalOpen(false);
+                                    setRevNotes("");
+                                  }}
                                   xmlns="http://www.w3.org/2000/svg"
                                   fill="none"
                                   viewBox="0 0 24 24"
@@ -357,14 +413,19 @@ function ServiceTracking() {
                                       <select
                                         value={revFor}
                                         onChange={(e) =>
-                                          setRevFor(e.target.value)
+                                          setRevFor(parseInt(e.target.value))
                                         }
                                         className="border bg-white/5 border-gray-300 rounded-full text-gray-600 h-10 pl-5 pr-10 bg-white hover:border-gray-400 focus:outline-none appearance-none"
                                       >
-                                        <option>Original Delivery</option>
+                                        <option value={0}>
+                                          Original Delivery
+                                        </option>
                                         {transaction.revisionFiles.map(
                                           (version, index) => (
-                                            <option key={version.revision}>
+                                            <option
+                                              key={version.revision}
+                                              value={index + 1}
+                                            >
                                               Revision {index + 1}
                                             </option>
                                           )
@@ -385,7 +446,8 @@ function ServiceTracking() {
 
                                 <Button
                                   onClick={() => {
-                                    setIsRevModalOpen(false);
+                                    handleRequestRevision(transaction);
+                                    // setIsRevModalOpen(false);
                                     // send revNotes to server
                                   }}
                                 >

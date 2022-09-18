@@ -34,6 +34,7 @@ fragment userServices on UserServices {
     description
     file
     revision
+    revisionFor
   }
   statusType
   status {
@@ -174,4 +175,18 @@ query ActiveDashboardContent {
   activeDashboardContent {
     image
   }
+}
+
+query RequestRevision(
+  $revisionNumber: Float!
+  $description: String!
+  $serviceId: String!
+  $revisionForNumber: Float!
+) {
+  requestRevision(
+    revisionNumber: $revisionNumber
+    description: $description
+    serviceId: $serviceId
+    revisionForNumber: $revisionForNumber
+  )
 }

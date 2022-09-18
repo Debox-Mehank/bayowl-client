@@ -337,7 +337,7 @@ const Home: NextPage = () => {
               "Login"
             )}
           </div>
-          <div className="flex justify-between">
+          <div className="flex flex-col gap-1 md:flex-row justify-between">
             <Link href={"/sign-up"}>
               <span className="underline cursor-pointer">
                 Create an account

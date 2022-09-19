@@ -23,6 +23,7 @@ import { ChevronDownIcon } from "@heroicons/react/solid";
 import { type } from "os";
 import { GetServerSideProps } from "next";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
+import Loader from "../components/reusable/Loader";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -245,7 +246,7 @@ function ServiceTracking() {
         </>
       </Modal>
 
-      <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
+      {loading || meQueryLoading ? <Loader /> : <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
         {/* Scrollable Div Below, issue */}
         <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[49]">
           <div className="w-full max-w-sm text-center text-xl sm:max-w-md text-white bg-white/10 rounded-md py-1 md:py-2 pl-2 pr-3 md:px-2 flex items-center gap-2 fixed">
@@ -270,8 +271,8 @@ function ServiceTracking() {
               className="w-full py-1 px-2 rounded-md border-none bg-transparent"
             />
             <div className="inline group">
-              <span className="cursor-pointer flex gap-2 items-center md:mr-3 text-sm md:text-md">
-                <label className="cursor-pointer" htmlFor="search">
+              <span className=" flex gap-2 items-center md:mr-3 text-sm md:text-md">
+                <label className="" htmlFor="search">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
@@ -424,8 +425,8 @@ function ServiceTracking() {
                                 className="relative inline-block text-left"
                               >
                                 <div>
-                                  <Menu.Button className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white/5 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-50/10 gradient-border-2 border-gradient-btn">
-                                    Downloads
+                                  <Menu.Button className="inline-flex w-full justify-center items-center rounded-md border border-gray-300 bg-white/5 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-gray-50/10 gradient-border-2 border-gradient-btn">
+                                    <span>Downloads</span>
                                     <ChevronDownIcon
                                       className="-mr-1 ml-2 h-5 w-5"
                                       aria-hidden="true"
@@ -604,7 +605,7 @@ function ServiceTracking() {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

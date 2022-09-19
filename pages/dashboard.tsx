@@ -31,7 +31,8 @@ function Dashboard() {
   const router = useRouter();
   const date = new Date();
   const hours = date.getHours();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [services, setServices] = useState<UserServiceFinal[]>([]);
   const [projectName, setProjectName] = useState<string>("");
   const [serviceId, setServiceId] = useState<string>("");
@@ -56,18 +57,19 @@ function Dashboard() {
     }
 
     try {
+      setIsLoading(true)
       const { data, error } = await updateProjectName({
         variables: { projectName: projectName, serviceId: serviceId },
       });
 
       if (error) {
-        // setLoading(false);
+        setIsLoading(false);
         toast.error(error.message);
         return;
       }
 
       if (!data || !data.updatePorjectName) {
-        // setLoading(false);
+        setIsLoading(false);
         toast.error("Something went wrong, try again later.");
         return;
       }
@@ -82,6 +84,7 @@ function Dashboard() {
       setServices(copyServices);
       router.push(`/upload?serviceId=${copyServices[foundServiceIdx]._id}`);
     } catch (error) {
+      setIsLoading(false)
       toast.error("Something went wrong please try again later");
       return;
     }
@@ -123,7 +126,7 @@ function Dashboard() {
       <div className="px-8 relative z-0 w-full">
         <div className="absolute animation-delay-2000 top-[55%] left-[20%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
         <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
-        {dashboardContents?.activeDashboardContent.map((el, idx) => {
+        {loading ? <Loader /> : dashboardContents?.activeDashboardContent.map((el, idx) => {
           if (currentContent === idx) {
             return (
               <div
@@ -190,8 +193,8 @@ function Dashboard() {
             {hours < 12
               ? "Morning"
               : hours >= 12 && hours < 17
-              ? "Afternoon"
-              : "Evening"}
+                ? "Afternoon"
+                : "Evening"}
             , {data?.me.name}.
           </span>
           <div className="text-sm md:text-lg">

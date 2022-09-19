@@ -13,6 +13,7 @@ import {
 import Modal from "../components/reusable/Modal";
 import secondsToTime from "../utils/secsToTime";
 import _ from "lodash";
+import Loader from "../components/reusable/Loader";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -328,7 +329,7 @@ const Pricing = () => {
           </div>
         </div>
       </Modal>
-      <div className="text-white relative">
+      {loading ? <Loader /> : <div className="text-white relative">
         <div className="absolute animation-delay-2000 top-[35%] left-[35%] w-36 md:w-96 h-56 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="absolute top-[42%] right-[34%] w-36 md:w-80 h-72 bg-orange3 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="max-w-7xl mx-auto lg:py-8 relative">
@@ -1778,7 +1779,6 @@ const Pricing = () => {
                           <div className="text-center relative ">
                             <svg
                               onClick={() => setIsModalOpen(false)}
-                              xmlns="http://www.w3.org/2000/svg"
                               fill="none"
                               viewBox="0 0 24 24"
                               strokeWidth={1.5}
@@ -1960,7 +1960,6 @@ const Pricing = () => {
                                           }
                                           setSelectedAddons(arr);
                                         }}
-                                        xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         strokeWidth={1.5}
@@ -2071,7 +2070,7 @@ const Pricing = () => {
                                             }
 
                                           }
-                                          console.log(arr);
+                                          // console.log(arr);
                                           setSelectedAddons(arr);
                                         }}
                                         xmlns="http://www.w3.org/2000/svg"
@@ -2168,7 +2167,7 @@ const Pricing = () => {
             </div>
           )}
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

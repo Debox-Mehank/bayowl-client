@@ -69,6 +69,8 @@ function ServiceTracking() {
   const [revNotes, setRevNotes] = useState<string>("");
   const [revFor, setRevFor] = useState<number>(0);
 
+  const [markCompleteVer, setMarkCompleteVer] = useState<string>("Original Delivery")
+
   useEffect(() => {
     if (data?.me) {
       const servicesArr = data.me.services.filter((el) => el.projectName);
@@ -170,80 +172,11 @@ function ServiceTracking() {
       <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden" />
       <div className="absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
       <DashNav name={data?.me.name} email={data?.me.email} />
-      {/* Mark Completed */}
-      <Modal open={!isMarkCompletedOpen} setOpen={setisMarkCompletedOpen}>
-        <>
-          <div className="relative text-center">
-            <h4 className="font-bold pb-4  text-primary text-lg">
-              Request a revision
-            </h4>
-            <svg
-              onClick={() => {
-                setIsRevModalOpen(false);
-                setRevNotes("");
-              }}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="absolute right-0 -top-3 w-6 h-6 hover:text-primary cursor-pointer"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </div>
-          <div className="text-center">
-            <p className="mb-4">
-              Which version did you finalize with?
-            </p>
-            <div className="relative inline-flex mb-4 w-full max-w-sm">
 
-              <select
-                value={revFor}
-                onChange={(e) => setRevFor(parseInt(e.target.value))}
-                className="border block w-full bg-gray-800 border-gray-300 rounded-lg text-white h-10 pl-5 pr-10  hover:border-gray-800/10 outline-none border-none focus:outline-none appearance-none"
-
-              >
-                <option value={0}>Original Delivery</option>
-                {/* Error due to below line */}
-                {(selectedService?.revisionFiles) && selectedService.revisionFiles && selectedService?.revisionFiles.map((version, index) => (
-                  <option key={version.revision} value={index + 1}>
-                    Revision {index + 1}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <textarea
-              className="bg-gray-800 rounded-xl w-full h-[60%] my-2 placeholder:text-center max-w-sm outline-none border-none focus:outline-none"
-              name="Remarks"
-              id="remarks"
-              placeholder="Please enter notes for the engineer here."
-              value={revNotes}
-              onChange={(e) => setRevNotes(e.target.value)}
-            />
-            <div className="w-fit mx-auto">
-              <Button
-                onClick={() => {
-                  handleRequestRevision(selectedService);
-                  // setIsRevModalOpen(false);
-                  // send revNotes to server
-                }}
-              >
-                <div className=" mx-auto inline-block">Proceed</div>
-              </Button>
-            </div>
-          </div>
-        </>
-
-      </Modal>
       {/* Revision Modal */}
       <Modal open={isRevModalOpen} setOpen={setIsRevModalOpen}>
         <>
-          {selectedService && selectedService.revisionFiles.length && (
+          {selectedService && (
             <div className="relative text-center">
               <h4 className="font-bold pb-4  text-primary text-lg">
                 Request a revision
@@ -636,15 +569,80 @@ function ServiceTracking() {
                             </td>
 
                             <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                              <Button
-                                onClick={() => {
-                                  if (getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
-                                    getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered") {
-                                    handleMarkComplete(transaction._id);
-                                  }
-                                }}
+                              {/* Mark Completed Modal*/}
+                              <Modal open={isMarkCompletedOpen} setOpen={setisMarkCompletedOpen}>
+                                <>
+                                  <div className="relative text-center">
+                                    <h4 className="font-bold pb-4  text-primary text-lg">
+                                      Request a revision
+                                    </h4>
+                                    <svg
+                                      onClick={() => {
+                                        setisMarkCompletedOpen(false);
+                                      }}
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      strokeWidth={1.5}
+                                      stroke="currentColor"
+                                      className="absolute right-0 -top-3 w-6 h-6 hover:text-primary cursor-pointer"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M6 18L18 6M6 6l12 12"
+                                      />
+                                    </svg>
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="mb-4">
+                                      Which version did you finalize with?
+                                    </p>
+                                    <div className="relative inline-flex mb-4 w-full max-w-sm">
+
+                                      <select
+                                        value={markCompleteVer}
+                                        onChange={(e) => setMarkCompleteVer((e.target.value))}
+                                        className="border block w-full bg-gray-800 border-gray-300 rounded-lg text-white h-10 pl-5 pr-10  hover:border-gray-800/10 outline-none border-none focus:outline-none appearance-none"
+
+                                      >
+                                        <option value={0}>Original Delivery</option>
+                                        {(selectedService?.revisionFiles) && selectedService.revisionFiles && selectedService?.revisionFiles.map((version, index) => (
+                                          <option key={version.revision} value={index + 1}>
+                                            Revision {index + 1}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                    <div className="w-fit mx-auto">
+                                      <Button
+                                        onClick={() => {
+                                          if (getStatusNames(transaction.statusType) ===
+                                            "Delivered" ||
+                                            getStatusNames(transaction.statusType) ===
+                                            "Revision Delivered") {
+                                            handleMarkComplete(transaction._id);
+                                          }
+                                          // setIsRevModalOpen(false);
+                                          // send revNotes to server
+                                        }}
+                                      >
+                                        <div className=" mx-auto inline-block">Proceed</div>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </>
+
+                              </Modal>
+                              <Button onClick={() => {
+                                (transaction?.revisionFiles.length! > 0) && setisMarkCompletedOpen(true);
+                                if ((transaction.revisionFiles.length! == 0) && getStatusNames(transaction.statusType) ===
+                                  "Delivered" ||
+                                  getStatusNames(transaction.statusType) ===
+                                  "Revision Delivered") {
+                                  handleMarkComplete(transaction._id);
+                                }
+                              }}
                                 disabled={!(
                                   getStatusNames(transaction.statusType) ===
                                   "Delivered" ||

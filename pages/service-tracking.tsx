@@ -425,7 +425,7 @@ function ServiceTracking() {
                                         transaction._id +
                                         "&reupload=true"}
                                     >
-                                      Reupload
+                                      Reupload all files
                                     </Link>
                                   ) : (
                                     "Upload"

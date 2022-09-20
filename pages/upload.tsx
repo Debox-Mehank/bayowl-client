@@ -39,6 +39,7 @@ import {
 import { UserServiceFinal } from "./dashboard";
 import { GetServerSideProps } from "next";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
+import axios from "axios";
 
 interface errorList {
   fileName: string;
@@ -507,11 +508,23 @@ function Upload() {
           let signedUrl = multipartUrls[index - 1].signedUrl ?? "";
           let partNumber = multipartUrls[index - 1].PartNumber ?? 0;
 
-          let uploadChunk = await fetch(signedUrl, {
-            method: "PUT",
-            body: fileBlob,
-          });
-          let etag = uploadChunk.headers.get("etag");
+          let uploadChunk = await axios.put(
+            signedUrl,
+            { data: fileBlob },
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+              onUploadProgress: (pe) => {
+                console.log(pe);
+              },
+            }
+          );
+          let etag = uploadChunk.headers["etag"];
+
+          // let uploadChunk = await fetch(signedUrl, {
+          //   method: "PUT",
+          //   body: fileBlob,
+          // });
+          // let etag = uploadChunk.headers.get("etag");
           partsUploadArray.push({
             ETag: etag ?? "",
             PartNumber: partNumber,
@@ -785,7 +798,9 @@ function Upload() {
             <div className="pt-7 pb-4 space-y-2 max-h-[70vh] overflow-auto px-2">
               {errorList.map((err) => (
                 <div key={err.fileName} className="flex gap-4 text-left">
-                  <div className="font-bold w-1/2 break-words">{err.fileName}</div>
+                  <div className="font-bold w-1/2 break-words">
+                    {err.fileName}
+                  </div>
                   <div className="flex-1 w-1/2">
                     {err.issue.map((issue, index) => (
                       <p key={`${issue} - ${index}`}>{issue}</p>
@@ -881,10 +896,11 @@ function Upload() {
                           fileOrFiles={filesArray}
                         >
                           <div
-                            className={`w-full cursor-pointer h-full px-2 bg-white/10 flex flex-col gap-8 rounded-xl ${filesArray.length <= 0
-                              ? "justify-center items-center"
-                              : ""
-                              }`}
+                            className={`w-full cursor-pointer h-full px-2 bg-white/10 flex flex-col gap-8 rounded-xl ${
+                              filesArray.length <= 0
+                                ? "justify-center items-center"
+                                : ""
+                            }`}
                           >
                             {filesArray.length <= 0 && (
                               <>
@@ -1037,10 +1053,10 @@ function Upload() {
                                 {refArray.length <
                                   (service.numberOfReferenceFileUploads ??
                                     0) && (
-                                    <div className="font-bold text-md py-3">
-                                      Or add more
-                                    </div>
-                                  )}
+                                  <div className="font-bold text-md py-3">
+                                    Or add more
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -1049,7 +1065,7 @@ function Upload() {
 
                           {isRefByUpload === null &&
                             refArray.length <
-                            (service.numberOfReferenceFileUploads ?? 0) && (
+                              (service.numberOfReferenceFileUploads ?? 0) && (
                               <div
                                 data-aos="fade-up"
                                 className="text-center space-y-4 mt-4"
@@ -1113,98 +1129,97 @@ function Upload() {
                                   refFilesArray.length >
                                   (service.numberOfReferenceFileUploads ?? 0)
                                 ) && (
-                                    <FileUploader
-                                      key={key3.current}
-                                      handleChange={async (file: File) => {
-                                        let approvedFiles: File[] = [];
-                                        // Checking Type, Duration & Size for each file.
+                                  <FileUploader
+                                    key={key3.current}
+                                    handleChange={async (file: File) => {
+                                      let approvedFiles: File[] = [];
+                                      // Checking Type, Duration & Size for each file.
 
-                                        // Check if files with the same name exists in the array or not.
-                                        if (
-                                          refFilesArray.find(
-                                            (prevFile) =>
-                                              prevFile.name === file.name
-                                          )
-                                        ) {
+                                      // Check if files with the same name exists in the array or not.
+                                      if (
+                                        refFilesArray.find(
+                                          (prevFile) =>
+                                            prevFile.name === file.name
+                                        )
+                                      ) {
+                                        toast.error(
+                                          `Upload Failed - Reference file named ${file.name} has already been selected.`
+                                        );
+                                        return;
+                                      }
+                                      //
+                                      if (
+                                        filesArray.find(
+                                          (prevFile) =>
+                                            prevFile.name === file.name
+                                        )
+                                      ) {
+                                        // alert()
+                                        toast.error(
+                                          `Upload Failed - You have already added this file as a part of your base files.`
+                                        );
+                                        return;
+                                      }
 
-                                          toast.error(
-                                            `Upload Failed - Reference file named ${file.name} has already been selected.`
-                                          );
-                                          return
-                                        }
-                                        //
-                                        if (
-                                          filesArray.find(
-                                            (prevFile) =>
-                                              prevFile.name === file.name
-                                          )
-                                        ) {
-                                          // alert()
-                                          toast.error(
-                                            `Upload Failed - You have already added this file as a part of your base files.`
-                                          );
-                                          return;
-                                        }
-
-                                        const hasErrors =
-                                          await checkTypeDurationSize(
-                                            file,
-                                            service.uploadFileFormat,
-                                            service.maxFileDuration ?? 0
-                                          );
-                                        //  If no errors, push to approved files.
-                                        if (!hasErrors) {
-                                          // Upload the file to S3 that returns a URL
-                                          // Append refArray with the returned URL.
-                                          setrefArray((prev) => [
-                                            ...prev,
-                                            {
-                                              name: file.name,
-                                              file: file,
-                                              isAddedByUpload: true,
-                                            },
-                                          ]);
-                                        } else if (
-                                          typeof hasErrors === "object"
-                                        ) {
-                                          // Else append error list.
-                                          toast.error(
-                                            "Upload Failed - " +
+                                      const hasErrors =
+                                        await checkTypeDurationSize(
+                                          file,
+                                          service.uploadFileFormat,
+                                          service.maxFileDuration ?? 0
+                                        );
+                                      //  If no errors, push to approved files.
+                                      if (!hasErrors) {
+                                        // Upload the file to S3 that returns a URL
+                                        // Append refArray with the returned URL.
+                                        setrefArray((prev) => [
+                                          ...prev,
+                                          {
+                                            name: file.name,
+                                            file: file,
+                                            isAddedByUpload: true,
+                                          },
+                                        ]);
+                                      } else if (
+                                        typeof hasErrors === "object"
+                                      ) {
+                                        // Else append error list.
+                                        toast.error(
+                                          "Upload Failed - " +
                                             hasErrors.fileName +
                                             " - " +
                                             hasErrors.issue.join(" & ")
-                                          );
-                                        }
-
-                                        setIsRefByUpload(null);
-
-                                        key3.current = key3.current + 1;
-                                      }}
-                                      name="Reference Files"
-                                      fileOrFiles={refFilesArray}
-                                      classes={
-                                        "w-full text-center cursor-pointer group"
+                                        );
                                       }
+
+                                      setIsRefByUpload(null);
+
+                                      key3.current = key3.current + 1;
+                                    }}
+                                    name="Reference Files"
+                                    fileOrFiles={refFilesArray}
+                                    classes={
+                                      "w-full text-center cursor-pointer group"
+                                    }
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      strokeWidth={1.5}
+                                      stroke="currentColor"
+                                      className="w-8 h-8 my-1 group-hover:text-primary duration-200 transition-colors mx-auto"
                                     >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={1.5}
-                                        stroke="currentColor"
-                                        className="w-8 h-8 my-1 group-hover:text-primary duration-200 transition-colors mx-auto"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                      </svg>
-                                      <span className="text-center mx-auto group-hover:text-primary duration-200 transition-colors">
-                                        Click to upload or drag on this area.
-                                      </span>
-                                    </FileUploader>
-                                  )}
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                      />
+                                    </svg>
+                                    <span className="text-center mx-auto group-hover:text-primary duration-200 transition-colors">
+                                      Click to upload or drag on this area.
+                                    </span>
+                                  </FileUploader>
+                                )}
                                 {refFilesArray.length > 0 && (
                                   <div className="text-sm text-center">
                                     <span
@@ -1229,51 +1244,51 @@ function Upload() {
                                 {refArray.length <
                                   (service.numberOfReferenceFileUploads ??
                                     0) && (
-                                    <div className="w-full flex gap-4">
-                                      <input
-                                        ref={urlEl}
-                                        placeholder="Enter URL"
-                                        className="bg-white/10 rounded-xl w-full border-transparent focus:border-transparent focus:ring-0"
-                                        type="url"
-                                        name="Ref Link"
-                                        id="refLink"
+                                  <div className="w-full flex gap-4">
+                                    <input
+                                      ref={urlEl}
+                                      placeholder="Enter URL"
+                                      className="bg-white/10 rounded-xl w-full border-transparent focus:border-transparent focus:ring-0"
+                                      type="url"
+                                      name="Ref Link"
+                                      id="refLink"
+                                    />
+                                    <svg
+                                      onClick={() => {
+                                        const input = urlEl.current?.value;
+                                        if (input && isValidHttpUrl(input)) {
+                                          setrefArray((prev) => [
+                                            ...prev,
+                                            {
+                                              url: getClickableLink(input),
+                                              isAddedByUpload: false,
+                                            },
+                                          ]);
+                                          urlEl.current.value = "";
+                                          setIsRefByUpload(null);
+                                          return;
+                                        }
+                                        toast.error(
+                                          "Invalid URL. Please check and try again."
+                                        );
+                                        // urlEl.current.text
+                                        // refArray()
+                                      }}
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      strokeWidth={1.5}
+                                      stroke="currentColor"
+                                      className="w-10 h-10 cursor-pointer hover:text-primary duration-200 transition-colors mx-auto"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
                                       />
-                                      <svg
-                                        onClick={() => {
-                                          const input = urlEl.current?.value;
-                                          if (input && isValidHttpUrl(input)) {
-                                            setrefArray((prev) => [
-                                              ...prev,
-                                              {
-                                                url: getClickableLink(input),
-                                                isAddedByUpload: false,
-                                              },
-                                            ]);
-                                            urlEl.current.value = "";
-                                            setIsRefByUpload(null);
-                                            return;
-                                          }
-                                          toast.error(
-                                            "Invalid URL. Please check and try again."
-                                          );
-                                          // urlEl.current.text
-                                          // refArray()
-                                        }}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={1.5}
-                                        stroke="currentColor"
-                                        className="w-10 h-10 cursor-pointer hover:text-primary duration-200 transition-colors mx-auto"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                      </svg>
-                                    </div>
-                                  )}
+                                    </svg>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
@@ -1339,7 +1354,7 @@ function Upload() {
                           )}
                           {filesArray.length > 0 &&
                             filesArray.length <
-                            (service.inputTrackLimit ?? 0) && (
+                              (service.inputTrackLimit ?? 0) && (
                               <div>
                                 <FileUploader
                                   key={key2.current}
@@ -1348,10 +1363,14 @@ function Upload() {
                                     setErrorList([]);
 
                                     let hasIssues = false;
-                                    console.log(Array.from(fileList).length, service.inputTrackLimit)
+                                    console.log(
+                                      Array.from(fileList).length,
+                                      service.inputTrackLimit
+                                    );
                                     // Checking Number of files based on track Limit
                                     if (
-                                      (Array.from(fileList).length + filesArray.length) >
+                                      Array.from(fileList).length +
+                                        filesArray.length >
                                       (service.inputTrackLimit ?? 0)
                                     ) {
                                       setErrorList([
@@ -1451,8 +1470,8 @@ function Upload() {
                             onClick={() => {
                               filesArray.length === 0
                                 ? toast.error(
-                                  "Please select the file(s) before proceeding."
-                                )
+                                    "Please select the file(s) before proceeding."
+                                  )
                                 : setSummaryModalOpen(true);
                             }}
                           >

@@ -89,10 +89,11 @@ html {
 
 .bg-homepage {
     background-image: url("/homepage.jpg");
+    background-position: center center;
 }
 
 .bg-loginImg {
-    background-image: url("/loginImg.jpg");
+    background-image: url("/1.jpg");
 }
 
 .dropdown:hover .dropdown-menu {

@@ -173,7 +173,7 @@ function ServiceTracking() {
       {/* Revision Modal */}
       <Modal open={isRevModalOpen} setOpen={setIsRevModalOpen}>
         <>
-          {selectedService && (
+          {selectedService && selectedService.revisionFiles.length && (
             <div className="relative text-center">
               <h4 className="font-bold pb-4  text-primary text-lg">
                 Request a revision
@@ -197,49 +197,71 @@ function ServiceTracking() {
                 />
               </svg>
 
-              {selectedService && selectedService.revisionFiles.length > 0 && (
+              {selectedService && (
                 <>
-                  <p className="mb-4">
-                    Which version are you requesting the revision for?
-                  </p>
-                  <div className="relative inline-flex mb-4 w-full max-w-sm">
+                  {(selectedService?.setOfRevisions! > selectedService.revisionFiles.length) ?
+                    <div className="">
+                      <p className="mb-4">
+                        Which version are you requesting the revision for?
+                      </p>
+                      <div className="relative inline-flex mb-4 w-full max-w-sm">
 
-                    <select
-                      value={revFor}
-                      onChange={(e) => setRevFor(parseInt(e.target.value))}
-                      className="border block w-full bg-gray-800 border-gray-300 rounded-lg text-white h-10 pl-5 pr-10  hover:border-gray-800/10 outline-none border-none focus:outline-none appearance-none"
+                        <select
+                          value={revFor}
+                          onChange={(e) => setRevFor(parseInt(e.target.value))}
+                          className="border block w-full bg-gray-800 border-gray-300 rounded-lg text-white h-10 pl-5 pr-10  hover:border-gray-800/10 outline-none border-none focus:outline-none appearance-none"
 
-                    >
-                      <option value={0}>Original Delivery</option>
-                      {selectedService.revisionFiles.map((version, index) => (
-                        <option key={version.revision} value={index + 1}>
-                          Revision {index + 1}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                        >
+                          <option value={0}>Original Delivery</option>
+                          {selectedService.revisionFiles.map((version, index) => (
+                            <option key={version.revision} value={index + 1}>
+                              Revision {index + 1}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <textarea
+                        className="bg-gray-800 rounded-xl w-full h-[60%] my-2 placeholder:text-center max-w-sm outline-none border-none focus:outline-none"
+                        name="Remarks"
+                        id="remarks"
+                        placeholder="Please enter notes for the engineer here."
+                        value={revNotes}
+                        onChange={(e) => setRevNotes(e.target.value)}
+                      />
+                      <div className="w-fit mx-auto">
+                        <Button
+                          onClick={() => {
+                            handleRequestRevision(selectedService);
+                            // setIsRevModalOpen(false);
+                            // send revNotes to server
+                          }}
+                        >
+                          <div className=" mx-auto inline-block">Proceed</div>
+                        </Button>
+                      </div>
+                    </div>
+                    : <>
+                      <div className="pt-2 pb-4">
+                        <div>
+                          You don't have any more revisions for this service.
+                          <div className="w-fit mx-auto mt-4">
+                            <Button
+                              onClick={() => {
+                                handleRequestRevision(selectedService);
+                                // setIsRevModalOpen(false);
+                                // send revNotes to server
+                              }}
+                            >
+                              <div className=" mx-auto inline-block">Buy an extra revision</div>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </>}
+
+
                 </>
               )}
-
-              <textarea
-                className="bg-gray-800 rounded-xl w-full h-[60%] my-2 placeholder:text-center max-w-sm outline-none border-none focus:outline-none"
-                name="Remarks"
-                id="remarks"
-                placeholder="Please enter notes for the engineer here."
-                value={revNotes}
-                onChange={(e) => setRevNotes(e.target.value)}
-              />
-              <div className="w-fit mx-auto">
-                <Button
-                  onClick={() => {
-                    handleRequestRevision(selectedService);
-                    // setIsRevModalOpen(false);
-                    // send revNotes to server
-                  }}
-                >
-                  <div className=" mx-auto inline-block">Proceed</div>
-                </Button>
-              </div>
 
             </div>
           )}
@@ -319,118 +341,271 @@ function ServiceTracking() {
                       </tr>
                     </thead>
                     <tbody className=" ">
-                      {filteredServices.map((transaction) => (
-                        <tr key={transaction._id}>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-white sticky -left-4 bg-black/60 z-50 backdrop-blur-[6px] flicker-fix backface-hidden">
-                            {transaction.projectName}
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            {transaction.serviceName}
-                          </td>
-                          <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
-                            {transaction.notes === "" || !transaction.notes
-                              ? "N/A"
-                              : transaction.notes}
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            {transaction.submissionDate
-                              ? moment(transaction.submissionDate).format(
-                                "MMM Do YY, h:mm a"
-                              )
-                              : "N/A"}
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
-                            <div className="flex items-center justify-center gap-2 h-full">
-                              <span className="relative z-10 w-4 h-4 flex items-center justify-center bg-white border-2 border-primary rounded-full">
-                                <span className="h-1 w-1 bg-primary rounded-full" />
-                              </span>
-                              <span>
-                                {getStatusNames(transaction.statusType)}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
-                            {transaction.estDeliveryDate
-                              ? moment(transaction.estDeliveryDate).format(
-                                "MMM Do, YYYY"
-                              )
-                              : "N/A"}
-                          </td>
-                          <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
-                            {transaction.reupload
-                              ? transaction.reuploadNote
-                              : "N/A"}
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
-                            {transaction.reupload
-                              ? moment(transaction.reupload).format(
-                                "MMM Do YY, h:mm a"
-                              )
-                              : "N/A"}
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
-                            {transaction.completionDate
-                              ? moment(transaction.completionDate).format(
-                                "MMM Do YY, h:mm a"
-                              )
-                              : "N/A"}
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button
-                              disabled={
-                                getStatusNames(transaction.statusType) ===
+                      {filteredServices.map((transaction) => {
+                        return (
+                          <tr key={transaction._id}>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm font-medium text-white sticky -left-4 bg-black/60 z-50 backdrop-blur-[6px] flicker-fix backface-hidden">
+                              {transaction.projectName}
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                              {transaction.serviceName}
+                            </td>
+                            <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
+                              {transaction.notes === "" || !transaction.notes
+                                ? "N/A"
+                                : transaction.notes}
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                              {transaction.submissionDate
+                                ? moment(transaction.submissionDate).format(
+                                  "MMM Do YY, h:mm a"
+                                )
+                                : "N/A"}
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
+                              <div className="flex items-center justify-center gap-2 h-full">
+                                <span className="relative z-10 w-4 h-4 flex items-center justify-center bg-white border-2 border-primary rounded-full">
+                                  <span className="h-1 w-1 bg-primary rounded-full" />
+                                </span>
+                                <span>
+                                  {getStatusNames(transaction.statusType)}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
+                              {transaction.estDeliveryDate
+                                ? moment(transaction.estDeliveryDate).format(
+                                  "MMM Do, YYYY"
+                                )
+                                : "N/A"}
+                            </td>
+                            <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
+                              {transaction.reupload
+                                ? transaction.reuploadNote
+                                : "N/A"}
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
+                              {transaction.reupload
+                                ? moment(transaction.reupload).format(
+                                  "MMM Do YY, h:mm a"
+                                )
+                                : "N/A"}
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
+                              {transaction.completionDate
+                                ? moment(transaction.completionDate).format(
+                                  "MMM Do YY, h:mm a"
+                                )
+                                : "N/A"}
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                              <Button
+                                disabled={getStatusNames(transaction.statusType) ===
                                   "Pending Upload"
                                   ? false
-                                  : true
-                              }
+                                  : true}
+                              >
+                                <div className="text-xs">
+                                  {getStatusNames(transaction.statusType) ===
+                                    "Pending Upload" &&
+                                    transaction.reupload === null ? (
+                                    <Link
+                                      href={"/upload?serviceId=" + transaction._id}
+                                    >
+                                      Upload
+                                    </Link>
+                                  ) : getStatusNames(transaction.statusType) ===
+                                    "Pending Upload" &&
+                                    transaction.reupload !== null ? (
+                                    <Link
+                                      href={"/upload?serviceId=" +
+                                        transaction._id +
+                                        "&reupload=true"}
+                                    >
+                                      Reupload
+                                    </Link>
+                                  ) : (
+                                    "Upload"
+                                  )}
+                                </div>
+                              </Button>
+                            </td>
+                            <td
+                              className={`whitespace-nowrap px-2 py-2 text-sm text-white relative`}
                             >
-                              <div className="text-xs">
-                                {getStatusNames(transaction.statusType) ===
-                                  "Pending Upload" &&
-                                  transaction.reupload === null ? (
-                                  <Link
-                                    href={
-                                      "/upload?serviceId=" + transaction._id
-                                    }
-                                  >
-                                    Upload
-                                  </Link>
-                                ) : getStatusNames(transaction.statusType) ===
-                                  "Pending Upload" &&
-                                  transaction.reupload !== null ? (
-                                  <Link
-                                    href={
-                                      "/upload?serviceId=" +
-                                      transaction._id +
-                                      "&reupload=true"
-                                    }
-                                  >
-                                    Reupload
-                                  </Link>
-                                ) : (
-                                  "Upload"
-                                )}
-                              </div>
-                            </Button>
-                          </td>
-                          <td
-                            className={`whitespace-nowrap px-2 py-2 text-sm text-white relative`}
-                          >
-                            {/* DIsabled unless delivered / revision delivered / completed */}
+                              {/* DIsabled unless delivered / revision delivered / completed */}
 
-                            {transaction.revisionFiles.filter((el) => el.file)
-                              .length > 0 ? (
+                              {transaction.revisionFiles.filter((el) => el.file)
+                                .length > 0 ? (
+                                <Menu
+                                  as="div"
+                                  className="relative inline-block text-left"
+                                >
+                                  <div>
+                                    <Menu.Button className="inline-flex w-full justify-center items-center rounded-md border border-gray-300 bg-white/5 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-gray-50/10 gradient-border-2 border-gradient-btn">
+                                      <span>Downloads</span>
+                                      <ChevronDownIcon
+                                        className="-mr-1 ml-2 h-5 w-5"
+                                        aria-hidden="true" />
+                                    </Menu.Button>
+                                  </div>
+
+                                  <Transition
+                                    as={Fragment}
+                                    enter="transition ease-out duration-100"
+                                    enterFrom="transform opacity-0 scale-95"
+                                    enterTo="transform opacity-100 scale-100"
+                                    leave="transition ease-in duration-75"
+                                    leaveFrom="transform opacity-100 scale-100"
+                                    leaveTo="transform opacity-0 scale-95"
+                                  >
+                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-darkBlue/70 backdrop-blur-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                      <div className="py-1">
+                                        <Menu.Item>
+                                          {({ active }) => (
+                                            <a
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              href={transaction.deliveredFiles
+                                                ? transaction.deliveredFiles[0]
+                                                : ""}
+                                              className={classNames(
+                                                active
+                                                  ? "bg-gray-100/20 text-white/80"
+                                                  : "text-white",
+                                                "block px-4 py-2 text-sm"
+                                              )}
+                                            >
+                                              Original Delivery
+                                            </a>
+                                          )}
+                                        </Menu.Item>
+                                        {transaction.revisionFiles.filter((el) => el.file)
+                                          .map(
+                                            (version, index) => (
+                                              <Menu.Item key={version.revision}>
+                                                {({ active }) => (
+                                                  <a
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    href={version.file
+                                                      ? version.file
+                                                      : ""}
+                                                    className={classNames(
+                                                      active
+                                                        ? "bg-gray-100/20 text-white/80"
+                                                        : "text-white",
+                                                      "block px-4 py-2 text-sm"
+                                                    )}
+                                                  >
+                                                    Revision {index + 1}
+                                                  </a>
+                                                )}
+                                              </Menu.Item>
+                                              // <option key={version.revision}>Revision {index + 1}</option>
+                                            )
+                                          )}
+                                      </div>
+                                    </Menu.Items>
+                                  </Transition>
+                                </Menu>
+                              ) : (
+                                <Button
+                                  onClick={() => {
+                                    if (getStatusNames(transaction.statusType) ===
+                                      "Delivered" ||
+                                      getStatusNames(transaction.statusType) ===
+                                      "Revision Delivered" ||
+                                      getStatusNames(transaction.statusType) ===
+                                      "Completed" ||
+                                      getStatusNames(transaction.statusType) ===
+                                      "Revision Requested") {
+                                      const downloadA = document.createElement("a");
+                                      (downloadA.href = transaction.deliveredFiles
+                                        ? transaction.deliveredFiles[0]
+                                        : ""),
+                                        (downloadA.download = "true");
+                                      downloadA.click();
+                                    }
+                                  }}
+                                  disabled={!(
+                                    getStatusNames(transaction.statusType) ===
+                                    "Delivered" ||
+                                    getStatusNames(transaction.statusType) ===
+                                    "Revision Delivered" ||
+                                    getStatusNames(transaction.statusType) ===
+                                    "Completed"
+                                  )}
+                                >
+                                  <div className="text-xs">Download</div>
+                                </Button>
+                              )}
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                              {/* Disabled unless Delivered, Revision Delivered, or if there are revisions left. */}
+                              <Button
+                                onClick={() => {
+                                  setIsRevModalOpen(true);
+                                  setSelectedService(transaction);
+                                }}
+                                disabled={!(
+                                  getStatusNames(transaction.statusType) ===
+                                  "Delivered" ||
+                                  getStatusNames(transaction.statusType) ===
+                                  "Revision Delivered"
+                                )
+                                  //|| !(
+                                  //   transaction.setOfRevisions &&
+                                  //   transaction.setOfRevisions >
+                                  //   transaction.revisionFiles.length
+                                  // )
+                                }
+                              >
+                                <div className="text-xs">Request Revision</div>
+                              </Button>
+                            </td>
+
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                              <Button
+                                onClick={() => {
+                                  if (getStatusNames(transaction.statusType) ===
+                                    "Delivered" ||
+                                    getStatusNames(transaction.statusType) ===
+                                    "Revision Delivered") {
+                                    handleMarkComplete(transaction._id);
+                                  }
+                                }}
+                                disabled={!(
+                                  getStatusNames(transaction.statusType) ===
+                                  "Delivered" ||
+                                  getStatusNames(transaction.statusType) ===
+                                  "Revision Delivered"
+                                )}
+                              >
+                                <div className="text-xs">Mark Completed</div>
+                              </Button>
+                            </td>
+                            <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
+                              {/* <Button
+              disabled={
+                getStatusNames(transaction.statusType) ===
+                  "Completed"
+                  ? false
+                  : true
+              }
+            >
+              <div className="text-xs">Add Service</div>
+            </Button> */}
                               <Menu
                                 as="div"
                                 className="relative inline-block text-left"
                               >
                                 <div>
-                                  <Menu.Button className="inline-flex w-full justify-center items-center rounded-md border border-gray-300 bg-white/5 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-gray-50/10 gradient-border-2 border-gradient-btn">
-                                    <span>Downloads</span>
+                                  <Menu.Button className={`inline-flex w-full justify-center items-center rounded-md border border-gray-300  px-3 py-1.5 text-xs font-bold text-white shadow-sm  ${getStatusNames(transaction.statusType) === "Completed" ? "hover:bg-gray-50/10 gradient-border-2 border-gradient-btn bg-white/5" : "outline-none border-none cursor-not-allowed bg-white/10 text-white/40"}`}>
+                                    <span>Add Ons</span>
                                     <ChevronDownIcon
                                       className="-mr-1 ml-2 h-5 w-5"
-                                      aria-hidden="true"
-                                    />
+                                      aria-hidden="true" />
                                   </Menu.Button>
                                 </div>
 
@@ -445,27 +620,7 @@ function ServiceTracking() {
                                 >
                                   <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-darkBlue/70 backdrop-blur-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1">
-                                      <Menu.Item>
-                                        {({ active }) => (
-                                          <a
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            href={
-                                              transaction.deliveredFiles
-                                                ? transaction.deliveredFiles[0]
-                                                : ""
-                                            }
-                                            className={classNames(
-                                              active
-                                                ? "bg-gray-100/20 text-white/80"
-                                                : "text-white",
-                                              "block px-4 py-2 text-sm"
-                                            )}
-                                          >
-                                            Original Delivery
-                                          </a>
-                                        )}
-                                      </Menu.Item>
+                                      {/* To fetch add ons here with selected service filter price != null, and map them */}
                                       {transaction.revisionFiles.filter((el) => el.file)
                                         .map(
                                           (version, index) => (
@@ -474,11 +629,9 @@ function ServiceTracking() {
                                                 <a
                                                   target="_blank"
                                                   rel="noopener noreferrer"
-                                                  href={
-                                                    version.file
-                                                      ? version.file
-                                                      : ""
-                                                  }
+                                                  href={version.file
+                                                    ? version.file
+                                                    : ""}
                                                   className={classNames(
                                                     active
                                                       ? "bg-gray-100/20 text-white/80"
@@ -486,7 +639,7 @@ function ServiceTracking() {
                                                     "block px-4 py-2 text-sm"
                                                   )}
                                                 >
-                                                  Revision {index + 1}
+                                                  Add On {index + 1}
                                                 </a>
                                               )}
                                             </Menu.Item>
@@ -497,107 +650,10 @@ function ServiceTracking() {
                                   </Menu.Items>
                                 </Transition>
                               </Menu>
-                            ) : (
-                              <Button
-                                onClick={() => {
-                                  if (
-                                    getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
-                                    getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered" ||
-                                    getStatusNames(transaction.statusType) ===
-                                    "Completed" ||
-                                    getStatusNames(transaction.statusType) ===
-                                    "Revision Requested"
-
-                                  ) {
-                                    const downloadA =
-                                      document.createElement("a");
-                                    (downloadA.href = transaction.deliveredFiles
-                                      ? transaction.deliveredFiles[0]
-                                      : ""),
-                                      (downloadA.download = "true");
-                                    downloadA.click();
-                                  }
-                                }}
-                                disabled={
-                                  !(
-                                    getStatusNames(transaction.statusType) ===
-                                    "Delivered" ||
-                                    getStatusNames(transaction.statusType) ===
-                                    "Revision Delivered" ||
-                                    getStatusNames(transaction.statusType) ===
-                                    "Completed"
-                                  )
-                                }
-                              >
-                                <div className="text-xs">Download</div>
-                              </Button>
-                            )}
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            {/* Disabled unless Delivered, Revision Delivered, or if there are revisions left. */}
-                            <Button
-                              onClick={() => {
-                                setIsRevModalOpen(true);
-                                setSelectedService(transaction);
-                              }}
-                              disabled={
-                                !(
-                                  getStatusNames(transaction.statusType) ===
-                                  "Delivered" ||
-                                  getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
-                                ) ||
-                                !(
-                                  transaction.setOfRevisions &&
-                                  transaction.setOfRevisions >
-                                  transaction.revisionFiles.length
-                                )
-                              }
-                            >
-                              <div className="text-xs">Request Revision</div>
-                            </Button>
-                          </td>
-
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button
-                              onClick={() => {
-                                if (
-                                  getStatusNames(transaction.statusType) ===
-                                  "Delivered" ||
-                                  getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
-                                ) {
-                                  handleMarkComplete(transaction._id);
-                                }
-                              }}
-                              disabled={
-                                !(
-                                  getStatusNames(transaction.statusType) ===
-                                  "Delivered" ||
-                                  getStatusNames(transaction.statusType) ===
-                                  "Revision Delivered"
-                                )
-                              }
-                            >
-                              <div className="text-xs">Mark Completed</div>
-                            </Button>
-                          </td>
-                          <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                            <Button
-                              disabled={
-                                getStatusNames(transaction.statusType) ===
-                                  "Delivered"
-                                  ? false
-                                  : true
-                              }
-                            >
-                              <div className="text-xs">Add Service</div>
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

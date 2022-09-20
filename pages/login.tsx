@@ -128,7 +128,7 @@ const Home: NextPage = () => {
 
   return (
     <div className="flex flex-col lg:flex-row w-full h-screen text-white overflow-hidden">
-      <div className="w-full h-1/3 lg:h-full lg:w-1/2 grid place-items-center bg-loginImg bg-cover"></div>
+      <div className="w-full h-1/3 lg:h-full lg:w-1/2 grid place-items-center bg-loginImg bg-center bg-cover"></div>
       <div className="w-full min-h-2/3 lg:h-full lg:w-1/2 grid place-items-center bg-darkBlue relative md:p-0">
         <div className="-z-0 absolute animation-delay-2000 top-0 md:top-[30%] left-[0%] lg:left-[11%] w-32 md:w-96 h-96 bg-blueGradient-2 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="-z-0 hidden lg:block absolute animation-delay-4000 top-1/3 right-[24%] w-32 md:w-80 h-80 bg-orange3 rounded-full mix-blend-screen filter blur-[100px] opacity-90 animate-blob overflow-hidden" />

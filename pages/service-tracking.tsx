@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import DashNav from "../components/DashNav";
 import Button from "../components/reusable/Button";
 import {
+  AddOn,
   MeDocument,
   MeQuery,
   ServiceStatusObjectState,
@@ -69,6 +70,9 @@ function ServiceTracking() {
     useState<boolean>(false);
   const [revNotes, setRevNotes] = useState<string>("");
   const [revFor, setRevFor] = useState<number>(0);
+  const [selectedAddons, setSelectedAddons] = useState<AddOn>()
+
+  const [isAddOnModalOpen, setIsAddOnModalOpen] = useState<boolean>(false)
 
   const [markCompleteVer, setMarkCompleteVer] =
     useState<string>("Original Delivery");
@@ -117,11 +121,36 @@ function ServiceTracking() {
     }
   };
 
+
+  const addOns = [
+    {
+      main: false,
+      type: "Revision",
+      price: 500,
+      qty: 0,
+    },
+    {
+      main: false,
+      type: "Bus Stems Export",
+      price: 500,
+      qty: 0,
+    },
+    {
+      main: false,
+      type: "Multitrack Export",
+      price: 500,
+      qty: 0,
+    },
+
+  ]
+
+
+
   const handleRequestRevision = async (service: UserServiceFinal) => {
     let lastRevisionNumber: number =
       service.revisionFiles.length > 0
         ? service.revisionFiles.sort((a, b) => a.revision - b.revision)[0]
-            .revision + 1
+          .revision + 1
         : 1;
     let revisionForNumber: number = revFor;
 
@@ -174,6 +203,72 @@ function ServiceTracking() {
       <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden" />
       <div className="absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
       <DashNav name={data?.me.name} email={data?.me.email} />
+      {/* Add On Modal */}
+      <Modal open={isAddOnModalOpen} setOpen={setIsAddOnModalOpen}>
+        <>
+          <div className="relative text-center">
+            <h4 className="font-bold pb-4  text-primary text-lg">
+              Buy an add-on
+            </h4>
+            <svg
+              onClick={() => {
+                setIsAddOnModalOpen(false);
+              }}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="absolute right-0 -top-3 w-6 h-6 hover:text-primary cursor-pointer"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+
+
+            <div className="flex flex-col gap-3">
+
+              {/* To also filter if the services are not already added. */}{
+
+
+                addOns.filter(addOn => addOn.main === false && !addOn.type.includes("Revision"))
+                  .map(addOn => (
+                    <div key={addOn.type}>
+                      <label htmlFor={addOn.type} className=" font-medium text-white ">
+                        <div className='border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center'>
+                          <div className="min-w-0 flex-1 text-md">
+                            <p id="comments-description" className="text-gray-200">
+                              <span className='font-bold'>{addOn.type}</span> - ₹{addOn.price.toLocaleString("en-IN")}
+                            </p>
+                          </div>
+                          <div className="flex justify-center items-center my-auto">
+                            <input
+                              id={addOn.type}
+                              aria-describedby="comments-description"
+                              name={addOn.type}
+                              type="checkbox"
+                              className="h-4 w-4 text-primary border-gray-300 rounded"
+                            />
+                          </div>
+                        </div>
+
+                      </label>
+                    </div>
+                  ))
+              }
+            </div>
+            <div className="w-fit mx-auto mt-5">
+              <Button>
+                <div className=" mx-auto inline-block">Proceed</div>
+              </Button>
+            </div>
+          </div>
+
+        </>
+      </Modal>
 
       {/* Revision Modal */}
       <Modal open={isRevModalOpen} setOpen={setIsRevModalOpen}>
@@ -205,7 +300,7 @@ function ServiceTracking() {
               {selectedService && (
                 <>
                   {selectedService?.setOfRevisions! >
-                  selectedService.revisionFiles.length ? (
+                    selectedService.revisionFiles.length ? (
                     <div className="">
                       <p className="mb-4">
                         Which version are you requesting the revision for?
@@ -325,9 +420,9 @@ function ServiceTracking() {
                     onClick={() => {
                       if (
                         getStatusNames(selectedService.statusType) ===
-                          "Delivered" ||
+                        "Delivered" ||
                         getStatusNames(selectedService.statusType) ===
-                          "Revision Delivered"
+                        "Revision Delivered"
                       ) {
                         handleMarkComplete(selectedService._id);
                       }
@@ -440,8 +535,8 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 {transaction.submissionDate
                                   ? moment(transaction.submissionDate).format(
-                                      "MMM Do YY, h:mm a"
-                                    )
+                                    "MMM Do YY, h:mm a"
+                                  )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
@@ -457,8 +552,8 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.estDeliveryDate
                                   ? moment(transaction.estDeliveryDate).format(
-                                      "MMM Do, YYYY"
-                                    )
+                                    "MMM Do, YYYY"
+                                  )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
@@ -469,22 +564,22 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.reupload
                                   ? moment(transaction.reupload).format(
-                                      "MMM Do YY, h:mm a"
-                                    )
+                                    "MMM Do YY, h:mm a"
+                                  )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.completionDate
                                   ? moment(transaction.completionDate).format(
-                                      "MMM Do YY, h:mm a"
-                                    )
+                                    "MMM Do YY, h:mm a"
+                                  )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 <Button
                                   disabled={
                                     getStatusNames(transaction.statusType) ===
-                                    "Pending Upload"
+                                      "Pending Upload"
                                       ? false
                                       : true
                                   }
@@ -492,7 +587,7 @@ function ServiceTracking() {
                                   <div className="text-xs">
                                     {getStatusNames(transaction.statusType) ===
                                       "Pending Upload" &&
-                                    transaction.reupload === null ? (
+                                      transaction.reupload === null ? (
                                       <Link
                                         href={
                                           "/upload?serviceId=" + transaction._id
@@ -501,8 +596,8 @@ function ServiceTracking() {
                                         Upload
                                       </Link>
                                     ) : getStatusNames(
-                                        transaction.statusType
-                                      ) === "Pending Upload" &&
+                                      transaction.statusType
+                                    ) === "Pending Upload" &&
                                       transaction.reupload !== null ? (
                                       <Link
                                         href={
@@ -560,7 +655,7 @@ function ServiceTracking() {
                                                 href={
                                                   transaction.deliveredFiles
                                                     ? transaction
-                                                        .deliveredFiles[0]
+                                                      .deliveredFiles[0]
                                                     : ""
                                                 }
                                                 className={classNames(
@@ -659,9 +754,9 @@ function ServiceTracking() {
                                   disabled={
                                     !(
                                       getStatusNames(transaction.statusType) ===
-                                        "Delivered" ||
+                                      "Delivered" ||
                                       getStatusNames(transaction.statusType) ===
-                                        "Revision Delivered"
+                                      "Revision Delivered"
                                     )
                                     //|| !(
                                     //   transaction.setOfRevisions &&
@@ -686,7 +781,7 @@ function ServiceTracking() {
                                     ) {
                                       setSelectedService(transaction);
                                       setisMarkCompletedOpen(true);
-                                    }
+                                    } else handleMarkComplete(transaction._id)
                                     // if (
                                     //   (transaction.revisionFiles.length! == 0 &&
                                     //     getStatusNames(
@@ -701,9 +796,9 @@ function ServiceTracking() {
                                   disabled={
                                     !(
                                       getStatusNames(transaction.statusType) ===
-                                        "Delivered" ||
+                                      "Delivered" ||
                                       getStatusNames(transaction.statusType) ===
-                                        "Revision Delivered"
+                                      "Revision Delivered"
                                     )
                                   }
                                 >
@@ -711,80 +806,18 @@ function ServiceTracking() {
                                 </Button>
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                                {/* <Button
-              disabled={
-                getStatusNames(transaction.statusType) ===
-                  "Completed"
-                  ? false
-                  : true
-              }
-            >
-              <div className="text-xs">Add Service</div>
-            </Button> */}
-                                <Menu
-                                  as="div"
-                                  className="relative inline-block text-left"
+                                <Button
+                                  onClick={() => setIsAddOnModalOpen(true)}
+                                  disabled={
+                                    getStatusNames(transaction.statusType) ===
+                                      "Completed"
+                                      ? false
+                                      : true
+                                  }
                                 >
-                                  <div>
-                                    <Menu.Button
-                                      className={`inline-flex w-full justify-center items-center rounded-md border border-gray-300  px-3 py-1.5 text-xs font-bold text-white shadow-sm  ${
-                                        getStatusNames(
-                                          transaction.statusType
-                                        ) === "Completed"
-                                          ? "hover:bg-gray-50/10 gradient-border-2 border-gradient-btn bg-white/5"
-                                          : "outline-none border-none cursor-not-allowed bg-white/10 text-white/40"
-                                      }`}
-                                    >
-                                      <span>Add Ons</span>
-                                      <ChevronDownIcon
-                                        className="-mr-1 ml-2 h-5 w-5"
-                                        aria-hidden="true"
-                                      />
-                                    </Menu.Button>
-                                  </div>
+                                  <div className="text-xs">Add Service</div>
+                                </Button>
 
-                                  <Transition
-                                    as={Fragment}
-                                    enter="transition ease-out duration-100"
-                                    enterFrom="transform opacity-0 scale-95"
-                                    enterTo="transform opacity-100 scale-100"
-                                    leave="transition ease-in duration-75"
-                                    leaveFrom="transform opacity-100 scale-100"
-                                    leaveTo="transform opacity-0 scale-95"
-                                  >
-                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-darkBlue/70 backdrop-blur-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                      <div className="py-1">
-                                        {/* To fetch add ons here with selected service filter price != null, and map them */}
-                                        {transaction.revisionFiles
-                                          .filter((el) => el.file)
-                                          .map((version, index) => (
-                                            <Menu.Item key={version.revision}>
-                                              {({ active }) => (
-                                                <a
-                                                  target="_blank"
-                                                  rel="noopener noreferrer"
-                                                  href={
-                                                    version.file
-                                                      ? version.file
-                                                      : ""
-                                                  }
-                                                  className={classNames(
-                                                    active
-                                                      ? "bg-gray-100/20 text-white/80"
-                                                      : "text-white",
-                                                    "block px-4 py-2 text-sm"
-                                                  )}
-                                                >
-                                                  Add On {index + 1}
-                                                </a>
-                                              )}
-                                            </Menu.Item>
-                                            // <option key={version.revision}>Revision {index + 1}</option>
-                                          ))}
-                                      </div>
-                                    </Menu.Items>
-                                  </Transition>
-                                </Menu>
                               </td>
                             </tr>
                           );

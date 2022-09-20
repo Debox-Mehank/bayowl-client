@@ -156,6 +156,10 @@ function Upload() {
         router.back();
         toast.error("You have already uploaded the files");
       }
+
+      if (data.getUserServiceDetailsById.reupload) {
+        setNotes(data.getUserServiceDetailsById.notes ?? "");
+      }
     };
     if (serviceId) {
       fetchFunc();
@@ -1339,19 +1343,20 @@ function Upload() {
                       </div>
                       <div className="flex justify-between z-50">
                         <div className="space-x-4 flex">
-                          {(service.numberOfReferenceFileUploads ?? 0) > 0 && (
-                            <div
-                              onClick={() => {
-                                setIsRefModalOpen(true);
-                              }}
-                            >
-                              <div className="w-fit">
-                                <Button>
-                                  <>Add References</>
-                                </Button>
+                          {!service.reupload &&
+                            (service.numberOfReferenceFileUploads ?? 0) > 0 && (
+                              <div
+                                onClick={() => {
+                                  setIsRefModalOpen(true);
+                                }}
+                              >
+                                <div className="w-fit">
+                                  <Button>
+                                    <>Add References</>
+                                  </Button>
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
                           {filesArray.length > 0 &&
                             filesArray.length <
                               (service.inputTrackLimit ?? 0) && (

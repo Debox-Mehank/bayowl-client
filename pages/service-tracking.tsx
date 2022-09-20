@@ -70,9 +70,9 @@ function ServiceTracking() {
     useState<boolean>(false);
   const [revNotes, setRevNotes] = useState<string>("");
   const [revFor, setRevFor] = useState<number>(0);
-  const [selectedAddons, setSelectedAddons] = useState<AddOn>()
+  const [selectedAddons, setSelectedAddons] = useState<AddOn>();
 
-  const [isAddOnModalOpen, setIsAddOnModalOpen] = useState<boolean>(false)
+  const [isAddOnModalOpen, setIsAddOnModalOpen] = useState<boolean>(false);
 
   const [markCompleteVer, setMarkCompleteVer] =
     useState<string>("Original Delivery");
@@ -121,7 +121,6 @@ function ServiceTracking() {
     }
   };
 
-
   const addOns = [
     {
       main: false,
@@ -141,16 +140,13 @@ function ServiceTracking() {
       price: 500,
       qty: 0,
     },
-
-  ]
-
-
+  ];
 
   const handleRequestRevision = async (service: UserServiceFinal) => {
     let lastRevisionNumber: number =
       service.revisionFiles.length > 0
         ? service.revisionFiles.sort((a, b) => a.revision - b.revision)[0]
-          .revision + 1
+            .revision + 1
         : 1;
     let revisionForNumber: number = revFor;
 
@@ -228,37 +224,42 @@ function ServiceTracking() {
               />
             </svg>
 
-
             <div className="flex flex-col gap-3">
-
-              {/* To also filter if the services are not already added. */}{
-
-
-                addOns.filter(addOn => addOn.main === false && !addOn.type.includes("Revision"))
-                  .map(addOn => (
-                    <div key={addOn.type}>
-                      <label htmlFor={addOn.type} className=" font-medium text-white ">
-                        <div className='border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center'>
-                          <div className="min-w-0 flex-1 text-md">
-                            <p id="comments-description" className="text-gray-200">
-                              <span className='font-bold'>{addOn.type}</span> - ₹{addOn.price.toLocaleString("en-IN")}
-                            </p>
-                          </div>
-                          <div className="flex justify-center items-center my-auto">
-                            <input
-                              id={addOn.type}
-                              aria-describedby="comments-description"
-                              name={addOn.type}
-                              type="checkbox"
-                              className="h-4 w-4 text-primary border-gray-300 rounded"
-                            />
-                          </div>
+              {/* To also filter if the services are not already added. */}
+              {addOns
+                .filter(
+                  (addOn) =>
+                    addOn.main === false && !addOn.type.includes("Revision")
+                )
+                .map((addOn) => (
+                  <div key={addOn.type}>
+                    <label
+                      htmlFor={addOn.type}
+                      className=" font-medium text-white "
+                    >
+                      <div className="border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center">
+                        <div className="min-w-0 flex-1 text-md">
+                          <p
+                            id="comments-description"
+                            className="text-gray-200"
+                          >
+                            <span className="font-bold">{addOn.type}</span> - ₹
+                            {addOn.price.toLocaleString("en-IN")}
+                          </p>
                         </div>
-
-                      </label>
-                    </div>
-                  ))
-              }
+                        <div className="flex justify-center items-center my-auto">
+                          <input
+                            id={addOn.type}
+                            aria-describedby="comments-description"
+                            name={addOn.type}
+                            type="checkbox"
+                            className="h-4 w-4 text-primary border-gray-300 rounded"
+                          />
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                ))}
             </div>
             <div className="w-fit mx-auto mt-5">
               <Button>
@@ -266,7 +267,6 @@ function ServiceTracking() {
               </Button>
             </div>
           </div>
-
         </>
       </Modal>
 
@@ -300,7 +300,7 @@ function ServiceTracking() {
               {selectedService && (
                 <>
                   {selectedService?.setOfRevisions! >
-                    selectedService.revisionFiles.length ? (
+                  selectedService.revisionFiles.length ? (
                     <div className="">
                       <p className="mb-4">
                         Which version are you requesting the revision for?
@@ -345,7 +345,9 @@ function ServiceTracking() {
                     <>
                       <div className="pt-2 pb-4">
                         <div>
-                          You don't have any more revisions for this service.
+                          {
+                            "You don't have any more revisions for this service."
+                          }
                           <div className="w-fit mx-auto mt-4">
                             <Button
                               onClick={() => {
@@ -420,9 +422,9 @@ function ServiceTracking() {
                     onClick={() => {
                       if (
                         getStatusNames(selectedService.statusType) ===
-                        "Delivered" ||
+                          "Delivered" ||
                         getStatusNames(selectedService.statusType) ===
-                        "Revision Delivered"
+                          "Revision Delivered"
                       ) {
                         handleMarkComplete(selectedService._id);
                       }
@@ -535,8 +537,8 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 {transaction.submissionDate
                                   ? moment(transaction.submissionDate).format(
-                                    "MMM Do YY, h:mm a"
-                                  )
+                                      "MMM Do YY, h:mm a"
+                                    )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
@@ -552,8 +554,8 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.estDeliveryDate
                                   ? moment(transaction.estDeliveryDate).format(
-                                    "MMM Do, YYYY"
-                                  )
+                                      "MMM Do, YYYY"
+                                    )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
@@ -564,22 +566,22 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.reupload
                                   ? moment(transaction.reupload).format(
-                                    "MMM Do YY, h:mm a"
-                                  )
+                                      "MMM Do YY, h:mm a"
+                                    )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.completionDate
                                   ? moment(transaction.completionDate).format(
-                                    "MMM Do YY, h:mm a"
-                                  )
+                                      "MMM Do YY, h:mm a"
+                                    )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 <Button
                                   disabled={
                                     getStatusNames(transaction.statusType) ===
-                                      "Pending Upload"
+                                    "Pending Upload"
                                       ? false
                                       : true
                                   }
@@ -587,7 +589,7 @@ function ServiceTracking() {
                                   <div className="text-xs">
                                     {getStatusNames(transaction.statusType) ===
                                       "Pending Upload" &&
-                                      transaction.reupload === null ? (
+                                    transaction.reupload === null ? (
                                       <Link
                                         href={
                                           "/upload?serviceId=" + transaction._id
@@ -596,8 +598,8 @@ function ServiceTracking() {
                                         Upload
                                       </Link>
                                     ) : getStatusNames(
-                                      transaction.statusType
-                                    ) === "Pending Upload" &&
+                                        transaction.statusType
+                                      ) === "Pending Upload" &&
                                       transaction.reupload !== null ? (
                                       <Link
                                         href={
@@ -655,7 +657,7 @@ function ServiceTracking() {
                                                 href={
                                                   transaction.deliveredFiles
                                                     ? transaction
-                                                      .deliveredFiles[0]
+                                                        .deliveredFiles[0]
                                                     : ""
                                                 }
                                                 className={classNames(
@@ -754,9 +756,9 @@ function ServiceTracking() {
                                   disabled={
                                     !(
                                       getStatusNames(transaction.statusType) ===
-                                      "Delivered" ||
+                                        "Delivered" ||
                                       getStatusNames(transaction.statusType) ===
-                                      "Revision Delivered"
+                                        "Revision Delivered"
                                     )
                                     //|| !(
                                     //   transaction.setOfRevisions &&
@@ -781,7 +783,7 @@ function ServiceTracking() {
                                     ) {
                                       setSelectedService(transaction);
                                       setisMarkCompletedOpen(true);
-                                    } else handleMarkComplete(transaction._id)
+                                    } else handleMarkComplete(transaction._id);
                                     // if (
                                     //   (transaction.revisionFiles.length! == 0 &&
                                     //     getStatusNames(
@@ -796,9 +798,9 @@ function ServiceTracking() {
                                   disabled={
                                     !(
                                       getStatusNames(transaction.statusType) ===
-                                      "Delivered" ||
+                                        "Delivered" ||
                                       getStatusNames(transaction.statusType) ===
-                                      "Revision Delivered"
+                                        "Revision Delivered"
                                     )
                                   }
                                 >
@@ -810,14 +812,13 @@ function ServiceTracking() {
                                   onClick={() => setIsAddOnModalOpen(true)}
                                   disabled={
                                     getStatusNames(transaction.statusType) ===
-                                      "Completed"
+                                    "Completed"
                                       ? false
                                       : true
                                   }
                                 >
                                   <div className="text-xs">Add Service</div>
                                 </Button>
-
                               </td>
                             </tr>
                           );

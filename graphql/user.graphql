@@ -114,8 +114,8 @@ query Logout {
   logout
 }
 
-query InitiatePayment($service: UserServicesInput!, $email: String) {
-  initiatePayment(service: $service, email: $email)
+query InitiatePayment($service: UserServicesInput!) {
+  initiatePayment(service: $service)
 }
 
 query UpdatePorjectName($serviceId: String!, $projectName: String!) {

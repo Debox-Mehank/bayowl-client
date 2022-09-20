@@ -9,6 +9,7 @@ import {
   Services,
   useGetServiceDetailsLazyQuery,
   useInitiatePaymentLazyQuery,
+  useRemoveServiceLazyQuery,
 } from "../graphql/generated/graphql";
 import Modal from "../components/reusable/Modal";
 import secondsToTime from "../utils/secsToTime";
@@ -32,6 +33,7 @@ const Pricing = () => {
   const [selectedAddons, setSelectedAddons] = useState<AddOn[]>([]);
   const [email, setEmail] = useState<string>("");
   const [getServiceDetailsQuery] = useGetServiceDetailsLazyQuery();
+  const [removeServiceQuery] = useRemoveServiceLazyQuery();
   const [initiatePaymentQuery] = useInitiatePaymentLazyQuery();
   const [bottomBarEl, { width, height: bottomBarHeight }] = useElementSize();
   const [isPlanModalOpen, setIsPlanModalOpen] = useState<boolean>(false);
@@ -163,7 +165,6 @@ const Pricing = () => {
             })),
             price: total,
           },
-          email: email === "" ? null : email,
         },
         fetchPolicy: "network-only",
       });
@@ -200,6 +201,30 @@ const Pricing = () => {
           },
           modal: {
             confirm_close: true,
+            ondismiss: async () => {
+              setLoading(true);
+              const { data: removeData, error: removeError } =
+                await removeServiceQuery({
+                  variables: {
+                    serviceId: order.serviceId,
+                  },
+                  fetchPolicy: "network-only",
+                });
+
+              if (removeError) {
+                setLoading(false);
+                toast.error(removeError.message);
+                return;
+              }
+
+              if (!removeData || !removeData.removeService) {
+                setLoading(false);
+                toast.error("Something went wrong, try again later.");
+                return;
+              }
+
+              setLoading(false);
+            },
           },
         };
         const razor = new (window as any).Razorpay(options);

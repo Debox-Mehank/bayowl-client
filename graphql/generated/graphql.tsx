@@ -291,7 +291,6 @@ export type QueryInitFileUploadArgs = {
 
 
 export type QueryInitiatePaymentArgs = {
-  email?: InputMaybe<Scalars['String']>;
   service: UserServicesInput;
 };
 
@@ -623,7 +622,6 @@ export type LogoutQuery = { __typename?: 'Query', logout: boolean };
 
 export type InitiatePaymentQueryVariables = Exact<{
   service: UserServicesInput;
-  email?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -1044,8 +1042,8 @@ export type LogoutQueryHookResult = ReturnType<typeof useLogoutQuery>;
 export type LogoutLazyQueryHookResult = ReturnType<typeof useLogoutLazyQuery>;
 export type LogoutQueryResult = Apollo.QueryResult<LogoutQuery, LogoutQueryVariables>;
 export const InitiatePaymentDocument = gql`
-    query InitiatePayment($service: UserServicesInput!, $email: String) {
-  initiatePayment(service: $service, email: $email)
+    query InitiatePayment($service: UserServicesInput!) {
+  initiatePayment(service: $service)
 }
     `;
 
@@ -1062,7 +1060,6 @@ export const InitiatePaymentDocument = gql`
  * const { data, loading, error } = useInitiatePaymentQuery({
  *   variables: {
  *      service: // value for 'service'
- *      email: // value for 'email'
  *   },
  * });
  */

@@ -26,6 +26,7 @@ query GetServiceDetails($input: ServicesDetailInput!) {
       type
       value
       qty
+      main
     }
     createdAt
     updatedAt

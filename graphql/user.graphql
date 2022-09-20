@@ -25,6 +25,7 @@ fragment userServices on UserServices {
     type
     value
     qty
+    main
   }
   projectName
   paid
@@ -48,6 +49,12 @@ fragment userServices on UserServices {
   estDeliveryDate
   deliveredFiles
   completionDate
+  addOnExportsBusStems
+  addOnExportsFile
+  addOnExportsMultitrack
+  addOnExtraRevision
+  paidAt
+  wrokingFile
 }
 
 query Login($password: String!, $email: String!, $token: String) {

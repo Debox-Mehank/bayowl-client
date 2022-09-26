@@ -107,6 +107,7 @@ query Me {
     accountVerified
     createdAt
     updatedAt
+    free
   }
 }
 
@@ -200,4 +201,12 @@ query RequestRevision(
 
 query RemoveService($serviceId: String!) {
   removeService(serviceId: $serviceId)
+}
+
+query RequestPasswordReset($email: String!) {
+  requestPasswordReset(email: $email)
+}
+
+query ResetPassword($token: String!, $password: String!) {
+  resetPassword(token: $token, password: $password)
 }

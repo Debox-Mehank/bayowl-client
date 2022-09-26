@@ -151,12 +151,36 @@ export type Payment = {
   userServiceId?: Maybe<Scalars['String']>;
 };
 
+export type PaymentConfig = {
+  __typename?: 'PaymentConfig';
+  _id: Scalars['ID'];
+  active: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  lastUpdatedBy?: Maybe<Admin>;
+  type?: Maybe<PaymentConfigEnum>;
+  updatedAt: Scalars['DateTime'];
+  value: Scalars['Float'];
+};
+
+/** Enum For Type of Payment Configs */
+export enum PaymentConfigEnum {
+  Gst = 'gst'
+}
+
+export type PaymentConfigInput = {
+  active: Scalars['Boolean'];
+  lastUpdatedBy?: InputMaybe<Scalars['ID']>;
+  type?: InputMaybe<PaymentConfigEnum>;
+  value: Scalars['Float'];
+};
+
 export type Query = {
   __typename?: 'Query';
   activeDashboardContent: Array<DashboardContent>;
   addAddOnExportsFile: Scalars['Boolean'];
   addDashboardContent: DashboardContent;
   addDeliverFiles: Scalars['Boolean'];
+  addPaymentConfig: Scalars['Boolean'];
   addRevisionNotesByMaster: Scalars['Boolean'];
   addWorkingFile: Scalars['Boolean'];
   adminLogin: Scalars['Boolean'];
@@ -170,11 +194,13 @@ export type Query = {
   dashboardMet: Array<DashboardInterfaceClass>;
   finalizeMultipartUpload?: Maybe<Scalars['String']>;
   getAllPayment: Array<Payment>;
+  getAllPaymentConfig: Array<PaymentConfig>;
   getAllService: Array<Services>;
   getAllServiceForEmployee: Array<UserServices>;
   getAllServiceForMaster: Array<UserServices>;
   getAllUser: Array<User>;
   getContentUploadUrl: Scalars['String'];
+  getGstStatus: Scalars['Boolean'];
   getMultipartPreSignedUrls: Array<MultipartSignedUrlResponse>;
   getS3SignedURL: Scalars['String'];
   getServiceDetails: Array<Services>;
@@ -188,11 +214,14 @@ export type Query = {
   meAdmin?: Maybe<Admin>;
   register: Scalars['Boolean'];
   removeService: Scalars['Boolean'];
+  requestPasswordReset: Scalars['Boolean'];
   requestReupload: Scalars['Boolean'];
   requestRevision: Scalars['Boolean'];
   resetPassword: Scalars['Boolean'];
   toggleDashboardContent: DashboardContent;
   updateDashboardContent: Scalars['Boolean'];
+  updateFreeUser: Scalars['Boolean'];
+  updatePaymentConfig: Scalars['Boolean'];
   updatePorjectName: Scalars['Boolean'];
   uploadFilesForService: Scalars['Boolean'];
   verifyUser: Scalars['Boolean'];
@@ -213,6 +242,11 @@ export type QueryAddDashboardContentArgs = {
 export type QueryAddDeliverFilesArgs = {
   serviceId: Scalars['String'];
   url: Scalars['String'];
+};
+
+
+export type QueryAddPaymentConfigArgs = {
+  input: PaymentConfigInput;
 };
 
 
@@ -321,6 +355,11 @@ export type QueryRemoveServiceArgs = {
 };
 
 
+export type QueryRequestPasswordResetArgs = {
+  email: Scalars['String'];
+};
+
+
 export type QueryRequestReuploadArgs = {
   reuploadNote: Scalars['String'];
   serviceId: Scalars['String'];
@@ -336,8 +375,8 @@ export type QueryRequestRevisionArgs = {
 
 
 export type QueryResetPasswordArgs = {
-  id: Scalars['String'];
   password: Scalars['String'];
+  token: Scalars['String'];
 };
 
 
@@ -349,6 +388,17 @@ export type QueryToggleDashboardContentArgs = {
 export type QueryUpdateDashboardContentArgs = {
   id: Scalars['String'];
   input: DashboardContentInput;
+};
+
+
+export type QueryUpdateFreeUserArgs = {
+  free: Scalars['Boolean'];
+  id: Scalars['String'];
+};
+
+
+export type QueryUpdatePaymentConfigArgs = {
+  gst: Scalars['Boolean'];
 };
 
 
@@ -463,10 +513,14 @@ export type User = {
   accountVerified: Scalars['Boolean'];
   createdAt: Scalars['DateTime'];
   email: Scalars['String'];
+  free?: Maybe<Scalars['Boolean']>;
   lastLoggedIn?: Maybe<Scalars['DateTime']>;
   lastLoggedOut?: Maybe<Scalars['DateTime']>;
+  lastUpdatedBy?: Maybe<Admin>;
   name?: Maybe<Scalars['String']>;
   number?: Maybe<Scalars['String']>;
+  passwordResetCounter?: Maybe<Scalars['Float']>;
+  passwordResetDate?: Maybe<Scalars['DateTime']>;
   services: Array<UserServices>;
   updatedAt: Scalars['DateTime'];
 };
@@ -613,7 +667,7 @@ export type CompleteAccountQuery = { __typename?: 'Query', completeAccount: bool
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name?: string | null, email: string, number?: string | null, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, services: Array<{ __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuningBasic?: string | null, mixVocalTuningAdvanced?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, reuploadNote?: string | null, notes?: string | null, submissionDate?: any | null, estDeliveryDate?: any | null, deliveredFiles?: Array<string> | null, completionDate?: any | null, addOnExportsBusStems: boolean, addOnExportsFile?: string | null, addOnExportsMultitrack: boolean, addOnExtraRevision: boolean, paidAt?: any | null, wrokingFile?: string | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null, main: boolean }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number, revisionFor: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> }> } };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name?: string | null, email: string, number?: string | null, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, free?: boolean | null, services: Array<{ __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuningBasic?: string | null, mixVocalTuningAdvanced?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, reuploadNote?: string | null, notes?: string | null, submissionDate?: any | null, estDeliveryDate?: any | null, deliveredFiles?: Array<string> | null, completionDate?: any | null, addOnExportsBusStems: boolean, addOnExportsFile?: string | null, addOnExportsMultitrack: boolean, addOnExtraRevision: boolean, paidAt?: any | null, wrokingFile?: string | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null, main: boolean }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number, revisionFor: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> }> } };
 
 export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -718,6 +772,21 @@ export type RemoveServiceQueryVariables = Exact<{
 
 
 export type RemoveServiceQuery = { __typename?: 'Query', removeService: boolean };
+
+export type RequestPasswordResetQueryVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+
+export type RequestPasswordResetQuery = { __typename?: 'Query', requestPasswordReset: boolean };
+
+export type ResetPasswordQueryVariables = Exact<{
+  token: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type ResetPasswordQuery = { __typename?: 'Query', resetPassword: boolean };
 
 export const UserServicesFragmentDoc = gql`
     fragment userServices on UserServices {
@@ -979,6 +1048,7 @@ export const MeDocument = gql`
     accountVerified
     createdAt
     updatedAt
+    free
   }
 }
     ${UserServicesFragmentDoc}`;
@@ -1500,3 +1570,70 @@ export function useRemoveServiceLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type RemoveServiceQueryHookResult = ReturnType<typeof useRemoveServiceQuery>;
 export type RemoveServiceLazyQueryHookResult = ReturnType<typeof useRemoveServiceLazyQuery>;
 export type RemoveServiceQueryResult = Apollo.QueryResult<RemoveServiceQuery, RemoveServiceQueryVariables>;
+export const RequestPasswordResetDocument = gql`
+    query RequestPasswordReset($email: String!) {
+  requestPasswordReset(email: $email)
+}
+    `;
+
+/**
+ * __useRequestPasswordResetQuery__
+ *
+ * To run a query within a React component, call `useRequestPasswordResetQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRequestPasswordResetQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRequestPasswordResetQuery({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useRequestPasswordResetQuery(baseOptions: Apollo.QueryHookOptions<RequestPasswordResetQuery, RequestPasswordResetQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<RequestPasswordResetQuery, RequestPasswordResetQueryVariables>(RequestPasswordResetDocument, options);
+      }
+export function useRequestPasswordResetLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<RequestPasswordResetQuery, RequestPasswordResetQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<RequestPasswordResetQuery, RequestPasswordResetQueryVariables>(RequestPasswordResetDocument, options);
+        }
+export type RequestPasswordResetQueryHookResult = ReturnType<typeof useRequestPasswordResetQuery>;
+export type RequestPasswordResetLazyQueryHookResult = ReturnType<typeof useRequestPasswordResetLazyQuery>;
+export type RequestPasswordResetQueryResult = Apollo.QueryResult<RequestPasswordResetQuery, RequestPasswordResetQueryVariables>;
+export const ResetPasswordDocument = gql`
+    query ResetPassword($token: String!, $password: String!) {
+  resetPassword(token: $token, password: $password)
+}
+    `;
+
+/**
+ * __useResetPasswordQuery__
+ *
+ * To run a query within a React component, call `useResetPasswordQuery` and pass it any options that fit your needs.
+ * When your component renders, `useResetPasswordQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useResetPasswordQuery({
+ *   variables: {
+ *      token: // value for 'token'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useResetPasswordQuery(baseOptions: Apollo.QueryHookOptions<ResetPasswordQuery, ResetPasswordQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ResetPasswordQuery, ResetPasswordQueryVariables>(ResetPasswordDocument, options);
+      }
+export function useResetPasswordLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ResetPasswordQuery, ResetPasswordQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ResetPasswordQuery, ResetPasswordQueryVariables>(ResetPasswordDocument, options);
+        }
+export type ResetPasswordQueryHookResult = ReturnType<typeof useResetPasswordQuery>;
+export type ResetPasswordLazyQueryHookResult = ReturnType<typeof useResetPasswordLazyQuery>;
+export type ResetPasswordQueryResult = Apollo.QueryResult<ResetPasswordQuery, ResetPasswordQueryVariables>;

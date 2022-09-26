@@ -21,7 +21,6 @@ const Services = () => {
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>();
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>();
   const [selectedService, setSelectedService] = useState<string>();
-  const [selectedSubService, setSelectedSubService] = useState<string | null>();
 
   useEffect(() => {
     if (!mainCategoryRoute) {
@@ -52,7 +51,7 @@ const Services = () => {
     }
   }, [mainCategoryRoute, subCategoryRoute, serviceNameRoute]);
 
-  const finalPageHandler = () => { };
+  const finalPageHandler = () => {};
 
   return (
     <div>
@@ -88,21 +87,6 @@ const Services = () => {
                       }}
                       title={a.mainCategory}
                     />
-                    // <button
-                    //   data-aos="fade-up"
-                    //   key={a.mainCategory}
-                    //   onClick={() => {
-                    //     setSelectedMainCategory(a.mainCategory);
-                    //     router.push(
-                    //       `/services?mainCategory=${encodeURIComponent(
-                    //         a.mainCategory
-                    //       )}`
-                    //     );
-                    //   }}
-                    //   className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
-                    // >
-                    //   {a.mainCategory}
-                    // </button>
                   );
                 })}
               </div>
@@ -137,7 +121,6 @@ const Services = () => {
                       <ServiceCard
                         key={a.subCategory}
                         onClick={() => {
-                          setSelectedSubCategory(a.subCategory);
                           if (
                             selectedMainCategory === "Voice Overs & Dialogue"
                           ) {
@@ -151,6 +134,7 @@ const Services = () => {
                             );
                             router.push("/pricing");
                           } else {
+                            setSelectedSubCategory(a.subCategory);
                             router.push(
                               `/services?mainCategory=${encodeURIComponent(
                                 selectedMainCategory
@@ -162,21 +146,6 @@ const Services = () => {
                         }}
                         title={a.subCategory}
                       />
-                      // <button
-                      //   data-aos="fade-up"
-                      //   key={a.subCategory}
-                      //   onClick={() => {
-                      //     setSelectedSubCategory(a.subCategory);
-                      //     router.push(
-                      //       `/services?mainCategory=${encodeURIComponent(
-                      //         selectedMainCategory
-                      //       )}&subCategory=${encodeURIComponent(a.subCategory)}`
-                      //     );
-                      //   }}
-                      //   className="h-40 w-40 p-2 bg-gradient3/20 hover:bg-gradient3/50 transition-all duration-300 rounded-2xl font-bold text-md filter backdrop-blur-lg"
-                      // >
-                      //   {a.subCategory}
-                      // </button>
                     );
                   })}
               </div>
@@ -214,39 +183,49 @@ const Services = () => {
                       <ServiceCard
                         key={a.serviceName}
                         onClick={() => {
-                          if (a.subServices) {
-                            setSelectedService(a.serviceName);
-                            // router.push(
-                            //   `/services?mainCategory=${encodeURIComponent(
-                            //     selectedMainCategory
-                            //   )}&subCategory=${encodeURIComponent(
-                            //     selectedSubCategory
-                            //   )}&serviceName=${encodeURIComponent(
-                            //     a.serviceName
-                            //   )}`
-                            // )
-                            const data = {
-                              mainCategory: selectedMainCategory,
-                              subCategory: selectedSubCategory,
-                              serviceName: a.serviceName,
-                            };
-                            localStorage.setItem(
-                              "userService",
-                              JSON.stringify(data)
-                            );
-                            router.push("/pricing");
-                          } else {
-                            const data = {
-                              mainCategory: selectedMainCategory,
-                              subCategory: selectedSubCategory,
-                              serviceName: a.serviceName,
-                            };
-                            localStorage.setItem(
-                              "userService",
-                              JSON.stringify(data)
-                            );
-                            router.push("/pricing");
-                          }
+                          const data = {
+                            mainCategory: selectedMainCategory,
+                            subCategory: selectedSubCategory,
+                            serviceName: a.serviceName,
+                          };
+                          localStorage.setItem(
+                            "userService",
+                            JSON.stringify(data)
+                          );
+                          router.push("/pricing");
+                          // if (a.subServices) {
+                          //   setSelectedService(a.serviceName);
+                          //   // router.push(
+                          //   //   `/services?mainCategory=${encodeURIComponent(
+                          //   //     selectedMainCategory
+                          //   //   )}&subCategory=${encodeURIComponent(
+                          //   //     selectedSubCategory
+                          //   //   )}&serviceName=${encodeURIComponent(
+                          //   //     a.serviceName
+                          //   //   )}`
+                          //   // )
+                          //   const data = {
+                          //     mainCategory: selectedMainCategory,
+                          //     subCategory: selectedSubCategory,
+                          //     serviceName: a.serviceName,
+                          //   };
+                          //   localStorage.setItem(
+                          //     "userService",
+                          //     JSON.stringify(data)
+                          //   );
+                          //   router.push("/pricing");
+                          // } else {
+                          //   const data = {
+                          //     mainCategory: selectedMainCategory,
+                          //     subCategory: selectedSubCategory,
+                          //     serviceName: a.serviceName,
+                          //   };
+                          //   localStorage.setItem(
+                          //     "userService",
+                          //     JSON.stringify(data)
+                          //   );
+                          //   router.push("/pricing");
+                          // }
                         }}
                         title={a.serviceName}
                       />

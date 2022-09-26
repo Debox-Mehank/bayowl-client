@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 import Button from "../components/reusable/Button";
 import {
   AddOn,
+  MeDocument,
+  MeQuery,
   Services,
   useGetServiceDetailsLazyQuery,
   useInitiatePaymentLazyQuery,
@@ -15,6 +17,8 @@ import Modal from "../components/reusable/Modal";
 import secondsToTime from "../utils/secsToTime";
 import _ from "lodash";
 import Loader from "../components/reusable/Loader";
+import { GetServerSideProps } from "next";
+import { addApolloState, initializeApollo } from "../lib/apolloClient";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -24,7 +28,7 @@ interface PricingServices extends Services {
   pricingArr: { name: string; price: number; id: string }[];
 }
 
-const Pricing = () => {
+const Pricing = ({ free }: { free: boolean }) => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedService, setSelectedService] = useState<PricingServices[]>();
@@ -138,9 +142,10 @@ const Pricing = () => {
         toast.error("Please provide your email before proceeding");
         return;
       }
-      const total =
-        selectedServiceFinal.price +
-        selectedAddons.reduce((acc, o) => acc + o.value! * o.qty!, 0);
+      const total = free
+        ? 0
+        : selectedServiceFinal.price +
+          selectedAddons.reduce((acc, o) => acc + o.value! * o.qty!, 0);
 
       const finalService = { ...selectedServiceFinal };
 
@@ -2199,14 +2204,16 @@ const Pricing = () => {
                         // Add price here.
                         <div className="font-bold flex items-center justify-between text-xl md:text-2xl">
                           <span>
-                            ₹{" "}
-                            {(
-                              selectedServiceFinal.price +
-                              selectedAddons.reduce(
-                                (acc, o) => acc + o.value! * (o.qty ?? 0),
-                                0
-                              )
-                            ).toLocaleString("en-IN")}
+                            {free ? "" : "₹"}{" "}
+                            {free
+                              ? "Free"
+                              : (
+                                  selectedServiceFinal.price +
+                                  selectedAddons.reduce(
+                                    (acc, o) => acc + o.value! * (o.qty ?? 0),
+                                    0
+                                  )
+                                ).toLocaleString("en-IN")}
                           </span>
                           <div className="md:hidden">
                             <Button>
@@ -2234,11 +2241,16 @@ const Pricing = () => {
                     {!localStorage.getItem("loggedIn") && (
                       <div className="font-bold flex items-center justify-between text-xl md:text-2xl pt-3">
                         <span>
-                          ₹{" "}
-                          {(
-                            selectedServiceFinal.price +
-                            selectedAddons.reduce((acc, o) => acc + o.value!, 0)
-                          ).toLocaleString("en-IN")}
+                          {free ? "" : "₹"}{" "}
+                          {free
+                            ? "Free"
+                            : (
+                                selectedServiceFinal.price +
+                                selectedAddons.reduce(
+                                  (acc, o) => acc + o.value!,
+                                  0
+                                )
+                              ).toLocaleString("en-IN")}
                         </span>
                         <div className="md:hidden">
                           <Button>
@@ -2259,3 +2271,35 @@ const Pricing = () => {
 };
 
 export default Pricing;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const apolloClient = initializeApollo(null, context);
+
+  try {
+    const meQueryData = await apolloClient.query<MeQuery>({
+      query: MeDocument,
+    });
+
+    if (meQueryData.error || meQueryData.errors) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+
+    return addApolloState(apolloClient, {
+      props: {
+        free: meQueryData.data.me.free,
+      },
+    });
+  } catch (error: any) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+};

@@ -1,3 +1,5 @@
+import 'react-phone-number-input/style.css'
+import PhoneInput from 'react-phone-number-input'
 import type { GetServerSideProps, NextPage } from "next";
 import GoogleIcon from "../public/googleIcon.png";
 import Image from "next/image";
@@ -10,11 +12,12 @@ import {
   useRegisterLazyQuery,
 } from "../graphql/generated/graphql";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import toast from "react-hot-toast";
 import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import Loader from "../components/reusable/Loader";
+import { useRef } from 'react';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -25,7 +28,7 @@ const Home: NextPage = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfPassword, setShowConfPassword] = useState<boolean>(false);
-
+  const phoneNum = useRef(null)
   const [loading, setLoading] = useState<boolean>(false);
 
   const [registerQuery] = useRegisterLazyQuery();
@@ -311,7 +314,18 @@ const Home: NextPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              <PhoneInput
+                defaultCountry='IN'
+                international={true}
+                className='w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40 border-none focus:ring-0 child:bg-transparent child:border-none'
+                autoComplete='off'
+                placeholder="Enter phone number"
+                value={number}
+                onChange={(e: string) => setNumber(e)}
+              />
+              {/* 
               <input
+                ref={phoneNum}
                 autoComplete="off"
                 className="w-full py-2 rounded-xl bg-black/30 px-4 placeholder:text-white/40 border-none focus:ring-0"
                 placeholder="Number"
@@ -320,9 +334,10 @@ const Home: NextPage = () => {
                 value={number}
                 maxLength={10}
                 onChange={(e) => setNumber(e.target.value)}
-              />
+              /> */}
               <div className="w-full bg-black/30 flex items-center rounded-xl pr-2 ">
                 <input
+
                   autoComplete="off"
                   className="py-2 rounded-xl bg-transparent px-4 placeholder:text-white/40 w-full border-0 border-none focus:ring-0"
                   placeholder="Password"

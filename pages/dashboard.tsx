@@ -190,7 +190,7 @@ function Dashboard() {
         <div className="py-4 space-y-3">
           <span className="text-xl md:text-3xl font-bold">
             Good{" "}
-            {hours < 12
+            {hours < 12 && hours > 4
               ? "Morning"
               : hours >= 12 && hours < 17
                 ? "Afternoon"

@@ -75,6 +75,10 @@ module.exports = {
     background: theme('colors'),
   }),
   plugins: [
+    function ({ addVariant }) {
+      addVariant('child', '& > *');
+      addVariant('child-hover', '& > *:hover');
+    },
     require('@tailwindcss/aspect-ratio'),
     require('tailwindcss-border-gradient-radius'),
     require('@tailwindcss/forms'),

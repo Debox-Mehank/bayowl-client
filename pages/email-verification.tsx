@@ -73,7 +73,7 @@ const EmailVerification = () => {
             style={{ textAlignLast: "center" }}
           >
             {
-              "Thanks for verifying your email id. You may now login to your account to continue your journey, "
+              "Thanks for verifying your email id. Click here to login to your account!, "
             }
             <span className="text-primary font-semibold">
               <Link href={"/login"}>click here </Link>

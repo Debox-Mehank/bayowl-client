@@ -18,19 +18,23 @@ const PaymentSuccess = () => {
           <h4
             className={`text-2xl lg:text-4xl font-bold text-white text-center py-2`}
           >
-            Payment Completed Successfully
+            Payment Completed Successfully!
           </h4>
           <p
             className="text-justify text-white font-light text-sm lg:text-lg py-2 flex-1"
             style={{ textAlignLast: "center" }}
           >
             {
-              "Thanks for purchasing our service, you can continue to the dashboard by "
+              "Thank you for your purchase, you can continue to your dashboard by "
             }
             <span className="text-primary font-semibold">
               <Link href={"/dashboard"}>clicking here.</Link>
             </span>
           </p>
+          <div className="text-center">
+            <p>If you'd like a GST invoice copy, please mail a copy of your GST certificate to accounts@bayowlstudios.com.</p>
+            <p>You will shortly receive the purchase summary on your email.</p>
+          </div>
         </div>
       </div>
     </div>

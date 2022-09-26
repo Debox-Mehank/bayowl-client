@@ -205,3 +205,9 @@ html {
 .flicker-fix {
     transform: translate3d(0px, 0px, 0px) translateY(0px);
 }
+
+
+.PhoneInputCountrySelect {
+    background-color: black !important;
+    color: white !important;
+}

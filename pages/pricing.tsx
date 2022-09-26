@@ -457,13 +457,13 @@ const Pricing = ({ free }: { free: boolean }) => {
                               return (
                                 <tr key={el.id} className="text-center">
                                   <th
-                                    className={`py-5 px-6 text-sm text-white text-left ${el.name.includes('Independent') && "bg-primary/80 font-bold"}`}
+                                    className={`py-5 px-6 text-sm text-white text-left ${el.name.includes('Independent') && "text-primary font-bold"}`}
                                     scope="row"
                                   >
                                     {el.name}
                                   </th>
                                   {selectedService.map((tier, tierIdx) => (
-                                    <td key={tierIdx} className={`py-5 px-6 ${tier.pricingArr.find((e) => e.name === el.name)?.name.includes('Independent') && "bg-primary/80"}`}>
+                                    <td key={tierIdx} className={`py-5 px-6 ${tier.pricingArr.find((e) => e.name === el.name)?.name.includes('Independent') && "text-primary/80"}`}>
                                       <span className="block text-sm text-white">
                                         {/* tier.pricingArr.find((e) => e.name === el.name)?.name.includes('Independent') && "abc" */}
                                         ₹{" "}

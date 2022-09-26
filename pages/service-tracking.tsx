@@ -612,6 +612,11 @@ function ServiceTracking() {
                       <p className="mb-4">
                         Which version are you requesting the revision for?
                       </p>
+                      <p className="pt-2 pb-4">
+                        {" "}
+                        {selectedService.revisionFiles.length} /{" "}
+                        {selectedService.setOfRevisions} Revisions used.
+                      </p>
                       <div className="relative inline-flex mb-4 w-full max-w-sm">
                         <select
                           value={revFor}
@@ -707,8 +712,8 @@ function ServiceTracking() {
                 </svg>
               </div>
               <div className="text-center">
-                <p className="mb-4">Which version did you finalize?</p>
-                <p className="py-4">
+                <p className="mb-2">Which version did you finalize?</p>
+                <p className="pt-2 pb-4">
                   Please note that you will only be able to request/purchase bus
                   and multitrack exports on the version that you mark as
                   completed.

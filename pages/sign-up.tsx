@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import Loader from "../components/reusable/Loader";
-import { useRef } from 'react';
+// import { useRef } from 'react';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -28,7 +28,7 @@ const Home: NextPage = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfPassword, setShowConfPassword] = useState<boolean>(false);
-  const phoneNum = useRef(null)
+  // const phoneNum = useRef(null)
   const [loading, setLoading] = useState<boolean>(false);
 
   const [registerQuery] = useRegisterLazyQuery();

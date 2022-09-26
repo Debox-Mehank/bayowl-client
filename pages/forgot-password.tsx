@@ -1,10 +1,70 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
-import { MeDocument, MeQuery } from "../graphql/generated/graphql";
+import {
+  MeDocument,
+  MeQuery,
+  useRequestPasswordResetLazyQuery,
+} from "../graphql/generated/graphql";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
-const Home: NextPage = () => {
+const ForgotPassword: NextPage = () => {
+  const [requestQuery] = useRequestPasswordResetLazyQuery();
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+
+  const handleSubmit = async () => {
+    if (loading) {
+      return;
+    }
+
+    if (!email) {
+      toast.error("Please enter your email id");
+      return;
+    }
+
+    if (
+      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.toString())
+    ) {
+      toast.error("Please provide valid email id");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { data, error } = await requestQuery({
+        variables: {
+          email: email.toString().trim(),
+        },
+      });
+
+      if (error) {
+        setLoading(false);
+        toast.error(error.message);
+        return;
+      }
+
+      if (!data || !data.requestPasswordReset) {
+        setLoading(false);
+        toast.error("Something went wrong, try again later.");
+        return;
+      }
+
+      setEmail("");
+      setLoading(false);
+      toast.success(
+        "If we found your email id is registered with us, we will send you an email to reset your password.",
+        { duration: 6000 }
+      );
+    } catch (error: any) {
+      console.log("login error : " + error.toString());
+      toast.error("Something went wrong, try again later.");
+      return;
+    }
+  };
   return (
-    <div className="flex flex-col md:flex-row w-full h-screen text-white">
+    <div className="flex flex-col md:flex-row w-full h-screen text-white overflow-hidden">
       <div className="w-full h-1/3 md:h-full md:w-1/2 grid place-items-center bg-loginImg bg-center bg-cover"></div>
       <div className="w-full min-h-2/3 md:h-full md:w-1/2 grid place-items-center bg-darkBlue relative md:p-0">
         <div className="-z-0 absolute animation-delay-2000 top-0 md:top-[30%] left-[0%] lg:left-[11%] w-32 md:w-96 h-96 bg-blueGradient-2 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
@@ -123,10 +183,39 @@ const Home: NextPage = () => {
               placeholder="Email"
               type="email"
               name="Email"
+              autoComplete="off"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <button className="w-full bg-black/70 filter backdrop-blur-3xl font-bold text-lg rounded-xl px-4 py-3 cursor-pointer transition-all hover:scale-105 hover:bg-black/90 duration-300">
-            Submit
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-black/70 filter backdrop-blur-3xl font-bold text-lg rounded-xl px-4 py-3 cursor-pointer flex justify-center items-center transition-all hover:scale-105 hover:bg-black/90 duration-300"
+          >
+            {loading ? (
+              <svg
+                className="animate-spin h-8 w-8 text-primary"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            ) : (
+              "Submit"
+            )}
           </button>
         </div>
       </div>
@@ -134,31 +223,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const apolloClient = initializeApollo(null, context);
-
-  try {
-    const meQueryData = await apolloClient.query<MeQuery>({
-      query: MeDocument,
-    });
-
-    if (meQueryData.error || meQueryData.errors) {
-      return addApolloState(apolloClient, {
-        props: {},
-      });
-    }
-
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  } catch (error: any) {
-    return addApolloState(apolloClient, {
-      props: {},
-    });
-  }
-};
+export default ForgotPassword;

@@ -50,11 +50,15 @@ fragment userServices on UserServices {
   deliveredFiles
   completionDate
   addOnExportsBusStems
-  addOnExportsFile
   addOnExportsMultitrack
+  multitrackFile
+  stemsFiles
   addOnExtraRevision
   paidAt
   wrokingFile
+  completedFor
+  updatedAt
+  createdAt
 }
 
 query Login($password: String!, $email: String!, $token: String) {
@@ -119,6 +123,10 @@ query InitiatePayment($service: UserServicesInput!) {
   initiatePayment(service: $service)
 }
 
+query InitiateAddOnPayment($serviceId: String!, $amount: Float!) {
+  initiateAddOnPayment(serviceId: $serviceId, amount: $amount)
+}
+
 query UpdatePorjectName($serviceId: String!, $projectName: String!) {
   updatePorjectName(serviceId: $serviceId, projectName: $projectName)
 }
@@ -175,8 +183,8 @@ query UploadFilesForService(
   )
 }
 
-query MarkCompleted($serviceId: String!) {
-  markCompleted(serviceId: $serviceId)
+query MarkCompleted($serviceId: String!, $completedFor: Float!) {
+  markCompleted(serviceId: $serviceId, completedFor: $completedFor)
 }
 
 query ActiveDashboardContent {

@@ -6,6 +6,8 @@ import {
   MeDocument,
   MeQuery,
   ServiceStatusObjectState,
+  useGetServiceDetailsLazyQuery,
+  useInitiateAddOnPaymentLazyQuery,
   useMarkCompletedLazyQuery,
   useMeQuery,
   useRequestRevisionLazyQuery,
@@ -46,6 +48,15 @@ const TABLE_HEADERS = [
   "Additional Exports",
 ];
 
+export interface UserServiceFinalTracking extends UserServiceFinal {
+  additionalAddons: {
+    main: boolean;
+    type: string;
+    price: number;
+    qty: number;
+  }[];
+}
+
 function ServiceTracking() {
   const {
     data,
@@ -55,6 +66,8 @@ function ServiceTracking() {
     fetchPolicy: "network-only",
   });
 
+  const [getServiceDetailsQuery] = useGetServiceDetailsLazyQuery();
+  const [initiatePaymentQuery] = useInitiateAddOnPaymentLazyQuery();
   const [markCompleteQuery] = useMarkCompletedLazyQuery();
   const [requestRevisionQuery] = useRequestRevisionLazyQuery();
   const [loading, setLoading] = useState<boolean>(false);
@@ -74,8 +87,7 @@ function ServiceTracking() {
 
   const [isAddOnModalOpen, setIsAddOnModalOpen] = useState<boolean>(false);
 
-  const [markCompleteVer, setMarkCompleteVer] =
-    useState<string>("Original Delivery");
+  const [markCompleteVer, setMarkCompleteVer] = useState<number>(0);
 
   useEffect(() => {
     if (data?.me) {
@@ -90,6 +102,7 @@ function ServiceTracking() {
       const { data, error } = await markCompleteQuery({
         variables: {
           serviceId: serviceId,
+          completedFor: markCompleteVer,
         },
       });
 
@@ -115,39 +128,277 @@ function ServiceTracking() {
       }));
       setServices(arr);
       setFilteredServices(arr);
-      setisMarkCompletedOpen(false)
+      setisMarkCompletedOpen(false);
     } catch (error: any) {
       setLoading(false);
       toast.error(error.toString());
     }
   };
 
-  const addOns = [
-    {
-      main: false,
-      type: "Revision",
-      price: 500,
-      qty: 0,
-    },
-    {
-      main: false,
-      type: "Bus Stems Export",
-      price: 500,
-      qty: 0,
-    },
-    {
-      main: false,
-      type: "Multitrack Export",
-      price: 500,
-      qty: 0,
-    },
-  ];
+  // const addOns = [
+  //   {
+  //     main: false,
+  //     type: "Revision",
+  //     price: 500,
+  //     qty: 0,
+  //   },
+  //   {
+  //     main: false,
+  //     type: "Bus Stems Export",
+  //     price: 500,
+  //     qty: 0,
+  //   },
+  //   {
+  //     main: false,
+  //     type: "Multitrack Export",
+  //     price: 500,
+  //     qty: 0,
+  //   },
+  // ];
+
+  const handleAddonPaymentRevision = async () => {
+    if (!selectedService) {
+      toast.error("Something went wrong, please try again later.");
+      return;
+    }
+
+    const { data: dd, error: ee } = await getServiceDetailsQuery({
+      variables: {
+        input: {
+          mainCategory: selectedService.mainCategory,
+          subCategory: selectedService.subCategory,
+          serviceName: selectedService.serviceName,
+        },
+      },
+    });
+
+    const finalS = selectedService.subService
+      ? dd?.getServiceDetails.find(
+          (el) =>
+            el.mainCategory === selectedService.mainCategory &&
+            el.subCategory === selectedService.subCategory &&
+            el.serviceName === selectedService.serviceName &&
+            el.subService === selectedService.subService
+        )
+      : dd?.getServiceDetails.find(
+          (el) =>
+            el.mainCategory === selectedService.mainCategory &&
+            el.subCategory === selectedService.subCategory &&
+            el.serviceName === selectedService.serviceName
+        );
+
+    setLoading(true);
+    const { data, error } = await initiatePaymentQuery({
+      variables: {
+        amount: finalS
+          ? finalS.addOn.find((el) => el.type === "Extra Revision")?.value ?? 0
+          : 0,
+        serviceId: selectedService._id,
+      },
+      fetchPolicy: "network-only",
+    });
+
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+
+    if (!data || !data.initiateAddOnPayment) {
+      setLoading(false);
+      toast.error("Something went wrong, try again later.");
+      return;
+    }
+
+    setLoading(false);
+    const order = JSON.parse(data.initiateAddOnPayment);
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: "INR",
+      name: "Bay Owl Studios",
+      order_id: order.id,
+      redirect: true,
+      callback_url: process.env.NEXT_PUBLIC_RAZORPAY_CALLBACK_REVISION,
+      theme: {
+        color: "#f07202",
+      },
+      modal: {
+        confirm_close: true,
+      },
+    };
+    const razor = new (window as any).Razorpay(options);
+    razor.open();
+
+    return;
+  };
+
+  const handleAddonPaymentMultitrack = async () => {
+    if (!selectedService) {
+      toast.error("Something went wrong, please try again later.");
+      return;
+    }
+
+    const { data: dd, error: ee } = await getServiceDetailsQuery({
+      variables: {
+        input: {
+          mainCategory: selectedService.mainCategory,
+          subCategory: selectedService.subCategory,
+          serviceName: selectedService.serviceName,
+        },
+      },
+    });
+
+    const finalS = selectedService.subService
+      ? dd?.getServiceDetails.find(
+          (el) =>
+            el.mainCategory === selectedService.mainCategory &&
+            el.subCategory === selectedService.subCategory &&
+            el.serviceName === selectedService.serviceName &&
+            el.subService === selectedService.subService
+        )
+      : dd?.getServiceDetails.find(
+          (el) =>
+            el.mainCategory === selectedService.mainCategory &&
+            el.subCategory === selectedService.subCategory &&
+            el.serviceName === selectedService.serviceName
+        );
+
+    setLoading(true);
+    const { data, error } = await initiatePaymentQuery({
+      variables: {
+        amount: finalS
+          ? finalS.addOn.find(
+              (el) => el.type === "Additional Exports: Multitracks"
+            )?.value ?? 0
+          : 0,
+        serviceId: selectedService._id,
+      },
+      fetchPolicy: "network-only",
+    });
+
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+
+    if (!data || !data.initiateAddOnPayment) {
+      setLoading(false);
+      toast.error("Something went wrong, try again later.");
+      return;
+    }
+
+    setLoading(false);
+    const order = JSON.parse(data.initiateAddOnPayment);
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: "INR",
+      name: "Bay Owl Studios",
+      order_id: order.id,
+      redirect: true,
+      callback_url: process.env.NEXT_PUBLIC_RAZORPAY_CALLBACK_MULTITRACK,
+      theme: {
+        color: "#f07202",
+      },
+      modal: {
+        confirm_close: true,
+      },
+    };
+    const razor = new (window as any).Razorpay(options);
+    razor.open();
+
+    return;
+  };
+
+  const handleAddonPaymentStems = async () => {
+    if (!selectedService) {
+      toast.error("Something went wrong, please try again later.");
+      return;
+    }
+
+    const { data: dd, error: ee } = await getServiceDetailsQuery({
+      variables: {
+        input: {
+          mainCategory: selectedService.mainCategory,
+          subCategory: selectedService.subCategory,
+          serviceName: selectedService.serviceName,
+        },
+      },
+    });
+
+    const finalS = selectedService.subService
+      ? dd?.getServiceDetails.find(
+          (el) =>
+            el.mainCategory === selectedService.mainCategory &&
+            el.subCategory === selectedService.subCategory &&
+            el.serviceName === selectedService.serviceName &&
+            el.subService === selectedService.subService
+        )
+      : dd?.getServiceDetails.find(
+          (el) =>
+            el.mainCategory === selectedService.mainCategory &&
+            el.subCategory === selectedService.subCategory &&
+            el.serviceName === selectedService.serviceName
+        );
+
+    setLoading(true);
+    const { data, error } = await initiatePaymentQuery({
+      variables: {
+        amount: finalS
+          ? finalS.addOn.find(
+              (el) => el.type === "Additional Exports: Bus Stems"
+            )?.value ?? 0
+          : 0,
+        serviceId: selectedService._id,
+      },
+      fetchPolicy: "network-only",
+    });
+
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+
+    if (!data || !data.initiateAddOnPayment) {
+      setLoading(false);
+      toast.error("Something went wrong, try again later.");
+      return;
+    }
+
+    setLoading(false);
+    const order = JSON.parse(data.initiateAddOnPayment);
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: "INR",
+      name: "Bay Owl Studios",
+      order_id: order.id,
+      redirect: true,
+      callback_url: process.env.NEXT_PUBLIC_RAZORPAY_CALLBACK_STEMS,
+      theme: {
+        color: "#f07202",
+      },
+      modal: {
+        confirm_close: true,
+      },
+    };
+    const razor = new (window as any).Razorpay(options);
+    razor.open();
+
+    return;
+  };
 
   const handleRequestRevision = async (service: UserServiceFinal) => {
     let lastRevisionNumber: number =
       service.revisionFiles.length > 0
         ? service.revisionFiles.sort((a, b) => a.revision - b.revision)[0]
-          .revision + 1
+            .revision + 1
         : 1;
     let revisionForNumber: number = revFor;
 
@@ -227,7 +478,57 @@ function ServiceTracking() {
 
             <div className="flex flex-col gap-3">
               {/* To also filter if the services are not already added. */}
-              {addOns
+              <div>
+                <label
+                  htmlFor={"Additional Exports: Bus Stems"}
+                  className=" font-medium text-white "
+                >
+                  <div className="border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center">
+                    <div className="min-w-0 flex-1 text-md">
+                      <p id="comments-description" className="text-gray-200">
+                        <span className="font-bold">
+                          {"Additional Exports: Bus Stems"}
+                        </span>{" "}
+                        - ₹{500}
+                      </p>
+                    </div>
+                    <div className="flex justify-center items-center my-auto">
+                      <input
+                        id={"Additional Exports: Bus Stems"}
+                        aria-describedby="comments-description"
+                        name={"Additional Exports: Bus Stems"}
+                        type="checkbox"
+                        className="h-4 w-4 text-primary border-gray-300 rounded"
+                      />
+                    </div>
+                  </div>
+                </label>
+              </div>
+              {/* <div key={addOn.type}>
+                <label
+                  htmlFor={addOn.type}
+                  className=" font-medium text-white "
+                >
+                  <div className="border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center">
+                    <div className="min-w-0 flex-1 text-md">
+                      <p id="comments-description" className="text-gray-200">
+                        <span className="font-bold">{addOn.type}</span> - ₹
+                        {addOn.price.toLocaleString("en-IN")}
+                      </p>
+                    </div>
+                    <div className="flex justify-center items-center my-auto">
+                      <input
+                        id={addOn.type}
+                        aria-describedby="comments-description"
+                        name={addOn.type}
+                        type="checkbox"
+                        className="h-4 w-4 text-primary border-gray-300 rounded"
+                      />
+                    </div>
+                  </div>
+                </label>
+              </div> */}
+              {/* {addOns
                 .filter(
                   (addOn) =>
                     addOn.main === false && !addOn.type.includes("Revision")
@@ -260,7 +561,7 @@ function ServiceTracking() {
                       </div>
                     </label>
                   </div>
-                ))}
+                ))} */}
             </div>
             <div className="w-fit mx-auto mt-5">
               <Button>
@@ -301,9 +602,13 @@ function ServiceTracking() {
               {selectedService && (
                 <>
                   {selectedService?.setOfRevisions! >
-                    selectedService.revisionFiles.length ? (
+                  selectedService.revisionFiles.length ? (
                     <div className="">
-                      <p> {selectedService.revisionFiles.length} / {selectedService.setOfRevisions} Revisions used.</p>
+                      <p>
+                        {" "}
+                        {selectedService.revisionFiles.length} /{" "}
+                        {selectedService.setOfRevisions} Revisions used.
+                      </p>
                       <p className="mb-4">
                         Which version are you requesting the revision for?
                       </p>
@@ -353,7 +658,7 @@ function ServiceTracking() {
                           <div className="w-fit mx-auto mt-4">
                             <Button
                               onClick={() => {
-                                handleRequestRevision(selectedService);
+                                handleAddonPaymentRevision();
                                 // setIsRevModalOpen(false);
                                 // send revNotes to server
                               }}
@@ -404,12 +709,16 @@ function ServiceTracking() {
               <div className="text-center">
                 <p className="mb-4">Which version did you finalize?</p>
                 <p className="py-4">
-                  Please note that you will only be able to request/purchase bus and multitrack exports on the version that you mark as completed.
+                  Please note that you will only be able to request/purchase bus
+                  and multitrack exports on the version that you mark as
+                  completed.
                 </p>
                 <div className="relative inline-flex mb-4 w-full max-w-sm">
                   <select
                     value={markCompleteVer}
-                    onChange={(e) => setMarkCompleteVer(e.target.value)}
+                    onChange={(e) =>
+                      setMarkCompleteVer(parseInt(e.target.value))
+                    }
                     className="border block w-full bg-gray-800 border-gray-300 rounded-lg text-white h-10 pl-5 pr-10  hover:border-gray-800/10 outline-none border-none focus:outline-none appearance-none"
                   >
                     <option value={0}>Original Delivery</option>
@@ -426,13 +735,12 @@ function ServiceTracking() {
                     onClick={() => {
                       if (
                         getStatusNames(selectedService.statusType) ===
-                        "Delivered" ||
+                          "Delivered" ||
                         getStatusNames(selectedService.statusType) ===
-                        "Revision Delivered"
+                          "Revision Delivered"
                       ) {
                         handleMarkComplete(selectedService._id);
                       }
-
                     }}
                   >
                     <div className=" mx-auto inline-block">Proceed</div>
@@ -540,8 +848,8 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 {transaction.submissionDate
                                   ? moment(transaction.submissionDate).format(
-                                    "MMM Do YY, h:mm a"
-                                  )
+                                      "MMM Do YY, h:mm a"
+                                    )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
@@ -557,8 +865,8 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.estDeliveryDate
                                   ? moment(transaction.estDeliveryDate).format(
-                                    "MMM Do, YYYY"
-                                  )
+                                      "MMM Do, YYYY"
+                                    )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
@@ -569,22 +877,22 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.reupload
                                   ? moment(transaction.reupload).format(
-                                    "MMM Do YY, h:mm a"
-                                  )
+                                      "MMM Do YY, h:mm a"
+                                    )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.completionDate
                                   ? moment(transaction.completionDate).format(
-                                    "MMM Do YY, h:mm a"
-                                  )
+                                      "MMM Do YY, h:mm a"
+                                    )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 <Button
                                   disabled={
                                     getStatusNames(transaction.statusType) ===
-                                      "Pending Upload"
+                                    "Pending Upload"
                                       ? false
                                       : true
                                   }
@@ -592,7 +900,7 @@ function ServiceTracking() {
                                   <div className="text-xs">
                                     {getStatusNames(transaction.statusType) ===
                                       "Pending Upload" &&
-                                      transaction.reupload === null ? (
+                                    transaction.reupload === null ? (
                                       <Link
                                         href={
                                           "/upload?serviceId=" + transaction._id
@@ -601,8 +909,8 @@ function ServiceTracking() {
                                         Upload
                                       </Link>
                                     ) : getStatusNames(
-                                      transaction.statusType
-                                    ) === "Pending Upload" &&
+                                        transaction.statusType
+                                      ) === "Pending Upload" &&
                                       transaction.reupload !== null ? (
                                       <Link
                                         href={
@@ -660,7 +968,7 @@ function ServiceTracking() {
                                                 href={
                                                   transaction.deliveredFiles
                                                     ? transaction
-                                                      .deliveredFiles[0]
+                                                        .deliveredFiles[0]
                                                     : ""
                                                 }
                                                 className={classNames(
@@ -759,9 +1067,9 @@ function ServiceTracking() {
                                   disabled={
                                     !(
                                       getStatusNames(transaction.statusType) ===
-                                      "Delivered" ||
+                                        "Delivered" ||
                                       getStatusNames(transaction.statusType) ===
-                                      "Revision Delivered"
+                                        "Revision Delivered"
                                     )
                                     //|| !(
                                     //   transaction.setOfRevisions &&
@@ -801,9 +1109,9 @@ function ServiceTracking() {
                                   disabled={
                                     !(
                                       getStatusNames(transaction.statusType) ===
-                                      "Delivered" ||
+                                        "Delivered" ||
                                       getStatusNames(transaction.statusType) ===
-                                      "Revision Delivered"
+                                        "Revision Delivered"
                                     )
                                   }
                                 >
@@ -815,7 +1123,7 @@ function ServiceTracking() {
                                   onClick={() => setIsAddOnModalOpen(true)}
                                   disabled={
                                     getStatusNames(transaction.statusType) ===
-                                      "Completed"
+                                    "Completed"
                                       ? false
                                       : true
                                   }

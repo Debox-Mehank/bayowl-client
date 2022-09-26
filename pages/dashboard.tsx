@@ -24,8 +24,9 @@ import {
 import toast from "react-hot-toast";
 import Loader from "../components/reusable/Loader";
 import { useRouter } from "next/router";
+import moment from "moment";
 
-export type UserServiceFinal = Omit<UserServices, "createdAt" | "updatedAt">;
+export type UserServiceFinal = UserServices;
 
 function Dashboard() {
   const router = useRouter();
@@ -57,7 +58,7 @@ function Dashboard() {
     }
 
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const { data, error } = await updateProjectName({
         variables: { projectName: projectName, serviceId: serviceId },
       });
@@ -84,7 +85,7 @@ function Dashboard() {
       setServices(copyServices);
       router.push(`/upload?serviceId=${copyServices[foundServiceIdx]._id}`);
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.error("Something went wrong please try again later");
       return;
     }
@@ -100,7 +101,13 @@ function Dashboard() {
 
   useEffect(() => {
     if (data?.me) {
-      setServices(data.me.services);
+      const filteredArr = data.me.services.filter(
+        (el) => el.statusType !== UserServiceStatus.Completed
+      );
+      const sortedArr = filteredArr.sort(
+        (a, b) => moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
+      );
+      setServices(sortedArr);
     }
   }, [data]);
 
@@ -126,31 +133,35 @@ function Dashboard() {
       <div className="px-8 relative z-0 w-full">
         <div className="absolute animation-delay-2000 top-[55%] left-[20%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
         <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
-        {loading ? <Loader /> : dashboardContents?.activeDashboardContent.map((el, idx) => {
-          if (currentContent === idx) {
-            return (
-              <div
-                data-aos="fade-in"
-                data-aos-duration="500"
-                data-aos-easing="ease-in-out"
-                data-aos-mirror="true"
-                className="mt-28 w-full h-32 lg:h-40 relative"
-                key={idx}
-              >
-                <Image
-                  objectFit="cover"
-                  layout="fill"
-                  className="rounded-xl"
-                  src={
-                    dashboardContents?.activeDashboardContent[idx].image ?? ""
-                  }
-                />
-              </div>
-            );
-          } else {
-            return null;
-          }
-        })}
+        {loading ? (
+          <Loader />
+        ) : (
+          dashboardContents?.activeDashboardContent.map((el, idx) => {
+            if (currentContent === idx) {
+              return (
+                <div
+                  data-aos="fade-in"
+                  data-aos-duration="500"
+                  data-aos-easing="ease-in-out"
+                  data-aos-mirror="true"
+                  className="mt-28 w-full h-32 lg:h-40 relative"
+                  key={idx}
+                >
+                  <Image
+                    objectFit="cover"
+                    layout="fill"
+                    className="rounded-xl"
+                    src={
+                      dashboardContents?.activeDashboardContent[idx].image ?? ""
+                    }
+                  />
+                </div>
+              );
+            } else {
+              return null;
+            }
+          })
+        )}
         {/* Modal Start */}
         <Modal open={open} setOpen={setOpen}>
           <div className="space-y-4 text-center">
@@ -193,8 +204,8 @@ function Dashboard() {
             {hours < 12 && hours > 4
               ? "Morning"
               : hours >= 12 && hours < 17
-                ? "Afternoon"
-                : "Evening"}
+              ? "Afternoon"
+              : "Evening"}
             , {data?.me.name}.
           </span>
           <div className="text-sm md:text-lg">

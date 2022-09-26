@@ -43,7 +43,7 @@ const TABLE_HEADERS = [
   "Download",
   "Request Revision",
   "Mark Completed",
-  "Add a Service",
+  "Additional Exports",
 ];
 
 function ServiceTracking() {
@@ -115,6 +115,7 @@ function ServiceTracking() {
       }));
       setServices(arr);
       setFilteredServices(arr);
+      setisMarkCompletedOpen(false)
     } catch (error: any) {
       setLoading(false);
       toast.error(error.toString());
@@ -146,7 +147,7 @@ function ServiceTracking() {
     let lastRevisionNumber: number =
       service.revisionFiles.length > 0
         ? service.revisionFiles.sort((a, b) => a.revision - b.revision)[0]
-            .revision + 1
+          .revision + 1
         : 1;
     let revisionForNumber: number = revFor;
 
@@ -300,8 +301,9 @@ function ServiceTracking() {
               {selectedService && (
                 <>
                   {selectedService?.setOfRevisions! >
-                  selectedService.revisionFiles.length ? (
+                    selectedService.revisionFiles.length ? (
                     <div className="">
+                      <p> {selectedService.revisionFiles.length} / {selectedService.setOfRevisions} Revisions used.</p>
                       <p className="mb-4">
                         Which version are you requesting the revision for?
                       </p>
@@ -400,7 +402,10 @@ function ServiceTracking() {
                 </svg>
               </div>
               <div className="text-center">
-                <p className="mb-4">Which version did you finalize with?</p>
+                <p className="mb-4">Which version did you finalize?</p>
+                <p className="py-4">
+                  Please note that you will only be able to request/purchase bus and multitrack exports on the version that you mark as completed.
+                </p>
                 <div className="relative inline-flex mb-4 w-full max-w-sm">
                   <select
                     value={markCompleteVer}
@@ -409,7 +414,6 @@ function ServiceTracking() {
                   >
                     <option value={0}>Original Delivery</option>
                     {selectedService?.revisionFiles &&
-                      selectedService.revisionFiles &&
                       selectedService?.revisionFiles.map((version, index) => (
                         <option key={version.revision} value={index + 1}>
                           Revision {index + 1}
@@ -422,14 +426,13 @@ function ServiceTracking() {
                     onClick={() => {
                       if (
                         getStatusNames(selectedService.statusType) ===
-                          "Delivered" ||
+                        "Delivered" ||
                         getStatusNames(selectedService.statusType) ===
-                          "Revision Delivered"
+                        "Revision Delivered"
                       ) {
                         handleMarkComplete(selectedService._id);
                       }
-                      // setIsRevModalOpen(false);
-                      // send revNotes to server
+
                     }}
                   >
                     <div className=" mx-auto inline-block">Proceed</div>
@@ -537,8 +540,8 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 {transaction.submissionDate
                                   ? moment(transaction.submissionDate).format(
-                                      "MMM Do YY, h:mm a"
-                                    )
+                                    "MMM Do YY, h:mm a"
+                                  )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
@@ -554,8 +557,8 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.estDeliveryDate
                                   ? moment(transaction.estDeliveryDate).format(
-                                      "MMM Do, YYYY"
-                                    )
+                                    "MMM Do, YYYY"
+                                  )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
@@ -566,22 +569,22 @@ function ServiceTracking() {
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.reupload
                                   ? moment(transaction.reupload).format(
-                                      "MMM Do YY, h:mm a"
-                                    )
+                                    "MMM Do YY, h:mm a"
+                                  )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.completionDate
                                   ? moment(transaction.completionDate).format(
-                                      "MMM Do YY, h:mm a"
-                                    )
+                                    "MMM Do YY, h:mm a"
+                                  )
                                   : "N/A"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 <Button
                                   disabled={
                                     getStatusNames(transaction.statusType) ===
-                                    "Pending Upload"
+                                      "Pending Upload"
                                       ? false
                                       : true
                                   }
@@ -589,7 +592,7 @@ function ServiceTracking() {
                                   <div className="text-xs">
                                     {getStatusNames(transaction.statusType) ===
                                       "Pending Upload" &&
-                                    transaction.reupload === null ? (
+                                      transaction.reupload === null ? (
                                       <Link
                                         href={
                                           "/upload?serviceId=" + transaction._id
@@ -598,8 +601,8 @@ function ServiceTracking() {
                                         Upload
                                       </Link>
                                     ) : getStatusNames(
-                                        transaction.statusType
-                                      ) === "Pending Upload" &&
+                                      transaction.statusType
+                                    ) === "Pending Upload" &&
                                       transaction.reupload !== null ? (
                                       <Link
                                         href={
@@ -657,7 +660,7 @@ function ServiceTracking() {
                                                 href={
                                                   transaction.deliveredFiles
                                                     ? transaction
-                                                        .deliveredFiles[0]
+                                                      .deliveredFiles[0]
                                                     : ""
                                                 }
                                                 className={classNames(
@@ -756,9 +759,9 @@ function ServiceTracking() {
                                   disabled={
                                     !(
                                       getStatusNames(transaction.statusType) ===
-                                        "Delivered" ||
+                                      "Delivered" ||
                                       getStatusNames(transaction.statusType) ===
-                                        "Revision Delivered"
+                                      "Revision Delivered"
                                     )
                                     //|| !(
                                     //   transaction.setOfRevisions &&
@@ -798,9 +801,9 @@ function ServiceTracking() {
                                   disabled={
                                     !(
                                       getStatusNames(transaction.statusType) ===
-                                        "Delivered" ||
+                                      "Delivered" ||
                                       getStatusNames(transaction.statusType) ===
-                                        "Revision Delivered"
+                                      "Revision Delivered"
                                     )
                                   }
                                 >
@@ -812,7 +815,7 @@ function ServiceTracking() {
                                   onClick={() => setIsAddOnModalOpen(true)}
                                   disabled={
                                     getStatusNames(transaction.statusType) ===
-                                    "Completed"
+                                      "Completed"
                                       ? false
                                       : true
                                   }

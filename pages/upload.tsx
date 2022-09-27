@@ -455,6 +455,11 @@ function Upload() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    if (loading) {
+      toast.error("Your files are uploading please wait");
+      return;
+    }
+
     try {
       // For showing the upload progess
       let percentage: number | undefined = undefined;

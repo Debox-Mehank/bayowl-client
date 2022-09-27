@@ -138,7 +138,7 @@ function Accordion({ service, handleAccordionClick }: Props) {
       {/* Expanded */}
 
       <div
-        className={`filter  rounded-lg top-14 w-full transition-all duration-300 overflow-hidden
+        className={`filter rounded-lg top-14 w-full transition-all duration-300 overflow-hidden
          ${
            isOpen
              ? "max-h-[100rem] duration-500 transition-all ease-in"

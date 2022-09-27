@@ -1,22 +1,18 @@
 import React, { useEffect } from "react";
 import DashNav from "../components/DashNav";
 import Image from "next/image";
-import PromoImg from "../public/dash1.jpg";
 import Link from "next/link";
 import Accordion from "../components/reusable/Accordion";
 import Modal from "../components/reusable/Modal";
 
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useRef, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon } from "@heroicons/react/outline";
+import { useState } from "react";
 import { GetServerSideProps } from "next";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import {
   MeDocument,
   MeQuery,
   useActiveDashboardContentQuery,
-  useMeQuery,
   UserServices,
   UserServiceStatus,
   useUpdatePorjectNameLazyQuery,
@@ -28,7 +24,13 @@ import moment from "moment";
 
 export type UserServiceFinal = UserServices;
 
-function Dashboard() {
+interface IDashboardProps {
+  meServices: UserServices[];
+  name: string;
+  email: string;
+}
+
+export const Dashboard = ({ meServices, name, email }: IDashboardProps) => {
   const router = useRouter();
   const date = new Date();
   const hours = date.getHours();
@@ -91,8 +93,6 @@ function Dashboard() {
     }
   };
 
-  const { data, loading, error } = useMeQuery({ fetchPolicy: "network-only" });
-
   const {
     data: dashboardContents,
     loading: dashboardContentLoading,
@@ -100,16 +100,18 @@ function Dashboard() {
   } = useActiveDashboardContentQuery({ fetchPolicy: "cache-and-network" });
 
   useEffect(() => {
-    if (data?.me) {
-      const filteredArr = data.me.services.filter(
+    if (meServices.length > 0) {
+      setIsLoading(true);
+      const filteredArr = meServices.filter(
         (el) => el.statusType !== UserServiceStatus.Completed
       );
       const sortedArr = filteredArr.sort(
         (a, b) => moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
       );
+      setIsLoading(false);
       setServices(sortedArr);
     }
-  }, [data]);
+  }, [meServices]);
 
   useEffect(() => {
     var contentInterval: NodeJS.Timeout;
@@ -129,11 +131,11 @@ function Dashboard() {
 
   return (
     <div className="bg-darkBlue text-white flex">
-      <DashNav name={data?.me.name} email={data?.me.email} />
+      <DashNav name={name} email={email} />
       <div className="px-8 relative z-0 w-full">
         <div className="absolute animation-delay-2000 top-[55%] left-[20%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-60 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
         <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden pointer-events-none" />
-        {loading ? (
+        {isLoading || dashboardContentLoading ? (
           <Loader />
         ) : (
           dashboardContents?.activeDashboardContent.map((el, idx) => {
@@ -151,6 +153,7 @@ function Dashboard() {
                     objectFit="cover"
                     layout="fill"
                     className="rounded-xl"
+                    priority
                     src={
                       dashboardContents?.activeDashboardContent[idx].image ?? ""
                     }
@@ -206,10 +209,10 @@ function Dashboard() {
               : hours >= 12 && hours < 17
               ? "Afternoon"
               : "Evening"}
-            , {data?.me.name}.
+            , {name}.
           </span>
           <div className="text-sm md:text-lg">
-            {(data?.me.services.length ?? 0) > 0
+            {(meServices.length ?? 0) > 0
               ? "You have the following paid subscriptions in your account."
               : "You don't have any paid services, click below to start with a new service."}
           </div>
@@ -232,7 +235,7 @@ function Dashboard() {
         {/* Add */}
 
         <div className="text-center space-y-3 pb-8">
-          <Link href={"/services"}>
+          <Link href={"/services"} passHref>
             <div className="h-14 w-14 md:h-24 md:w-24 bg-white/10 hover:bg-white/20 transition-colors duration-100 rounded-full cursor-pointer mx-auto grid place-items-center">
               <svg
                 className="z-0 fill-primary h-7 w-7 md:w-10 md:h-10"
@@ -247,7 +250,7 @@ function Dashboard() {
           </Link>
 
           <div className="">
-            <Link href={"/services"}>
+            <Link href={"/services"} passHref>
               <span className="group cursor-pointer">Add a service</span>
             </Link>
           </div>
@@ -255,7 +258,7 @@ function Dashboard() {
       </div>
     </div>
   );
-}
+};
 
 export default Dashboard;
 
@@ -277,7 +280,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     return addApolloState(apolloClient, {
-      props: {},
+      props: {
+        meServices: meQueryData.data.me.services,
+        name: meQueryData.data.me.name ?? "",
+        email: meQueryData.data.me.email,
+      },
     });
   } catch (error: any) {
     return {

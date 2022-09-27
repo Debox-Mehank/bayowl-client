@@ -11,6 +11,7 @@ import {
   useMarkCompletedLazyQuery,
   useMeQuery,
   useRequestRevisionLazyQuery,
+  UserServices,
   UserServiceStatus,
 } from "../graphql/generated/graphql";
 import { useState } from "react";
@@ -57,14 +58,20 @@ export interface UserServiceFinalTracking extends UserServiceFinal {
   }[];
 }
 
-function ServiceTracking() {
-  const {
-    data,
-    loading: meQueryLoading,
-    error,
-  } = useMeQuery({
-    fetchPolicy: "network-only",
-  });
+interface ITrackingProps {
+  meServices: UserServices[];
+  name: string;
+  email: string;
+}
+
+const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
+  // const {
+  //   data,
+  //   loading: meQueryLoading,
+  //   error,
+  // } = useMeQuery({
+  //   fetchPolicy: "network-only",
+  // });
 
   const [getServiceDetailsQuery] = useGetServiceDetailsLazyQuery();
   const [initiatePaymentQuery] = useInitiateAddOnPaymentLazyQuery();
@@ -83,19 +90,19 @@ function ServiceTracking() {
     useState<boolean>(false);
   const [revNotes, setRevNotes] = useState<string>("");
   const [revFor, setRevFor] = useState<number>(0);
-  const [selectedAddons, setSelectedAddons] = useState<AddOn>();
+  const [selectedAddons, setSelectedAddons] = useState<AddOn[]>([]);
 
   const [isAddOnModalOpen, setIsAddOnModalOpen] = useState<boolean>(false);
 
   const [markCompleteVer, setMarkCompleteVer] = useState<number>(0);
 
   useEffect(() => {
-    if (data?.me) {
-      const servicesArr = data.me.services.filter((el) => el.projectName);
+    if (meServices.length > 0) {
+      const servicesArr = meServices.filter((el) => el.projectName);
       setServices(servicesArr);
       setFilteredServices(servicesArr);
     }
-  }, [data]);
+  }, [meServices]);
 
   const handleMarkComplete = async (serviceId: string) => {
     try {
@@ -135,64 +142,20 @@ function ServiceTracking() {
     }
   };
 
-  // const addOns = [
-  //   {
-  //     main: false,
-  //     type: "Revision",
-  //     price: 500,
-  //     qty: 0,
-  //   },
-  //   {
-  //     main: false,
-  //     type: "Bus Stems Export",
-  //     price: 500,
-  //     qty: 0,
-  //   },
-  //   {
-  //     main: false,
-  //     type: "Multitrack Export",
-  //     price: 500,
-  //     qty: 0,
-  //   },
-  // ];
-
   const handleAddonPaymentRevision = async () => {
     if (!selectedService) {
       toast.error("Something went wrong, please try again later.");
       return;
     }
 
-    const { data: dd, error: ee } = await getServiceDetailsQuery({
-      variables: {
-        input: {
-          mainCategory: selectedService.mainCategory,
-          subCategory: selectedService.subCategory,
-          serviceName: selectedService.serviceName,
-        },
-      },
-    });
-
-    const finalS = selectedService.subService
-      ? dd?.getServiceDetails.find(
-          (el) =>
-            el.mainCategory === selectedService.mainCategory &&
-            el.subCategory === selectedService.subCategory &&
-            el.serviceName === selectedService.serviceName &&
-            el.subService === selectedService.subService
-        )
-      : dd?.getServiceDetails.find(
-          (el) =>
-            el.mainCategory === selectedService.mainCategory &&
-            el.subCategory === selectedService.subCategory &&
-            el.serviceName === selectedService.serviceName
-        );
+    console.log(selectedService.allAddOns);
 
     setLoading(true);
     const { data, error } = await initiatePaymentQuery({
       variables: {
-        amount: finalS
-          ? finalS.addOn.find((el) => el.type === "Extra Revision")?.value ?? 0
-          : 0,
+        amount:
+          selectedService.allAddOns?.find((el) => el.type === "Extra Revision")
+            ?.value ?? 0,
         serviceId: selectedService._id,
       },
       fetchPolicy: "network-only",
@@ -240,39 +203,13 @@ function ServiceTracking() {
       return;
     }
 
-    const { data: dd, error: ee } = await getServiceDetailsQuery({
-      variables: {
-        input: {
-          mainCategory: selectedService.mainCategory,
-          subCategory: selectedService.subCategory,
-          serviceName: selectedService.serviceName,
-        },
-      },
-    });
-
-    const finalS = selectedService.subService
-      ? dd?.getServiceDetails.find(
-          (el) =>
-            el.mainCategory === selectedService.mainCategory &&
-            el.subCategory === selectedService.subCategory &&
-            el.serviceName === selectedService.serviceName &&
-            el.subService === selectedService.subService
-        )
-      : dd?.getServiceDetails.find(
-          (el) =>
-            el.mainCategory === selectedService.mainCategory &&
-            el.subCategory === selectedService.subCategory &&
-            el.serviceName === selectedService.serviceName
-        );
-
     setLoading(true);
     const { data, error } = await initiatePaymentQuery({
       variables: {
-        amount: finalS
-          ? finalS.addOn.find(
-              (el) => el.type === "Additional Exports: Multitracks"
-            )?.value ?? 0
-          : 0,
+        amount:
+          selectedService.allAddOns?.find(
+            (el) => el.type === "Additional Exports: Multitracks"
+          )?.value ?? 0,
         serviceId: selectedService._id,
       },
       fetchPolicy: "network-only",
@@ -320,39 +257,13 @@ function ServiceTracking() {
       return;
     }
 
-    const { data: dd, error: ee } = await getServiceDetailsQuery({
-      variables: {
-        input: {
-          mainCategory: selectedService.mainCategory,
-          subCategory: selectedService.subCategory,
-          serviceName: selectedService.serviceName,
-        },
-      },
-    });
-
-    const finalS = selectedService.subService
-      ? dd?.getServiceDetails.find(
-          (el) =>
-            el.mainCategory === selectedService.mainCategory &&
-            el.subCategory === selectedService.subCategory &&
-            el.serviceName === selectedService.serviceName &&
-            el.subService === selectedService.subService
-        )
-      : dd?.getServiceDetails.find(
-          (el) =>
-            el.mainCategory === selectedService.mainCategory &&
-            el.subCategory === selectedService.subCategory &&
-            el.serviceName === selectedService.serviceName
-        );
-
     setLoading(true);
     const { data, error } = await initiatePaymentQuery({
       variables: {
-        amount: finalS
-          ? finalS.addOn.find(
-              (el) => el.type === "Additional Exports: Bus Stems"
-            )?.value ?? 0
-          : 0,
+        amount:
+          selectedService.allAddOns?.find(
+            (el) => el.type === "Additional Exports: Bus Stems"
+          )?.value ?? 0,
         serviceId: selectedService._id,
       },
       fetchPolicy: "network-only",
@@ -394,15 +305,62 @@ function ServiceTracking() {
     return;
   };
 
-  const handleRequestRevision = async (service: UserServiceFinal) => {
-    let lastRevisionNumber: number =
-      service.revisionFiles.length > 0
-        ? service.revisionFiles.sort((a, b) => a.revision - b.revision)[0]
-            .revision + 1
-        : 1;
-    let revisionForNumber: number = revFor;
+  const handleAddonPaymentsBoth = async (price: number) => {
+    if (!selectedService) {
+      toast.error("Something went wrong, please try again later.");
+      return;
+    }
 
-    console.log(lastRevisionNumber, revisionForNumber);
+    setLoading(true);
+    const { data, error } = await initiatePaymentQuery({
+      variables: {
+        amount: price,
+        serviceId: selectedService._id,
+      },
+      fetchPolicy: "network-only",
+    });
+
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+
+    if (!data || !data.initiateAddOnPayment) {
+      setLoading(false);
+      toast.error("Something went wrong, try again later.");
+      return;
+    }
+
+    setLoading(false);
+    const order = JSON.parse(data.initiateAddOnPayment);
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: "INR",
+      name: "Bay Owl Studios",
+      order_id: order.id,
+      redirect: true,
+      callback_url: process.env.NEXT_PUBLIC_RAZORPAY_CALLBACK_ADDONBOTH,
+      theme: {
+        color: "#f07202",
+      },
+      modal: {
+        confirm_close: true,
+      },
+    };
+    const razor = new (window as any).Razorpay(options);
+    razor.open();
+
+    return;
+  };
+
+  const handleRequestRevision = async (service: UserServiceFinal) => {
+    let revs = [...service.revisionFiles];
+    revs.sort((a, b) => b.revision - a.revision);
+    let lastRevisionNumber: number = revs.length > 0 ? revs[0].revision + 1 : 1;
+    let revisionForNumber: number = revFor;
 
     try {
       const { data, error } = await requestRevisionQuery({
@@ -450,7 +408,7 @@ function ServiceTracking() {
       <div className="absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden" />
       <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden" />
       <div className="absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-      <DashNav name={data?.me.name} email={data?.me.email} />
+      <DashNav name={name} email={email} />
       {/* Add On Modal */}
       <Modal open={isAddOnModalOpen} setOpen={setIsAddOnModalOpen}>
         <>
@@ -478,93 +436,79 @@ function ServiceTracking() {
 
             <div className="flex flex-col gap-3">
               {/* To also filter if the services are not already added. */}
-              <div>
-                <label
-                  htmlFor={"Additional Exports: Bus Stems"}
-                  className=" font-medium text-white "
-                >
-                  <div className="border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center">
-                    <div className="min-w-0 flex-1 text-md">
-                      <p id="comments-description" className="text-gray-200">
-                        <span className="font-bold">
-                          {"Additional Exports: Bus Stems"}
-                        </span>{" "}
-                        - ₹{500}
-                      </p>
-                    </div>
-                    <div className="flex justify-center items-center my-auto">
-                      <input
-                        id={"Additional Exports: Bus Stems"}
-                        aria-describedby="comments-description"
-                        name={"Additional Exports: Bus Stems"}
-                        type="checkbox"
-                        className="h-4 w-4 text-primary border-gray-300 rounded"
-                      />
-                    </div>
-                  </div>
-                </label>
-              </div>
-              {/* <div key={addOn.type}>
-                <label
-                  htmlFor={addOn.type}
-                  className=" font-medium text-white "
-                >
-                  <div className="border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center">
-                    <div className="min-w-0 flex-1 text-md">
-                      <p id="comments-description" className="text-gray-200">
-                        <span className="font-bold">{addOn.type}</span> - ₹
-                        {addOn.price.toLocaleString("en-IN")}
-                      </p>
-                    </div>
-                    <div className="flex justify-center items-center my-auto">
-                      <input
-                        id={addOn.type}
-                        aria-describedby="comments-description"
-                        name={addOn.type}
-                        type="checkbox"
-                        className="h-4 w-4 text-primary border-gray-300 rounded"
-                      />
-                    </div>
-                  </div>
-                </label>
-              </div> */}
-              {/* {addOns
-                .filter(
-                  (addOn) =>
-                    addOn.main === false && !addOn.type.includes("Revision")
-                )
-                .map((addOn) => (
-                  <div key={addOn.type}>
-                    <label
-                      htmlFor={addOn.type}
-                      className=" font-medium text-white "
-                    >
-                      <div className="border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center">
-                        <div className="min-w-0 flex-1 text-md">
-                          <p
-                            id="comments-description"
-                            className="text-gray-200"
-                          >
-                            <span className="font-bold">{addOn.type}</span> - ₹
-                            {addOn.price.toLocaleString("en-IN")}
-                          </p>
+              {selectedService?.allAddOns
+                ?.filter((el) => !el.main && !el.type.includes("Revision"))
+                .map((addOn) =>
+                  (selectedService.multitrackFile &&
+                    addOn.type.includes("Multitracks")) ||
+                  (selectedService.stemsFiles &&
+                    addOn.type.includes("Stems")) ? null : (
+                    <div key={addOn.type}>
+                      <label
+                        htmlFor={addOn.type}
+                        className="font-medium text-white "
+                      >
+                        <div className="border-2 border-gray-600 rounded-lg relative flex items-start py-4 px-3 justify-center">
+                          <div className="min-w-0 flex-1 text-md">
+                            <p
+                              id="comments-description"
+                              className="text-gray-200"
+                            >
+                              <span className="font-bold">{addOn.type}</span> -
+                              ₹{addOn.value?.toLocaleString("en-IN")}
+                            </p>
+                          </div>
+                          <div className="flex justify-center items-center my-auto">
+                            <input
+                              id={addOn.type}
+                              aria-describedby="comments-description"
+                              name={addOn.type}
+                              type="checkbox"
+                              className="h-4 w-4 text-primary border-gray-300 rounded"
+                              onChange={(e) => {
+                                let arr = [...selectedAddons];
+                                let elemFound = arr.find(
+                                  (el) => el.type === addOn.type
+                                );
+                                if (elemFound) {
+                                  arr = arr.filter(
+                                    (el) => el.type !== addOn.type
+                                  );
+                                } else {
+                                  arr.push(addOn);
+                                }
+                                setSelectedAddons(arr);
+                              }}
+                            />
+                          </div>
                         </div>
-                        <div className="flex justify-center items-center my-auto">
-                          <input
-                            id={addOn.type}
-                            aria-describedby="comments-description"
-                            name={addOn.type}
-                            type="checkbox"
-                            className="h-4 w-4 text-primary border-gray-300 rounded"
-                          />
-                        </div>
-                      </div>
-                    </label>
-                  </div>
-                ))} */}
+                      </label>
+                    </div>
+                  )
+                )}
             </div>
             <div className="w-fit mx-auto mt-5">
-              <Button>
+              <Button
+                onClick={() => {
+                  if (selectedAddons.length === 2) {
+                    // Handle Both in one
+                    handleAddonPaymentsBoth(
+                      selectedAddons.reduce((accum, obj) => {
+                        return accum + (obj.value ?? 0);
+                      }, 0)
+                    );
+                  } else {
+                    selectedAddons.map((el) => {
+                      if (el.type === "Additional Exports: Multitracks") {
+                        handleAddonPaymentMultitrack();
+                      }
+                      if (el.type === "Additional Exports: Bus Stems") {
+                        handleAddonPaymentStems();
+                      }
+                    });
+                  }
+                }}
+              >
                 <div className=" mx-auto inline-block">Proceed</div>
               </Button>
             </div>
@@ -757,7 +701,7 @@ function ServiceTracking() {
         </>
       </Modal>
 
-      {loading || meQueryLoading ? (
+      {loading ? (
         <Loader />
       ) : (
         <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
@@ -939,7 +883,9 @@ function ServiceTracking() {
 
                                 {transaction.revisionFiles.filter(
                                   (el) => el.file
-                                ).length > 0 ? (
+                                ).length > 0 ||
+                                transaction.stemsFiles ||
+                                transaction.multitrackFile ? (
                                   <Menu
                                     as="div"
                                     className="relative inline-block text-left"
@@ -987,8 +933,53 @@ function ServiceTracking() {
                                               </a>
                                             )}
                                           </Menu.Item>
+                                          {transaction.stemsFiles && (
+                                            <Menu.Item>
+                                              {({ active }) => (
+                                                <a
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  href={
+                                                    transaction.stemsFiles ?? ""
+                                                  }
+                                                  className={classNames(
+                                                    active
+                                                      ? "bg-gray-100/20 text-white/80"
+                                                      : "text-white",
+                                                    "block px-4 py-2 text-sm"
+                                                  )}
+                                                >
+                                                  Bus Stems Export
+                                                </a>
+                                              )}
+                                            </Menu.Item>
+                                          )}
+                                          {transaction.multitrackFile && (
+                                            <Menu.Item>
+                                              {({ active }) => (
+                                                <a
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  href={
+                                                    transaction.multitrackFile ??
+                                                    ""
+                                                  }
+                                                  className={classNames(
+                                                    active
+                                                      ? "bg-gray-100/20 text-white/80"
+                                                      : "text-white",
+                                                    "block px-4 py-2 text-sm"
+                                                  )}
+                                                >
+                                                  Multitrack Exports
+                                                </a>
+                                              )}
+                                            </Menu.Item>
+                                          )}
                                           {transaction.revisionFiles
-                                            .filter((el) => el.file)
+                                            .filter(
+                                              (el) => el.file !== undefined
+                                            )
                                             .map((version, index) => (
                                               <Menu.Item key={version.revision}>
                                                 {({ active }) => (
@@ -1125,10 +1116,15 @@ function ServiceTracking() {
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 <Button
-                                  onClick={() => setIsAddOnModalOpen(true)}
+                                  onClick={() => {
+                                    setSelectedService(transaction);
+                                    setIsAddOnModalOpen(true);
+                                  }}
                                   disabled={
                                     getStatusNames(transaction.statusType) ===
-                                    "Completed"
+                                      "Completed" &&
+                                    (!transaction.addOnExportsBusStems ||
+                                      !transaction.addOnExportsMultitrack)
                                       ? false
                                       : true
                                   }
@@ -1150,7 +1146,7 @@ function ServiceTracking() {
       )}
     </div>
   );
-}
+};
 
 export default ServiceTracking;
 
@@ -1172,7 +1168,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     return addApolloState(apolloClient, {
-      props: {},
+      props: {
+        meServices: meQueryData.data.me.services,
+        name: meQueryData.data.me.name ?? "",
+        email: meQueryData.data.me.email,
+      },
     });
   } catch (error: any) {
     return {

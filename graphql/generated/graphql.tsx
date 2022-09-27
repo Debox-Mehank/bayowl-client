@@ -76,10 +76,19 @@ export type DashboardContentInput = {
   image: Scalars['String'];
 };
 
+/** Enum For Type of dashboard data */
+export enum DashboardEnum {
+  NumberOfCustomersRegistered = 'NumberOfCustomersRegistered',
+  NumberOfCustomersWithPaidService = 'NumberOfCustomersWithPaidService',
+  NumberOfServicesCompleted = 'NumberOfServicesCompleted',
+  NumberOfServicesInProgress = 'NumberOfServicesInProgress',
+  NumberOfServicesPendingAcceptance = 'NumberOfServicesPendingAcceptance'
+}
+
 export type DashboardInterfaceClass = {
   __typename?: 'DashboardInterfaceClass';
   data: Scalars['Float'];
-  label: Scalars['String'];
+  label: DashboardEnum;
 };
 
 export type FileUploadResponse = {
@@ -177,12 +186,10 @@ export type PaymentConfigInput = {
 export type Query = {
   __typename?: 'Query';
   activeDashboardContent: Array<DashboardContent>;
-  addAddOnExportsFile: Scalars['Boolean'];
   addDashboardContent: DashboardContent;
   addDeliverFiles: Scalars['Boolean'];
   addPaymentConfig: Scalars['Boolean'];
   addRevisionNotesByMaster: Scalars['Boolean'];
-  addWorkingFile: Scalars['Boolean'];
   adminLogin: Scalars['Boolean'];
   adminLogout: Scalars['Boolean'];
   allAdmins: Array<Admin>;
@@ -192,6 +199,8 @@ export type Query = {
   completeAccount: Scalars['Boolean'];
   confirmUpload: Scalars['Boolean'];
   dashboardMet: Array<DashboardInterfaceClass>;
+  dashboardMetEmployee: Array<DashboardInterfaceClass>;
+  deleteDashboardContent: Scalars['Boolean'];
   finalizeMultipartUpload?: Maybe<Scalars['String']>;
   getAllPayment: Array<Payment>;
   getAllPaymentConfig: Array<PaymentConfig>;
@@ -220,19 +229,15 @@ export type Query = {
   requestRevision: Scalars['Boolean'];
   resetPassword: Scalars['Boolean'];
   resetPasswordAdmin: Scalars['Boolean'];
-  toggleDashboardContent: DashboardContent;
-  updateDashboardContent: Scalars['Boolean'];
+  toggleDashboardContent: Scalars['Boolean'];
   updateFreeUser: Scalars['Boolean'];
   updatePaymentConfig: Scalars['Boolean'];
   updatePorjectName: Scalars['Boolean'];
+  uploadBusFiles: Scalars['Boolean'];
   uploadFilesForService: Scalars['Boolean'];
+  uploadMultitrackFiles: Scalars['Boolean'];
+  uploadWorkingFiles: Scalars['Boolean'];
   verifyUser: Scalars['Boolean'];
-};
-
-
-export type QueryAddAddOnExportsFileArgs = {
-  serviceId: Scalars['String'];
-  url: Scalars['String'];
 };
 
 
@@ -258,12 +263,6 @@ export type QueryAddRevisionNotesByMasterArgs = {
 };
 
 
-export type QueryAddWorkingFileArgs = {
-  serviceId: Scalars['String'];
-  url: Scalars['String'];
-};
-
-
 export type QueryAdminLoginArgs = {
   input: AdminLoginInput;
 };
@@ -286,6 +285,12 @@ export type QueryCompleteAccountArgs = {
 export type QueryConfirmUploadArgs = {
   deliveryDays: Scalars['Float'];
   serviceId: Scalars['String'];
+};
+
+
+export type QueryDeleteDashboardContentArgs = {
+  id: Scalars['String'];
+  image: Scalars['String'];
 };
 
 
@@ -400,12 +405,6 @@ export type QueryToggleDashboardContentArgs = {
 };
 
 
-export type QueryUpdateDashboardContentArgs = {
-  id: Scalars['String'];
-  input: DashboardContentInput;
-};
-
-
 export type QueryUpdateFreeUserArgs = {
   free: Scalars['Boolean'];
   id: Scalars['String'];
@@ -423,12 +422,30 @@ export type QueryUpdatePorjectNameArgs = {
 };
 
 
+export type QueryUploadBusFilesArgs = {
+  fileUrl: Scalars['String'];
+  serviceId: Scalars['String'];
+};
+
+
 export type QueryUploadFilesForServiceArgs = {
   isReupload?: InputMaybe<Scalars['Boolean']>;
   notes?: InputMaybe<Scalars['String']>;
   referenceUploadedFiles?: InputMaybe<Array<Scalars['String']>>;
   serviceId: Scalars['String'];
   uplodedFiles: Array<Scalars['String']>;
+};
+
+
+export type QueryUploadMultitrackFilesArgs = {
+  fileUrl: Scalars['String'];
+  serviceId: Scalars['String'];
+};
+
+
+export type QueryUploadWorkingFilesArgs = {
+  fileUrl: Scalars['String'];
+  serviceId: Scalars['String'];
 };
 
 
@@ -559,6 +576,7 @@ export type UserServices = {
   addOnExportsBusStems: Scalars['Boolean'];
   addOnExportsMultitrack: Scalars['Boolean'];
   addOnExtraRevision: Scalars['Boolean'];
+  allAddOns?: Maybe<Array<AddOn>>;
   assignedBy?: Maybe<Admin>;
   assignedTime?: Maybe<Scalars['DateTime']>;
   assignedTo?: Maybe<Admin>;
@@ -610,11 +628,12 @@ export type UserServices = {
   /** File formats for uploading file */
   uploadFileFormat: Array<Scalars['String']>;
   uploadedFiles: Array<Scalars['String']>;
-  wrokingFile?: Maybe<Scalars['String']>;
+  workingFile?: Maybe<Scalars['String']>;
 };
 
 export type UserServicesInput = {
   addOn: Array<AddOnInput>;
+  allAddOns: Array<AddOnInput>;
   deliveryDays?: InputMaybe<Scalars['Float']>;
   /** File formats for delivery file */
   deliveryFileFormat: Array<Scalars['String']>;
@@ -648,7 +667,7 @@ export type GetServiceDetailsQueryVariables = Exact<{
 
 export type GetServiceDetailsQuery = { __typename?: 'Query', getServiceDetails: Array<{ __typename?: 'Services', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuningBasic?: string | null, mixVocalTuningAdvanced?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, createdAt?: any | null, updatedAt?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null, main: boolean }> }> };
 
-export type UserServicesFragment = { __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuningBasic?: string | null, mixVocalTuningAdvanced?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, reuploadNote?: string | null, notes?: string | null, submissionDate?: any | null, estDeliveryDate?: any | null, deliveredFiles?: Array<string> | null, completionDate?: any | null, addOnExportsBusStems: boolean, addOnExportsMultitrack: boolean, multitrackFile?: string | null, stemsFiles?: string | null, addOnExtraRevision: boolean, paidAt?: any | null, wrokingFile?: string | null, completedFor?: number | null, updatedAt?: any | null, createdAt?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null, main: boolean }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number, revisionFor: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> };
+export type UserServicesFragment = { __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuningBasic?: string | null, mixVocalTuningAdvanced?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, reuploadNote?: string | null, notes?: string | null, submissionDate?: any | null, estDeliveryDate?: any | null, deliveredFiles?: Array<string> | null, completionDate?: any | null, addOnExportsBusStems: boolean, addOnExportsMultitrack: boolean, multitrackFile?: string | null, stemsFiles?: string | null, addOnExtraRevision: boolean, paidAt?: any | null, workingFile?: string | null, completedFor?: number | null, updatedAt?: any | null, createdAt?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null, main: boolean }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number, revisionFor: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }>, allAddOns?: Array<{ __typename?: 'AddOn', type: string, value?: number | null, main: boolean }> | null };
 
 export type LoginQueryVariables = Exact<{
   password: Scalars['String'];
@@ -684,7 +703,7 @@ export type CompleteAccountQuery = { __typename?: 'Query', completeAccount: bool
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name?: string | null, email: string, number?: string | null, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, free?: boolean | null, services: Array<{ __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuningBasic?: string | null, mixVocalTuningAdvanced?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, reuploadNote?: string | null, notes?: string | null, submissionDate?: any | null, estDeliveryDate?: any | null, deliveredFiles?: Array<string> | null, completionDate?: any | null, addOnExportsBusStems: boolean, addOnExportsMultitrack: boolean, multitrackFile?: string | null, stemsFiles?: string | null, addOnExtraRevision: boolean, paidAt?: any | null, wrokingFile?: string | null, completedFor?: number | null, updatedAt?: any | null, createdAt?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null, main: boolean }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number, revisionFor: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> }> } };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', _id: string, name?: string | null, email: string, number?: string | null, lastLoggedIn?: any | null, lastLoggedOut?: any | null, accountVerified: boolean, createdAt: any, updatedAt: any, free?: boolean | null, services: Array<{ __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuningBasic?: string | null, mixVocalTuningAdvanced?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, reuploadNote?: string | null, notes?: string | null, submissionDate?: any | null, estDeliveryDate?: any | null, deliveredFiles?: Array<string> | null, completionDate?: any | null, addOnExportsBusStems: boolean, addOnExportsMultitrack: boolean, multitrackFile?: string | null, stemsFiles?: string | null, addOnExtraRevision: boolean, paidAt?: any | null, workingFile?: string | null, completedFor?: number | null, updatedAt?: any | null, createdAt?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null, main: boolean }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number, revisionFor: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }>, allAddOns?: Array<{ __typename?: 'AddOn', type: string, value?: number | null, main: boolean }> | null }> } };
 
 export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -719,7 +738,7 @@ export type GetUserServiceDetailsByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetUserServiceDetailsByIdQuery = { __typename?: 'Query', getUserServiceDetailsById?: { __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuningBasic?: string | null, mixVocalTuningAdvanced?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, reuploadNote?: string | null, notes?: string | null, submissionDate?: any | null, estDeliveryDate?: any | null, deliveredFiles?: Array<string> | null, completionDate?: any | null, addOnExportsBusStems: boolean, addOnExportsMultitrack: boolean, multitrackFile?: string | null, stemsFiles?: string | null, addOnExtraRevision: boolean, paidAt?: any | null, wrokingFile?: string | null, completedFor?: number | null, updatedAt?: any | null, createdAt?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null, main: boolean }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number, revisionFor: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }> } | null };
+export type GetUserServiceDetailsByIdQuery = { __typename?: 'Query', getUserServiceDetailsById?: { __typename?: 'UserServices', _id: string, mainCategory: string, subCategory: string, serviceName: string, subService?: string | null, subService2?: string | null, description?: string | null, estimatedTime?: number | null, price: number, inputTrackLimit?: number | null, uploadFileFormat: Array<string>, deliveryFileFormat: Array<string>, deliveryDays?: number | null, maxFileDuration?: number | null, numberOfReferenceFileUploads?: number | null, setOfRevisions?: number | null, revisionsDelivery?: number | null, mixVocalTuningBasic?: string | null, mixVocalTuningAdvanced?: string | null, mixProcessingReverbs?: string | null, mixProcessingDelays?: string | null, mixProcessingOtherFx?: string | null, projectName?: string | null, paid: boolean, uploadedFiles: Array<string>, referenceFiles: Array<string>, statusType: UserServiceStatus, reupload?: any | null, reuploadNote?: string | null, notes?: string | null, submissionDate?: any | null, estDeliveryDate?: any | null, deliveredFiles?: Array<string> | null, completionDate?: any | null, addOnExportsBusStems: boolean, addOnExportsMultitrack: boolean, multitrackFile?: string | null, stemsFiles?: string | null, addOnExtraRevision: boolean, paidAt?: any | null, workingFile?: string | null, completedFor?: number | null, updatedAt?: any | null, createdAt?: any | null, addOn: Array<{ __typename?: 'AddOn', type: string, value?: number | null, qty?: number | null, main: boolean }>, revisionFiles: Array<{ __typename?: 'RevisionFiles', description?: string | null, file?: string | null, revision: number, revisionFor: number }>, status: Array<{ __typename?: 'ServiceStatusObject', name?: UserServiceStatus | null, state: ServiceStatusObjectState }>, allAddOns?: Array<{ __typename?: 'AddOn', type: string, value?: number | null, main: boolean }> | null } | null };
 
 export type VerifyUserQueryVariables = Exact<{
   token: Scalars['String'];
@@ -814,6 +833,11 @@ export type ResetPasswordQueryVariables = Exact<{
 
 export type ResetPasswordQuery = { __typename?: 'Query', resetPassword: boolean };
 
+export type GetGstStatusQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetGstStatusQuery = { __typename?: 'Query', getGstStatus: boolean };
+
 export const UserServicesFragmentDoc = gql`
     fragment userServices on UserServices {
   _id
@@ -872,10 +896,15 @@ export const UserServicesFragmentDoc = gql`
   stemsFiles
   addOnExtraRevision
   paidAt
-  wrokingFile
+  workingFile
   completedFor
   updatedAt
   createdAt
+  allAddOns {
+    type
+    value
+    main
+  }
 }
     `;
 export const GetServiceDetailsDocument = gql`
@@ -1702,3 +1731,35 @@ export function useResetPasswordLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type ResetPasswordQueryHookResult = ReturnType<typeof useResetPasswordQuery>;
 export type ResetPasswordLazyQueryHookResult = ReturnType<typeof useResetPasswordLazyQuery>;
 export type ResetPasswordQueryResult = Apollo.QueryResult<ResetPasswordQuery, ResetPasswordQueryVariables>;
+export const GetGstStatusDocument = gql`
+    query GetGstStatus {
+  getGstStatus
+}
+    `;
+
+/**
+ * __useGetGstStatusQuery__
+ *
+ * To run a query within a React component, call `useGetGstStatusQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGstStatusQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetGstStatusQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetGstStatusQuery(baseOptions?: Apollo.QueryHookOptions<GetGstStatusQuery, GetGstStatusQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetGstStatusQuery, GetGstStatusQueryVariables>(GetGstStatusDocument, options);
+      }
+export function useGetGstStatusLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetGstStatusQuery, GetGstStatusQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetGstStatusQuery, GetGstStatusQueryVariables>(GetGstStatusDocument, options);
+        }
+export type GetGstStatusQueryHookResult = ReturnType<typeof useGetGstStatusQuery>;
+export type GetGstStatusLazyQueryHookResult = ReturnType<typeof useGetGstStatusLazyQuery>;
+export type GetGstStatusQueryResult = Apollo.QueryResult<GetGstStatusQuery, GetGstStatusQueryVariables>;

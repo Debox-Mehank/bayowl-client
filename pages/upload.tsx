@@ -191,6 +191,12 @@ function Upload() {
   const key3 = useRef(0);
   const urlEl = useRef<HTMLInputElement>(null);
 
+  // For upload percentage
+  const [zippingPercentage, setZippingPercentage] = useState<number>(0);
+  const [finalPercentage, setFinalPercentage] = useState<number>();
+  const [refFilesZipPercentage, setRefFilesZipPercentage] = useState<number>(0);
+  const [refFilesPercentage, setRefFilesPercentage] = useState<number>();
+
   useEffect(() => {
     // setOnLoadModalOpen(true)
   }, []);
@@ -270,7 +276,9 @@ function Upload() {
         filesUploadedForRef.forEach((file) => {
           zip.file(`${file.name}`, file);
         });
-        const file = await zip.generateAsync({ type: "blob" });
+        const file = await zip.generateAsync({ type: "blob" }, (uc) => {
+          setRefFilesZipPercentage((prev) => Math.round(uc.percent));
+        });
 
         let finalUploadedUrl: undefined | string = undefined;
 
@@ -332,7 +340,10 @@ function Upload() {
 
           let partsUploadArray: FinalMultipartUploadPartsInput[] = [];
 
+          let chCounter = 0;
+
           for (let index = 1; index < chunkCount + 1; index++) {
+            chCounter++;
             let start = (index - 1) * chunkSize;
             let end = index * chunkSize;
             let fileBlob =
@@ -340,11 +351,25 @@ function Upload() {
             let signedUrl = multipartUrls[index - 1].signedUrl ?? "";
             let partNumber = multipartUrls[index - 1].PartNumber ?? 0;
 
-            let uploadChunk = await fetch(signedUrl, {
-              method: "PUT",
-              body: fileBlob,
-            });
-            let etag = uploadChunk.headers.get("etag");
+            let uploadChunk = await axios.put(
+              signedUrl,
+              { data: fileBlob },
+              {
+                headers: { "Content-Type": "multipart/form-data" },
+                onUploadProgress: (pe) => {
+                  let percentComplete = Math.round(
+                    (pe.loaded / pe.total) * 100
+                  );
+                  let totalPercentComplete = Math.round(
+                    ((chCounter - 1) / chunkCount) * 100 +
+                      percentComplete / chunkCount
+                  );
+                  setRefFilesPercentage((prev) => totalPercentComplete);
+                },
+              }
+            );
+            let etag = uploadChunk.headers["etag"];
+
             partsUploadArray.push({
               ETag: etag ?? "",
               PartNumber: partNumber,
@@ -397,13 +422,17 @@ function Upload() {
             return [];
           }
 
-          await fetch(s3Url.getS3SignedURL, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            body: file,
-          });
+          await axios.put(
+            s3Url.getS3SignedURL,
+            { data: file },
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+              onUploadProgress: (pe) => {
+                let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+                setRefFilesPercentage((prev) => percentComplete);
+              },
+            }
+          );
           const imageUrl = s3Url.getS3SignedURL.split("?")[0];
 
           finalUploadedUrl = imageUrl;
@@ -440,10 +469,14 @@ function Upload() {
         return;
       }
 
+      setLoading(true);
+
       filesArray.forEach((file) => {
         zip.file(`${file.name}`, file);
       });
-      const file = await zip.generateAsync({ type: "blob" });
+      const file = await zip.generateAsync({ type: "blob" }, (uc) => {
+        setZippingPercentage((prev) => Math.round(uc.percent));
+      });
 
       let finalUploadedUrl: undefined | string = undefined;
 
@@ -504,7 +537,10 @@ function Upload() {
 
         let partsUploadArray: FinalMultipartUploadPartsInput[] = [];
 
+        let chCounter = 0;
+
         for (let index = 1; index < chunkCount + 1; index++) {
+          chCounter++;
           let start = (index - 1) * chunkSize;
           let end = index * chunkSize;
           let fileBlob =
@@ -518,17 +554,17 @@ function Upload() {
             {
               headers: { "Content-Type": "multipart/form-data" },
               onUploadProgress: (pe) => {
-                console.log(pe);
+                let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+                let totalPercentComplete = Math.round(
+                  ((chCounter - 1) / chunkCount) * 100 +
+                    percentComplete / chunkCount
+                );
+                setFinalPercentage((prev) => totalPercentComplete);
               },
             }
           );
           let etag = uploadChunk.headers["etag"];
 
-          // let uploadChunk = await fetch(signedUrl, {
-          //   method: "PUT",
-          //   body: fileBlob,
-          // });
-          // let etag = uploadChunk.headers.get("etag");
           partsUploadArray.push({
             ETag: etag ?? "",
             PartNumber: partNumber,
@@ -582,13 +618,17 @@ function Upload() {
           return;
         }
 
-        await fetch(s3Url.getS3SignedURL, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          body: file,
-        });
+        await axios.put(
+          s3Url.getS3SignedURL,
+          { data: file },
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+            onUploadProgress: (pe) => {
+              let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+              setFinalPercentage((prev) => percentComplete);
+            },
+          }
+        );
         const imageUrl = s3Url.getS3SignedURL.split("?")[0];
 
         finalUploadedUrl = imageUrl;
@@ -721,6 +761,55 @@ function Upload() {
                   </>
                 </Button>
               </span>
+              {refArray.filter((el) => el.isAddedByUpload).length > 0 ? (
+                <>
+                  {loading &&
+                  zippingPercentage &&
+                  !finalPercentage &&
+                  !refFilesZipPercentage &&
+                  !refFilesPercentage ? (
+                    <span className="block mt-2">{`Zipping your files ${zippingPercentage}% completed`}</span>
+                  ) : loading &&
+                    zippingPercentage === 100 &&
+                    finalPercentage &&
+                    !refFilesZipPercentage &&
+                    !refFilesPercentage ? (
+                    <span className="block mt-2">{`Uploading zipped file ${finalPercentage}% completed`}</span>
+                  ) : loading &&
+                    zippingPercentage === 100 &&
+                    finalPercentage === 100 &&
+                    refFilesZipPercentage &&
+                    !refFilesPercentage ? (
+                    <span className="block mt-2">{`Zipping reference files ${refFilesZipPercentage}% completed`}</span>
+                  ) : loading &&
+                    zippingPercentage === 100 &&
+                    finalPercentage === 100 &&
+                    refFilesZipPercentage === 100 &&
+                    refFilesPercentage ? (
+                    <span className="block mt-2">{`Uploading zipped file ${refFilesPercentage}% completed`}</span>
+                  ) : loading &&
+                    zippingPercentage === 100 &&
+                    finalPercentage === 100 &&
+                    refFilesZipPercentage === 100 &&
+                    refFilesPercentage === 100 ? (
+                    <span className="block mt-2">{`Finalizing your upload...`}</span>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  {loading && zippingPercentage && !finalPercentage ? (
+                    <span className="block mt-2">{`Zipping your files ${zippingPercentage}% completed`}</span>
+                  ) : loading &&
+                    zippingPercentage === 100 &&
+                    finalPercentage ? (
+                    <span className="block mt-2">{`Uploading zipped file ${finalPercentage}% completed`}</span>
+                  ) : loading &&
+                    zippingPercentage === 100 &&
+                    finalPercentage === 100 ? (
+                    <span className="block mt-2">{`Finalizing your upload...`}</span>
+                  ) : null}
+                </>
+              )}
             </div>
           </div>
         </Modal>

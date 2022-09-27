@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ["bayowl-online-services.s3.ap-south-1.amazonaws.com"],
+    domains: ["d1ab2a01ooe5o9.cloudfront.net"],
   },
 };
 

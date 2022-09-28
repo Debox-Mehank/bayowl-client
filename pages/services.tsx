@@ -62,9 +62,9 @@ const Services = () => {
       >
         {/* {console.log(navHeight)} */}
 
-        <div className="absolute animation-delay-4000 top-[40%] right-[22%] w-36 md:w-96 h-56 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none" />
-        <div className="absolute animation-delay-2000 top-[38%] right-[40%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none" />
-        <div className="absolute top-[42%] right-[58%] w-36 md:w-96 h-56 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none" />
+        <div className="absolute animate-blob top-[40%] right-[22%] w-36 md:w-96 h-56 bg-primary opacity-50 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none" />
+        <div className="absolute top-[38%] animate-blob right-[40%] w-36 md:w-96 h-56 bg-blueGradient-0 opacity-70 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none" />
+        <div className="absolute top-[42%] right-[58%] w-36 animate-blob md:w-96 h-56 bg-pink-700 opacity-60 rounded-full mix-blend-screen filter blur-[80px]  overflow-hidden pointer-events-none" />
         <div className="flex flex-col gap-8 text-center">
           {/* Rendering Main Categories if none are selected.  */}
           {!selectedMainCategory ? (

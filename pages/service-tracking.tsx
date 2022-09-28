@@ -99,8 +99,11 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
   useEffect(() => {
     if (meServices.length > 0) {
       const servicesArr = meServices.filter((el) => el.projectName);
-      setServices(servicesArr);
-      setFilteredServices(servicesArr);
+      const sortedArr = servicesArr.sort(
+        (a, b) => moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
+      );
+      setServices(sortedArr);
+      setFilteredServices(sortedArr);
     }
   }, [meServices]);
 
@@ -548,18 +551,13 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
                   {selectedService?.setOfRevisions! >
                   selectedService.revisionFiles.length ? (
                     <div className="">
-                      <p>
+                      <p className="font-bold">
                         {" "}
                         {selectedService.revisionFiles.length} /{" "}
                         {selectedService.setOfRevisions} Revisions used.
                       </p>
-                      <p className="mb-4">
+                      <p className="mb-4 pb-2">
                         Which version are you requesting the revision for?
-                      </p>
-                      <p className="pt-2 pb-4">
-                        {" "}
-                        {selectedService.revisionFiles.length} /{" "}
-                        {selectedService.setOfRevisions} Revisions used.
                       </p>
                       <div className="relative inline-flex mb-4 w-full max-w-sm">
                         <select
@@ -791,7 +789,7 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
                               </td>
                               <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
                                 {transaction.notes === "" || !transaction.notes
-                                  ? "N/A"
+                                  ? "--"
                                   : transaction.notes}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
@@ -799,7 +797,7 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
                                   ? moment(transaction.submissionDate).format(
                                       "MMM Do YY, h:mm a"
                                     )
-                                  : "N/A"}
+                                  : "--"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 <div className="flex items-center justify-center gap-2 h-full">
@@ -816,26 +814,26 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
                                   ? moment(transaction.estDeliveryDate).format(
                                       "MMM Do, YYYY"
                                     )
-                                  : "N/A"}
+                                  : "--"}
                               </td>
                               <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
                                 {transaction.reupload
                                   ? transaction.reuploadNote
-                                  : "N/A"}
+                                  : "--"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.reupload
                                   ? moment(transaction.reupload).format(
                                       "MMM Do YY, h:mm a"
                                     )
-                                  : "N/A"}
+                                  : "--"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white text-center">
                                 {transaction.completionDate
                                   ? moment(transaction.completionDate).format(
                                       "MMM Do YY, h:mm a"
                                     )
-                                  : "N/A"}
+                                  : "--"}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 <Button

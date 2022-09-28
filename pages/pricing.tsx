@@ -128,7 +128,7 @@ const Pricing = ({ free }: { free: boolean }) => {
 
       // console.log(_.uniqBy(priceArr, (el) => el.name));
 
-      setSelectedService(arr);
+      setSelectedService(arr.sort((a, b) => a.price - b.price));
     };
 
     if (userServiceLS) {

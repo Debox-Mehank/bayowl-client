@@ -79,7 +79,10 @@ const checkTypeDurationSize = async (
     issue: [],
   };
 
-  const fileType = `.${file.type.replace(/(.*)\//g, "")}`;
+  const fileType =
+    file.type === "audio/x-wav"
+      ? ".wav"
+      : `.${file.type.replace(/(.*)\//g, "")}`;
 
   // Type Check
   if (!fileTypes.includes(fileType)) {
@@ -721,12 +724,12 @@ function Upload() {
             </p>
             <p className="pt-4 text-center">
               <ul>
-                <li>
+                <li className="font-bold">
                   Tracks Selected:{" "}
                   {filesArray.length + " / " + (service?.inputTrackLimit || 0)}
                 </li>
                 {(service?.numberOfReferenceFileUploads || 0) > 0 && (
-                  <li>
+                  <li className="font-bold">
                     Reference Tracks Selected:{" "}
                     {refArray.length +
                       " / " +

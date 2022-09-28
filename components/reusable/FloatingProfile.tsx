@@ -8,7 +8,7 @@ function FloatingProfile({
   name,
   email,
   position,
-  onTop
+  onTop,
 }: {
   name?: string | null;
   email?: string | null;
@@ -51,7 +51,10 @@ function FloatingProfile({
       <div
         onClick={() => setIsProfileOpen((prev) => !prev)}
         onBlur={() => setIsProfileOpen(false)}
-        className={`z-50 ${position} ${position === "absolute" && "mx-auto lg:mx-0 space-x-2 left-0 right-0 lg:left-auto lg:-right-20 xl:right-0"} bottom-10 lg:bottom-auto lg:top-10 lg:right-0 overflow-clip flex justify-center items-center gap-1 md:gap-2 cursor-pointer duration-300 transition-colors text-white lg:px-8`}
+        className={`z-50 ${position} ${
+          position === "absolute" &&
+          "mx-auto lg:mx-0 space-x-2 left-0 right-0 lg:left-auto lg:-right-20 xl:right-0"
+        } bottom-10 lg:bottom-auto lg:top-10 lg:right-0 overflow-clip flex justify-center items-center gap-1 md:gap-2 cursor-pointer duration-300 transition-colors text-white lg:px-8`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -68,13 +71,16 @@ function FloatingProfile({
         <span>{name}</span>
         {/* Expanded */}
         <div
-          className={`fixed space-y-3 bg-blueGradient-2/70 filter backdrop-blur-lg p-3 rounded-lg ${onTop ? "top-20 right-2" : "bottom-20 left-4"} lg:bottom-auto lg:left-auto lg:top-[6.5rem] lg:right-10 min-w-[20rem] transition-all duration-300 ${isProfileOpen
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 -translate-y-10 invisible"
-            }`}
+          className={`fixed space-y-3 bg-blueGradient-2/70 filter backdrop-blur-lg rounded-lg ${
+            onTop ? "top-20 right-2" : "bottom-20 left-4"
+          } lg:bottom-auto lg:left-auto lg:top-[6.5rem] lg:right-10 min-w-[20rem] transition-all duration-300 ${
+            isProfileOpen
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-10 invisible"
+          }`}
         >
           <Link href={"/dashboard"}>
-            <div className="flex items-center justify-start gap-4 px-1 py-2 w-full hover:bg-blueGradient-2/80">
+            <div className="flex items-center justify-start gap-4 py-2 px-4 w-full hover:bg-blueGradient-2/80 rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="30"
@@ -98,7 +104,7 @@ function FloatingProfile({
 
           <div
             onClick={logoutHandler}
-            className="flex items-center justify-start gap-4 px-1 py-2 hover:bg-blueGradient-2/80"
+            className="flex items-center justify-start gap-4 px-4 py-3 hover:bg-blueGradient-2/80 rounded-lg"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -25,7 +25,7 @@ function DashNav({
   }, [isDesktop]);
 
   return (
-    <div >
+    <div>
       <div
         onClick={() => setIsOpen((prev) => !prev)}
         className="fixed top-6 right-3 text-white lg:hidden inline-block z-[120]"
@@ -40,14 +40,20 @@ function DashNav({
           <span></span>
         </div>
       </div>
-      <div className={`sticky top-0 left-0 lg:static ${isOpen ? "z-50" : "z-0"}`}>
+      <div
+        className={`sticky top-0 left-0 lg:static ${isOpen ? "z-50" : "z-0"}`}
+      >
         <div className="hidden lg:block">
           <FloatingProfile position="absolute" name={name} email={email} />
         </div>
 
         <aside
           id="menu"
-          className={`min-h-screen sticky w-80 flex duration-500 transition-transform bg-darkBlue ${!isDesktop && isOpen ? "translate-x-0" : "-translate-x-80 lg:-translate-x-0"}`}
+          className={`min-h-screen w-80 flex duration-500 transition-transform bg-darkBlue ${
+            !isDesktop && isOpen
+              ? "translate-x-0"
+              : "-translate-x-80 lg:-translate-x-0"
+          }`}
         >
           <div className="lg:hidden">
             <FloatingProfile position="absolute" name={name} email={email} />
@@ -155,21 +161,31 @@ function DashNav({
             <div className="w-full bg-gray-800 h-10">
               <Link href={"/services"}>
                 <Button>
-                  <div className="text-center w-full mx-auto text-md">New Service</div>
+                  <div className="text-center w-full mx-auto text-md">
+                    New Service
+                  </div>
                 </Button>
               </Link>
             </div>
             {/* <div onClick={() => setIsOpen(false)}
                         className="text-right text-4xl hover:text-primary cursor-pointer">&times;</div> */}
             {/* className={currentRoute === "/dashboard" ? "text-blueGradient-3" : ""} */}
-            <Link href="/dashboard" >
-              <span className={`hover:text-primary/80 cursor-pointer duration-300 transition-colors text-lg ${currentRoute === "/dashboard" ? "text-primary" : ""}`} >
+            <Link href="/dashboard">
+              <span
+                className={`hover:text-primary/80 cursor-pointer duration-300 transition-colors text-lg ${
+                  currentRoute === "/dashboard" ? "text-primary" : ""
+                }`}
+              >
                 Dashboard
               </span>
             </Link>
-            <Link href="/service-tracking" >
+            <Link href="/service-tracking">
               {/* */}
-              <span className={`hover:text-primary/80 cursor-pointer duration-300 transition-colors text-lg ${currentRoute === "/service-tracking" ? "text-primary" : ""}`}>
+              <span
+                className={`hover:text-primary/80 cursor-pointer duration-300 transition-colors text-lg ${
+                  currentRoute === "/service-tracking" ? "text-primary" : ""
+                }`}
+              >
                 Service Tracking
               </span>
             </Link>
@@ -179,7 +195,6 @@ function DashNav({
             </main> */}
         </aside>
       </div>
-
     </div>
   );
 }

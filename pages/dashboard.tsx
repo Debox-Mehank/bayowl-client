@@ -21,6 +21,7 @@ import toast from "react-hot-toast";
 import Loader from "../components/reusable/Loader";
 import { useRouter } from "next/router";
 import moment from "moment";
+import Button from "../components/reusable/Button";
 
 export type UserServiceFinal = UserServices;
 
@@ -106,7 +107,7 @@ export const Dashboard = ({ meServices, name, email }: IDashboardProps) => {
         (el) => el.statusType !== UserServiceStatus.Completed
       );
       const sortedArr = filteredArr.sort(
-        (a, b) => moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
+        (a, b) => moment(b.paidAt).valueOf() - moment(a.paidAt).valueOf()
       );
       setIsLoading(false);
       setServices(sortedArr);
@@ -191,13 +192,9 @@ export const Dashboard = ({ meServices, name, email }: IDashboardProps) => {
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
             />
-            <button
-              type="button"
-              className="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary/80 text-base font-medium text-white hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:text-sm"
-              onClick={handleSubmit}
-            >
-              Proceed to upload
-            </button>
+            <Button onClick={handleSubmit}>
+              <>Proceed to upload</>
+            </Button>
           </div>
         </Modal>
         {/* Modal End */}

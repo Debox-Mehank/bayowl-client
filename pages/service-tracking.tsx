@@ -712,11 +712,15 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
                   if (input) {
                     const arr = [...services];
                     setFilteredServices(
-                      arr.filter((el) =>
-                        el.projectName
-                          ?.toLocaleLowerCase()
-                          .trim()
-                          .includes(input)
+                      arr.filter(
+                        (el) =>
+                          el.projectName
+                            ?.toLocaleLowerCase()
+                            .trim()
+                            .includes(input.toLowerCase()) ||
+                          el.statusType
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
                       )
                     );
                   } else {

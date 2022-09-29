@@ -41,7 +41,7 @@ function DashNav({
         </div>
       </div>
       <div
-        className={`fixed top-0 left-0 lg:static ${isOpen ? "z-50" : "z-0"}`}
+        className={`fixed top-0 left-0 lg:static ${isOpen ? "z-[60]" : "z-0"}`}
       >
         <div className="hidden lg:block">
           <FloatingProfile position="absolute" name={name} email={email} />

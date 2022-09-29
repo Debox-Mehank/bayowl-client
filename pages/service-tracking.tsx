@@ -410,7 +410,7 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
 
   return (
     <div className="h-screen bg-darkBlue text-white flex relative ">
-      <div className="absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden" />
+      <div className="hidden md:block absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden" />
       <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden" />
       <div className="absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
       <DashNav name={name} email={email} />
@@ -742,7 +742,7 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
         <Loader />
       ) : (
         <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-between gap-3 md:overflow-hidden">
-          <div className="w-full max-w-sm text-center text-xl sm:max-w-md text-white bg-white/10 rounded-md py-1 md:py-2 pl-2 pr-3 md:px-2 flex items-center gap-2 fixed z-50 backdrop-blur-md">
+          <div className="ml-2 w-11/12 lg:ml-auto lg:w-full  max-w-sm text-center text-xl sm:max-w-md text-white bg-white/10 rounded-md py-1 md:py-2 pl-2 pr-3 md:px-2 flex items-center gap-2 fixed z-50 backdrop-blur-md">
             <input
               onChange={(e) => {
                 const input = e.target.value.toString().toLowerCase().trim();

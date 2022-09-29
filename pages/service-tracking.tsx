@@ -15,6 +15,7 @@ import {
   UserServiceStatus,
 } from "../graphql/generated/graphql";
 import { useState } from "react";
+import Truncate from "react-truncate";
 import { UserServiceFinal } from "./dashboard";
 import { getStatusNames } from "../components/reusable/Accordion";
 import Link from "next/link";
@@ -93,6 +94,7 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
   const [selectedAddons, setSelectedAddons] = useState<AddOn[]>([]);
 
   const [isAddOnModalOpen, setIsAddOnModalOpen] = useState<boolean>(false);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState<boolean>(false);
 
   const [markCompleteVer, setMarkCompleteVer] = useState<number>(0);
 
@@ -407,11 +409,48 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-darkBlue text-white flex relative ">
-      <div className="absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden" />
+    <div className="h-screen bg-darkBlue text-white flex relative ">
+      <div className="hidden md:block absolute animation-delay-2000 top-[35%] left-[55%] w-36 md:w-96 h-56 bg-primary opacity-60 rounded-full mix-blend-screen filter blur-[75px] animate-blob overflow-hidden" />
       <div className="absolute animation-delay-4000 top-[60%] right-[35%] w-36 md:w-96 h-56 bg-blueGradient-2 opacity-80 rounded-full mix-blend-screen filter blur-[70px] animate-blob overflow-hidden" />
       <div className="absolute top-[60%] right-[15%] w-36 md:w-96 h-56 bg-blueGradient-1 opacity-80 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
       <DashNav name={name} email={email} />
+      {/* Note Modal */}
+      <Modal open={isNoteModalOpen} setOpen={setIsNoteModalOpen}>
+        <>
+          {selectedService && (
+            <div className="relative text-center">
+              <h4 className="font-bold pb-4  text-primary text-lg">
+                Notes to the Engineer
+              </h4>
+              <svg
+                onClick={() => {
+                  setIsNoteModalOpen(false);
+                }}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="absolute right-0 -top-3 w-6 h-6 hover:text-primary cursor-pointer"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+
+              {selectedService && (
+                <>
+                  <div className="">
+                    <p className="mb-4 pb-2">{selectedService.notes}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </>
+      </Modal>
       {/* Add On Modal */}
       <Modal open={isAddOnModalOpen} setOpen={setIsAddOnModalOpen}>
         <>
@@ -702,54 +741,57 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
       {loading ? (
         <Loader />
       ) : (
-        <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-center gap-3 md:overflow-hidden">
-          {/* Scrollable Div Below, issue */}
-          <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-x-auto whitespace-nowrap relative z-[49]">
-            <div className="w-full max-w-sm text-center text-xl sm:max-w-md text-white bg-white/10 rounded-md py-1 md:py-2 pl-2 pr-3 md:px-2 flex items-center gap-2 fixed">
-              <input
-                onChange={(e) => {
-                  const input = e.target.value.toString().toLowerCase().trim();
-                  if (input) {
-                    const arr = [...services];
-                    setFilteredServices(
-                      arr.filter(
-                        (el) =>
-                          el.projectName
-                            ?.toLocaleLowerCase()
-                            .trim()
-                            .includes(input.toLowerCase()) ||
-                          el.statusType
-                            .toLowerCase()
-                            .includes(input.toLowerCase())
-                      )
-                    );
-                  } else {
-                    setFilteredServices(services);
-                  }
-                }}
-                name="search"
-                id="search"
-                type={"search"}
-                placeholder="Search by Project Name"
-                className="w-full py-1 px-2 rounded-md border-none bg-transparent"
-              />
-              <div className="inline group">
-                <span className=" flex gap-2 items-center md:mr-3 text-sm md:text-md">
-                  <label className="" htmlFor="search">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="currentColor"
-                      className="fill-gray-500 inline mb-1"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                    </svg>
-                  </label>
-                </span>
-              </div>
+        <div className="mt-16 md:mt-0 md:py-10 relative w-full flex justify-between gap-3 md:overflow-hidden">
+          <div className="ml-2 w-11/12 lg:ml-auto lg:w-full  max-w-sm text-center text-xl sm:max-w-md text-white bg-white/10 rounded-md py-1 md:py-2 pl-2 pr-3 md:px-2 flex items-center gap-2 fixed z-50 backdrop-blur-md">
+            <input
+              onChange={(e) => {
+                const input = e.target.value.toString().toLowerCase().trim();
+                if (input) {
+                  const arr = [...services];
+                  setFilteredServices(
+                    arr.filter(
+                      (el) =>
+                        el.projectName
+                          ?.toLocaleLowerCase()
+                          .trim()
+                          .includes(input.toLowerCase()) ||
+                        el.statusType
+                          .toLowerCase()
+                          .includes(input.toLowerCase()) ||
+                        (el.subService ? el.subService : el.serviceName)
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                    )
+                  );
+                } else {
+                  setFilteredServices(services);
+                }
+              }}
+              name="search"
+              id="search"
+              type={"search"}
+              placeholder="Search by Project Name, Service, Status"
+              className="w-full py-1 px-2 rounded-md border-none bg-transparent"
+            />
+            <div className="inline group">
+              <span className=" flex gap-2 items-center md:mr-3 text-sm md:text-md">
+                <label className="" htmlFor="search">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="currentColor"
+                    className="fill-gray-500 inline mb-1"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                  </svg>
+                </label>
+              </span>
             </div>
+          </div>
+          {/* Scrollable Div Below, issue */}
+          <div className="px-2 sm:px-3 lg:px-4 md:w-screen overflow-auto max-h-[90vh] whitespace-nowrap relative z-[49]">
             {/* <div className="sm:flex sm:items-center">
                         <div className="sm:flex-auto space-y-3">
                             <h1 className="text-xl font-semibold text-white">Service Tracking</h1>
@@ -781,7 +823,7 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
                           ))}
                         </tr>
                       </thead>
-                      <tbody className=" ">
+                      <tbody className="">
                         {filteredServices.map((transaction) => {
                           return (
                             <tr key={transaction._id}>
@@ -789,12 +831,32 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
                                 {transaction.projectName}
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
-                                {transaction.serviceName}
+                                {transaction.subService
+                                  ? transaction.subService
+                                  : transaction.serviceName}
                               </td>
-                              <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white">
-                                {transaction.notes === "" || !transaction.notes
-                                  ? "--"
-                                  : transaction.notes}
+                              <td className="whitespace-pre-wrap px-2 py-2 text-sm text-white ">
+                                <div className="max-h-20 w-40 ">
+                                  {transaction.notes === "" ||
+                                  !transaction.notes ? (
+                                    "--"
+                                  ) : transaction.notes.length > 35 ? (
+                                    <>
+                                      {transaction.notes.slice(0, 35)}{" "}
+                                      <span
+                                        className="text-xs text-gray-400 hover:text-gray-200 transition-colors duration-300 cursor-pointer"
+                                        onClick={() => {
+                                          setSelectedService(transaction);
+                                          setIsNoteModalOpen(true);
+                                        }}
+                                      >
+                                        .. Read More
+                                      </span>
+                                    </>
+                                  ) : (
+                                    transaction.notes
+                                  )}
+                                </div>
                               </td>
                               <td className="whitespace-nowrap px-2 py-2 text-sm text-white">
                                 {transaction.submissionDate
@@ -1059,8 +1121,8 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
                                 {/* Disabled unless Delivered, Revision Delivered, or if there are revisions left. */}
                                 <Button
                                   onClick={() => {
-                                    setIsRevModalOpen(true);
                                     setSelectedService(transaction);
+                                    setIsRevModalOpen(true);
                                   }}
                                   disabled={
                                     !(

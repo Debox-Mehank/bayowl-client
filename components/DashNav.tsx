@@ -41,7 +41,7 @@ function DashNav({
         </div>
       </div>
       <div
-        className={`sticky top-0 left-0 lg:static ${isOpen ? "z-50" : "z-0"}`}
+        className={`fixed top-0 left-0 lg:static ${isOpen ? "z-50" : "z-0"}`}
       >
         <div className="hidden lg:block">
           <FloatingProfile position="absolute" name={name} email={email} />
@@ -49,7 +49,7 @@ function DashNav({
 
         <aside
           id="menu"
-          className={`min-h-screen w-80 flex duration-500 transition-transform bg-darkBlue ${
+          className={`min-h-screen md:w-80 flex duration-500 transition-transform bg-darkBlue ${
             !isDesktop && isOpen
               ? "translate-x-0"
               : "-translate-x-80 lg:-translate-x-0"

@@ -100,7 +100,7 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
     if (meServices.length > 0) {
       const servicesArr = meServices.filter((el) => el.projectName);
       const sortedArr = servicesArr.sort(
-        (a, b) => moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
+        (a, b) => moment(b.paidAt).valueOf() - moment(a.paidAt).valueOf()
       );
       setServices(sortedArr);
       setFilteredServices(sortedArr);

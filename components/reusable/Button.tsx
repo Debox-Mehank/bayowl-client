@@ -1,7 +1,7 @@
 import React from "react";
 
 type ButtonProps = {
-  children: JSX.Element;
+  children: React.ReactNode;
   onClick?: (e?: any) => void;
   disabled?: boolean;
 };

@@ -40,6 +40,7 @@ import { UserServiceFinal } from "./dashboard";
 import { GetServerSideProps } from "next";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import axios from "axios";
+import * as zip from "@zip.js/zip.js";
 
 interface errorList {
   fileName: string;
@@ -167,7 +168,7 @@ function Upload() {
     if (serviceId) {
       fetchFunc();
     }
-  }, [serviceId]);
+  }, [getUserServiceDetailsByIdQuery, router, serviceId]);
 
   // Modals
   const [isAlertModalOpen, setIsAlertModalOpen] = useState<Boolean>(false);
@@ -354,23 +355,22 @@ function Upload() {
             let signedUrl = multipartUrls[index - 1].signedUrl ?? "";
             let partNumber = multipartUrls[index - 1].PartNumber ?? 0;
 
-            let uploadChunk = await axios.put(
-              signedUrl,
-              { data: fileBlob },
-              {
-                headers: { "Content-Type": "multipart/form-data" },
-                onUploadProgress: (pe) => {
-                  let percentComplete = Math.round(
-                    (pe.loaded / pe.total) * 100
-                  );
-                  let totalPercentComplete = Math.round(
-                    ((chCounter - 1) / chunkCount) * 100 +
-                      percentComplete / chunkCount
-                  );
-                  setRefFilesPercentage((prev) => totalPercentComplete);
-                },
-              }
-            );
+            let uploadChunk = await axios({
+              url: signedUrl,
+              method: "PUT",
+              data: fileBlob,
+              headers: {
+                "Content-Type": "application/zip",
+              },
+              onUploadProgress: (pe) => {
+                let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+                let totalPercentComplete = Math.round(
+                  ((chCounter - 1) / chunkCount) * 100 +
+                    percentComplete / chunkCount
+                );
+                setRefFilesPercentage((prev) => totalPercentComplete);
+              },
+            });
             let etag = uploadChunk.headers["etag"];
 
             partsUploadArray.push({
@@ -425,17 +425,30 @@ function Upload() {
             return [];
           }
 
-          await axios.put(
-            s3Url.getS3SignedURL,
-            { data: file },
-            {
-              headers: { "Content-Type": "multipart/form-data" },
-              onUploadProgress: (pe) => {
-                let percentComplete = Math.round((pe.loaded / pe.total) * 100);
-                setRefFilesPercentage((prev) => percentComplete);
-              },
-            }
-          );
+          await axios({
+            url: s3Url.getS3SignedURL,
+            method: "PUT",
+            data: file,
+            headers: {
+              "Content-Type": "application/zip",
+            },
+            onUploadProgress: (pe) => {
+              let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+              setRefFilesPercentage((prev) => percentComplete);
+            },
+          });
+
+          // await axios.put(
+          //   s3Url.getS3SignedURL,
+          //   { data: file },
+          //   {
+          //     headers: { "Content-Type": "multipart/form-data" },
+          //     onUploadProgress: (pe) => {
+          //       let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+          //       setRefFilesPercentage((prev) => percentComplete);
+          //     },
+          //   }
+          // );
           const imageUrl = s3Url.getS3SignedURL.split("?")[0];
 
           finalUploadedUrl = imageUrl;
@@ -556,21 +569,22 @@ function Upload() {
           let signedUrl = multipartUrls[index - 1].signedUrl ?? "";
           let partNumber = multipartUrls[index - 1].PartNumber ?? 0;
 
-          let uploadChunk = await axios.put(
-            signedUrl,
-            { data: fileBlob },
-            {
-              headers: { "Content-Type": "multipart/form-data" },
-              onUploadProgress: (pe) => {
-                let percentComplete = Math.round((pe.loaded / pe.total) * 100);
-                let totalPercentComplete = Math.round(
-                  ((chCounter - 1) / chunkCount) * 100 +
-                    percentComplete / chunkCount
-                );
-                setFinalPercentage((prev) => totalPercentComplete);
-              },
-            }
-          );
+          let uploadChunk = await axios({
+            url: signedUrl,
+            method: "PUT",
+            data: fileBlob,
+            headers: {
+              "Content-Type": "application/zip",
+            },
+            onUploadProgress: (pe) => {
+              let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+              let totalPercentComplete = Math.round(
+                ((chCounter - 1) / chunkCount) * 100 +
+                  percentComplete / chunkCount
+              );
+              setFinalPercentage((prev) => totalPercentComplete);
+            },
+          });
           let etag = uploadChunk.headers["etag"];
 
           partsUploadArray.push({
@@ -626,17 +640,19 @@ function Upload() {
           return;
         }
 
-        await axios.put(
-          s3Url.getS3SignedURL,
-          { data: file },
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-            onUploadProgress: (pe) => {
-              let percentComplete = Math.round((pe.loaded / pe.total) * 100);
-              setFinalPercentage((prev) => percentComplete);
-            },
-          }
-        );
+        await axios({
+          url: s3Url.getS3SignedURL,
+          method: "PUT",
+          data: file,
+          headers: {
+            "Content-Type": "application/zip",
+          },
+          onUploadProgress: (pe) => {
+            let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+            setFinalPercentage((prev) => percentComplete);
+          },
+        });
+
         const imageUrl = s3Url.getS3SignedURL.split("?")[0];
 
         finalUploadedUrl = imageUrl;

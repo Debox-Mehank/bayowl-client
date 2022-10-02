@@ -133,8 +133,10 @@ const Home: NextPage = () => {
         <div className="-z-0 absolute animation-delay-2000 top-0 md:top-[30%] left-[0%] lg:left-[11%] w-32 md:w-96 h-96 bg-blueGradient-2 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
         <div className="-z-0 hidden lg:block absolute animation-delay-4000 top-1/3 right-[24%] w-32 md:w-80 h-80 bg-orange3 rounded-full mix-blend-screen filter blur-[100px] opacity-90 animate-blob overflow-hidden" />
         <div className="-z-0 hidden lg:block absolute top-[48%] left-[20%] w-32 md:w-96 h-96 bg-blueGradient-0 rounded-full mix-blend-screen filter blur-[80px] animate-blob overflow-hidden" />
-        {loading ? <Loader /> : (
-          <div className="space-y-3.5 text-center z-10 px-4 relative py-8 md:w-4/6">
+        {loading ? (
+          <Loader />
+        ) : (
+          <div className="space-y-3.5 text-center z-10 px-4 relative py-8  md:w-4/6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 504.04 517.13"
@@ -346,12 +348,47 @@ const Home: NextPage = () => {
                 </span>
               </Link>
               <Link href={"/forgot-password"}>
-                <span className="underline cursor-pointer">Forgot password?</span>
+                <span className="underline cursor-pointer">
+                  Forgot password?
+                </span>
               </Link>
+            </div>
+            <div className="lg:hidden pt-8 text-center mx-auto md:left-0 md:right-0">
+              <p>
+                {" "}
+                <span className="text-primary">Bay Owl Studios</span> | © All
+                rights reserved 2022
+              </p>
+              <p>
+                {"Designed & Developed by"}{" "}
+                <a
+                  href="https://debox.co.in/"
+                  className="text-primary cursor-pointer"
+                >
+                  Debox Consulting Private Limited
+                </a>
+              </p>
             </div>
           </div>
         )}
-
+        <div className="hidden lg:block lg:absolute md:bottom-0 mt-20 text-center mx-auto md:left-0 md:right-0">
+          <p>
+            {" "}
+            <span className="text-primary">
+              <a href="https://bayowlstudios.com">Bay Owl Studios</a>
+            </span>{" "}
+            | © All rights reserved 2022
+          </p>
+          <p>
+            {"Designed & Developed by"}{" "}
+            <a
+              href="https://debox.co.in/"
+              className="text-primary cursor-pointer"
+            >
+              Debox Consulting Private Limited
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

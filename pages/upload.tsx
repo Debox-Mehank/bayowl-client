@@ -270,8 +270,8 @@ function Upload() {
         const refFileName = `referenceFiles_${serviceId}`;
 
         // Creating the zip file
-        const zipInit = new JSZip();
-        const zip = zipInit.folder("files");
+        const zip = new JSZip();
+        // const zip = zipInit.folder("files");
 
         if (!zip) {
           return [];
@@ -280,9 +280,14 @@ function Upload() {
         filesUploadedForRef.forEach((file) => {
           zip.file(`${file.name}`, file);
         });
-        const file = await zip.generateAsync({ type: "blob" }, (uc) => {
-          setRefFilesZipPercentage((prev) => Math.round(uc.percent));
-        });
+        const file = await zip.generateAsync(
+          {
+            type: "blob",
+          },
+          (uc) => {
+            setRefFilesZipPercentage((prev) => Math.round(uc.percent));
+          }
+        );
 
         let finalUploadedUrl: undefined | string = undefined;
 

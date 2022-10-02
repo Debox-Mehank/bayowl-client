@@ -40,7 +40,6 @@ import { UserServiceFinal } from "./dashboard";
 import { GetServerSideProps } from "next";
 import { addApolloState, initializeApollo } from "../lib/apolloClient";
 import axios from "axios";
-import * as zip from "@zip.js/zip.js";
 
 interface errorList {
   fileName: string;

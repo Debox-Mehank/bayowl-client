@@ -1149,12 +1149,8 @@ const ServiceTracking = ({ meServices, name, email }: ITrackingProps) => {
 
                                 <Button
                                   onClick={() => {
-                                    if (
-                                      transaction?.revisionFiles.length! > 0
-                                    ) {
-                                      setSelectedService(transaction);
-                                      setisMarkCompletedOpen(true);
-                                    } else handleMarkComplete(transaction._id);
+                                    setSelectedService(transaction);
+                                    setisMarkCompletedOpen(true);
                                     // if (
                                     //   (transaction.revisionFiles.length! == 0 &&
                                     //     getStatusNames(

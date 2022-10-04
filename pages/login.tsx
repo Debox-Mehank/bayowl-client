@@ -371,15 +371,15 @@ const Home: NextPage = () => {
             </div>
           </div>
         )}
-        <div className="hidden lg:block lg:absolute md:bottom-0 mt-20 text-center mx-auto md:left-0 md:right-0">
-          <p>
+        <div className="hidden lg:block lg:absolute md:bottom-2 mt-20 text-center mx-auto md:left-0 md:right-0">
+          <p className="text-sm">
             {" "}
             <span className="text-primary">
               <a href="https://bayowlstudios.com">Bay Owl Studios</a>
             </span>{" "}
             | © All rights reserved 2022
           </p>
-          <p>
+          <p className="text-sm">
             {"Designed & Developed by"}{" "}
             <a
               href="https://debox.co.in/"

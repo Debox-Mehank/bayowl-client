@@ -17,6 +17,7 @@ import secondsToTime from "../utils/secsToTime";
 import { formatBytes, formatBytesNumber } from "../utils/formatBytes";
 import isValidHttpUrl from "../utils/isValidURL";
 import { getClickableLink } from "../utils/getClickableLink";
+import _ from "lodash";
 
 // Components
 import Modal from "../components/reusable/Modal";
@@ -475,229 +476,428 @@ function Upload() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    const zipInit = new JSZip();
+
     if (loading) {
       toast.error("Your files are uploading please wait");
       return;
     }
 
-    try {
-      // For showing the upload progess
-      let percentage: number | undefined = undefined;
-      // Final zip file name uploaded to aws
-      const finalFileName = `uploadedFiles_${serviceId}`;
+    // Check if all files total size is 2gb or more
+    let allFilesSize = 0;
+    filesArray.forEach((f) => {
+      allFilesSize += formatBytesNumber(f.size);
+    });
 
-      // Creating the zip file
-      const zipInit = new JSZip();
-      const zip = zipInit.folder("files");
+    if (allFilesSize > 2000) {
+      try {
+        // Make multiple zips
+        // Divide files into set of 2gb zips
+        const divided = _.chunk(filesArray, 9);
 
-      if (!zip) {
-        return;
-      }
+        let allZips: Blob[] = [];
 
-      setLoading(true);
-
-      filesArray.forEach((file) => {
-        zip.file(`${file.name}`, file);
-      });
-      const file = await zip.generateAsync({ type: "blob" }, (uc) => {
-        setZippingPercentage((prev) => Math.round(uc.percent));
-      });
-
-      let finalUploadedUrl: undefined | string = undefined;
-
-      // Check if file size is bigger than 5 MB
-      if (formatBytesNumber(file.size) > 5) {
-        // Initializing the upload from server
         setLoading(true);
-        const { data: initData, error: initError } = await initFileUploadQuery({
-          variables: { fileName: finalFileName + ".zip" },
-        });
 
-        // Handling Errors
-        if (initError) {
-          setLoading(false);
-          toast.error(initError.message);
-          return;
+        for (const element of divided) {
+          const d = element;
+          let zinit = new JSZip();
+          let folder = zinit.folder("files");
+          if (folder !== null) {
+            d.forEach((f) => {
+              folder?.file(`${f.name}`, f);
+            });
+            let z = await zinit.generateAsync({ type: "blob" }, (uc) => {
+              setZippingPercentage((prev) => Math.round(uc.percent));
+            });
+            allZips.push(z);
+          }
         }
-        if (!initData || !initData.initFileUpload) {
-          setLoading(false);
-          toast.error("Something went wrong, try again later.");
-          return;
-        }
 
-        // Multipart upload part (dividing the file into chunks and upload the chunks)
-        const chunkSize = 10 * 1024 * 1024; // 10 MiB
-        const chunkCount = Math.floor(file.size / chunkSize) + 1;
+        // Loop through all zips
+        let i = 0;
+        for (const file of allZips) {
+          ++i;
+          const finalFileName = `uploadedFiles_${serviceId}_${i}`;
+          let finalUploadedUrl: undefined | string = undefined;
 
-        // Getting multiple urls
-        const { data: multipleSignedUrlData, error: multipleSignedUrlError } =
-          await multipartPresignedQuery({
+          // Initializing the upload from server
+          setLoading(true);
+          const { data: initData, error: initError } =
+            await initFileUploadQuery({
+              variables: { fileName: finalFileName + ".zip" },
+            });
+
+          // Handling Errors
+          if (initError) {
+            setLoading(false);
+            toast.error(initError.message);
+            return;
+          }
+          if (!initData || !initData.initFileUpload) {
+            setLoading(false);
+            toast.error("Something went wrong, try again later.");
+            return;
+          }
+
+          // Multipart upload part (dividing the file into chunks and upload the chunks)
+          const chunkSize = 10 * 1024 * 1024; // 10 MiB
+          const chunkCount = Math.floor(file.size / chunkSize) + 1;
+
+          // Getting multiple urls
+          const { data: multipleSignedUrlData, error: multipleSignedUrlError } =
+            await multipartPresignedQuery({
+              variables: {
+                fileId: initData.initFileUpload.fileId ?? "",
+                fileKey: initData.initFileUpload.fileKey ?? "",
+                parts: chunkCount,
+              },
+            });
+
+          // Handling Errors
+          if (multipleSignedUrlError) {
+            setLoading(false);
+            toast.error(multipleSignedUrlError.message);
+            return;
+          }
+          if (
+            !multipleSignedUrlData ||
+            !multipleSignedUrlData.getMultipartPreSignedUrls
+          ) {
+            setLoading(false);
+            toast.error("Something went wrong, try again later.");
+            return;
+          }
+
+          let multipartUrls: MultipartSignedUrlResponse[] =
+            multipleSignedUrlData.getMultipartPreSignedUrls.map((el) => ({
+              signedUrl: el.signedUrl,
+              PartNumber: el.PartNumber,
+            }));
+
+          let partsUploadArray: FinalMultipartUploadPartsInput[] = [];
+
+          let chCounter = 0;
+
+          for (let index = 1; index < chunkCount + 1; index++) {
+            chCounter++;
+            let start = (index - 1) * chunkSize;
+            let end = index * chunkSize;
+            let fileBlob =
+              index < chunkCount ? file.slice(start, end) : file.slice(start);
+            let signedUrl = multipartUrls[index - 1].signedUrl ?? "";
+            let partNumber = multipartUrls[index - 1].PartNumber ?? 0;
+
+            let uploadChunk = await axios({
+              url: signedUrl,
+              method: "PUT",
+              data: fileBlob,
+              headers: {
+                "Content-Type": "application/zip",
+              },
+              onUploadProgress: (pe) => {
+                let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+                let totalPercentComplete = Math.round(
+                  ((chCounter - 1) / chunkCount) * 100 +
+                    percentComplete / chunkCount
+                );
+                setFinalPercentage((prev) => totalPercentComplete);
+              },
+            });
+            let etag = uploadChunk.headers["etag"];
+
+            partsUploadArray.push({
+              ETag: etag ?? "",
+              PartNumber: partNumber,
+            });
+          }
+
+          // Finalize multipart upload
+          const { data: finalMultipartData, error: finalMultipartError } =
+            await finalizeMultipartUploadQuery({
+              variables: {
+                input: {
+                  fileId: initData.initFileUpload.fileId ?? "",
+                  fileKey: initData.initFileUpload.fileKey ?? "",
+                  parts: partsUploadArray,
+                },
+              },
+            });
+
+          // Handling Errors
+          if (finalMultipartError) {
+            setLoading(false);
+            toast.error(finalMultipartError.message);
+            return;
+          }
+          if (
+            !finalMultipartData ||
+            !finalMultipartData.finalizeMultipartUpload
+          ) {
+            setLoading(false);
+            toast.error("Something went wrong, try again later.");
+            return;
+          }
+
+          finalUploadedUrl = finalMultipartData.finalizeMultipartUpload;
+
+          // Update user status and uploadedFiles Array
+          if (!finalUploadedUrl) {
+            setLoading(false);
+            toast.error("Something went wrong, try again later.");
+            return;
+          }
+
+          const refArr = await handleRefFilesSubmit();
+
+          const { data, error } = await uploadFilesForServiceQuery({
             variables: {
-              fileId: initData.initFileUpload.fileId ?? "",
-              fileKey: initData.initFileUpload.fileKey ?? "",
-              parts: chunkCount,
+              referenceUploadedFiles: refArr,
+              serviceId: serviceId?.toString() ?? "",
+              uplodedFiles: [finalUploadedUrl],
+              notes: notes,
+              isReupload: service?.reupload ? true : false,
             },
           });
 
-        // Handling Errors
-        if (multipleSignedUrlError) {
-          setLoading(false);
-          toast.error(multipleSignedUrlError.message);
+          // Handling Errors
+          if (error) {
+            setLoading(false);
+            toast.error(error.message);
+            return;
+          }
+          if (!data || !data.uploadFilesForService) {
+            setLoading(false);
+            toast.error("Something went wrong, try again later.");
+            return;
+          }
+        }
+        setLoading(false);
+        router.push("/service-tracking");
+      } catch (error: any) {
+        setLoading(false);
+        toast.error(error.toString());
+      }
+    } else {
+      try {
+        // For showing the upload progess
+        let percentage: number | undefined = undefined;
+        // Final zip file name uploaded to aws
+        const finalFileName = `uploadedFiles_${serviceId}`;
+
+        // Creating the zip file
+        const zip = zipInit.folder("files");
+
+        if (!zip) {
           return;
         }
-        if (
-          !multipleSignedUrlData ||
-          !multipleSignedUrlData.getMultipartPreSignedUrls
-        ) {
-          setLoading(false);
-          toast.error("Something went wrong, try again later.");
-          return;
-        }
 
-        let multipartUrls: MultipartSignedUrlResponse[] =
-          multipleSignedUrlData.getMultipartPreSignedUrls.map((el) => ({
-            signedUrl: el.signedUrl,
-            PartNumber: el.PartNumber,
-          }));
+        setLoading(true);
 
-        let partsUploadArray: FinalMultipartUploadPartsInput[] = [];
+        filesArray.forEach((file) => {
+          zip.file(`${file.name}`, file);
+        });
+        const file = await zip.generateAsync({ type: "blob" }, (uc) => {
+          setZippingPercentage((prev) => Math.round(uc.percent));
+        });
 
-        let chCounter = 0;
+        let finalUploadedUrl: undefined | string = undefined;
 
-        for (let index = 1; index < chunkCount + 1; index++) {
-          chCounter++;
-          let start = (index - 1) * chunkSize;
-          let end = index * chunkSize;
-          let fileBlob =
-            index < chunkCount ? file.slice(start, end) : file.slice(start);
-          let signedUrl = multipartUrls[index - 1].signedUrl ?? "";
-          let partNumber = multipartUrls[index - 1].PartNumber ?? 0;
+        // Check if file size is bigger than 5 MB
+        if (formatBytesNumber(file.size) > 5) {
+          // Initializing the upload from server
+          setLoading(true);
+          const { data: initData, error: initError } =
+            await initFileUploadQuery({
+              variables: { fileName: finalFileName + ".zip" },
+            });
 
-          let uploadChunk = await axios({
-            url: signedUrl,
+          // Handling Errors
+          if (initError) {
+            setLoading(false);
+            toast.error(initError.message);
+            return;
+          }
+          if (!initData || !initData.initFileUpload) {
+            setLoading(false);
+            toast.error("Something went wrong, try again later.");
+            return;
+          }
+
+          // Multipart upload part (dividing the file into chunks and upload the chunks)
+          const chunkSize = 10 * 1024 * 1024; // 10 MiB
+          const chunkCount = Math.floor(file.size / chunkSize) + 1;
+
+          // Getting multiple urls
+          const { data: multipleSignedUrlData, error: multipleSignedUrlError } =
+            await multipartPresignedQuery({
+              variables: {
+                fileId: initData.initFileUpload.fileId ?? "",
+                fileKey: initData.initFileUpload.fileKey ?? "",
+                parts: chunkCount,
+              },
+            });
+
+          // Handling Errors
+          if (multipleSignedUrlError) {
+            setLoading(false);
+            toast.error(multipleSignedUrlError.message);
+            return;
+          }
+          if (
+            !multipleSignedUrlData ||
+            !multipleSignedUrlData.getMultipartPreSignedUrls
+          ) {
+            setLoading(false);
+            toast.error("Something went wrong, try again later.");
+            return;
+          }
+
+          let multipartUrls: MultipartSignedUrlResponse[] =
+            multipleSignedUrlData.getMultipartPreSignedUrls.map((el) => ({
+              signedUrl: el.signedUrl,
+              PartNumber: el.PartNumber,
+            }));
+
+          let partsUploadArray: FinalMultipartUploadPartsInput[] = [];
+
+          let chCounter = 0;
+
+          for (let index = 1; index < chunkCount + 1; index++) {
+            chCounter++;
+            let start = (index - 1) * chunkSize;
+            let end = index * chunkSize;
+            let fileBlob =
+              index < chunkCount ? file.slice(start, end) : file.slice(start);
+            let signedUrl = multipartUrls[index - 1].signedUrl ?? "";
+            let partNumber = multipartUrls[index - 1].PartNumber ?? 0;
+
+            let uploadChunk = await axios({
+              url: signedUrl,
+              method: "PUT",
+              data: fileBlob,
+              headers: {
+                "Content-Type": "application/zip",
+              },
+              onUploadProgress: (pe) => {
+                let percentComplete = Math.round((pe.loaded / pe.total) * 100);
+                let totalPercentComplete = Math.round(
+                  ((chCounter - 1) / chunkCount) * 100 +
+                    percentComplete / chunkCount
+                );
+                setFinalPercentage((prev) => totalPercentComplete);
+              },
+            });
+            let etag = uploadChunk.headers["etag"];
+
+            partsUploadArray.push({
+              ETag: etag ?? "",
+              PartNumber: partNumber,
+            });
+          }
+
+          // Finalize multipart upload
+          const { data: finalMultipartData, error: finalMultipartError } =
+            await finalizeMultipartUploadQuery({
+              variables: {
+                input: {
+                  fileId: initData.initFileUpload.fileId ?? "",
+                  fileKey: initData.initFileUpload.fileKey ?? "",
+                  parts: partsUploadArray,
+                },
+              },
+            });
+
+          // Handling Errors
+          if (finalMultipartError) {
+            setLoading(false);
+            toast.error(finalMultipartError.message);
+            return;
+          }
+          if (
+            !finalMultipartData ||
+            !finalMultipartData.finalizeMultipartUpload
+          ) {
+            setLoading(false);
+            toast.error("Something went wrong, try again later.");
+            return;
+          }
+
+          finalUploadedUrl = finalMultipartData.finalizeMultipartUpload;
+        } else {
+          setLoading(true);
+          // Direct Upload The Zip File To S3 using pre signed url
+          const { data: s3Url, error: s3Error } = await getS3URL({
+            variables: { fileName: finalFileName },
+          });
+
+          // Handling Errors
+          if (s3Error) {
+            setLoading(false);
+            toast.error(s3Error.message);
+            return;
+          }
+          if (!s3Url || !s3Url.getS3SignedURL) {
+            setLoading(false);
+            toast.error("Something went wrong, try again later.");
+            return;
+          }
+
+          await axios({
+            url: s3Url.getS3SignedURL,
             method: "PUT",
-            data: fileBlob,
+            data: file,
             headers: {
               "Content-Type": "application/zip",
             },
             onUploadProgress: (pe) => {
               let percentComplete = Math.round((pe.loaded / pe.total) * 100);
-              let totalPercentComplete = Math.round(
-                ((chCounter - 1) / chunkCount) * 100 +
-                  percentComplete / chunkCount
-              );
-              setFinalPercentage((prev) => totalPercentComplete);
-            },
-          });
-          let etag = uploadChunk.headers["etag"];
-
-          partsUploadArray.push({
-            ETag: etag ?? "",
-            PartNumber: partNumber,
-          });
-        }
-
-        // Finalize multipart upload
-        const { data: finalMultipartData, error: finalMultipartError } =
-          await finalizeMultipartUploadQuery({
-            variables: {
-              input: {
-                fileId: initData.initFileUpload.fileId ?? "",
-                fileKey: initData.initFileUpload.fileKey ?? "",
-                parts: partsUploadArray,
-              },
+              setFinalPercentage((prev) => percentComplete);
             },
           });
 
-        // Handling Errors
-        if (finalMultipartError) {
-          setLoading(false);
-          toast.error(finalMultipartError.message);
-          return;
+          const imageUrl = s3Url.getS3SignedURL.split("?")[0];
+
+          finalUploadedUrl = imageUrl;
         }
-        if (
-          !finalMultipartData ||
-          !finalMultipartData.finalizeMultipartUpload
-        ) {
+
+        // Update user status and uploadedFiles Array
+        if (!finalUploadedUrl) {
           setLoading(false);
           toast.error("Something went wrong, try again later.");
           return;
         }
 
-        finalUploadedUrl = finalMultipartData.finalizeMultipartUpload;
-      } else {
-        setLoading(true);
-        // Direct Upload The Zip File To S3 using pre signed url
-        const { data: s3Url, error: s3Error } = await getS3URL({
-          variables: { fileName: finalFileName },
+        const refArr = await handleRefFilesSubmit();
+
+        const { data, error } = await uploadFilesForServiceQuery({
+          variables: {
+            referenceUploadedFiles: refArr,
+            serviceId: serviceId?.toString() ?? "",
+            uplodedFiles: [finalUploadedUrl],
+            notes: notes,
+            isReupload: service?.reupload ? true : false,
+          },
         });
 
         // Handling Errors
-        if (s3Error) {
+        if (error) {
           setLoading(false);
-          toast.error(s3Error.message);
+          toast.error(error.message);
           return;
         }
-        if (!s3Url || !s3Url.getS3SignedURL) {
+        if (!data || !data.uploadFilesForService) {
           setLoading(false);
           toast.error("Something went wrong, try again later.");
           return;
         }
 
-        await axios({
-          url: s3Url.getS3SignedURL,
-          method: "PUT",
-          data: file,
-          headers: {
-            "Content-Type": "application/zip",
-          },
-          onUploadProgress: (pe) => {
-            let percentComplete = Math.round((pe.loaded / pe.total) * 100);
-            setFinalPercentage((prev) => percentComplete);
-          },
-        });
-
-        const imageUrl = s3Url.getS3SignedURL.split("?")[0];
-
-        finalUploadedUrl = imageUrl;
-      }
-
-      // Update user status and uploadedFiles Array
-      if (!finalUploadedUrl) {
         setLoading(false);
-        toast.error("Something went wrong, try again later.");
-        return;
-      }
-
-      const refArr = await handleRefFilesSubmit();
-
-      const { data, error } = await uploadFilesForServiceQuery({
-        variables: {
-          referenceUploadedFiles: refArr,
-          serviceId: serviceId?.toString() ?? "",
-          uplodedFiles: [finalUploadedUrl],
-          notes: notes,
-          isReupload: service?.reupload ? true : false,
-        },
-      });
-
-      // Handling Errors
-      if (error) {
+        router.push("/service-tracking");
+      } catch (error: any) {
         setLoading(false);
-        toast.error(error.message);
-        return;
+        toast.error(error.toString());
       }
-      if (!data || !data.uploadFilesForService) {
-        setLoading(false);
-        toast.error("Something went wrong, try again later.");
-        return;
-      }
-
-      setLoading(false);
-      router.push("/service-tracking");
-    } catch (error: any) {
-      setLoading(false);
-      toast.error(error.toString());
     }
   };
 

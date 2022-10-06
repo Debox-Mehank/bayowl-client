@@ -223,7 +223,3 @@ query RequestPasswordReset($email: String!) {
 query ResetPassword($token: String!, $password: String!) {
   resetPassword(token: $token, password: $password)
 }
-
-query GetGstStatus {
-  getGstStatus
-}

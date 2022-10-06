@@ -2236,7 +2236,7 @@ const Pricing = ({ free }: { free: boolean }) => {
                       {localStorage.getItem("loggedIn") ? (
                         // Add price here.
                         <div className="font-bold flex items-center justify-between text-xl md:text-2xl">
-                          <span>
+                          <span className="flex flex-col justify-center items-center">
                             {free ? "" : "₹"}{" "}
                             {free
                               ? "Free"
@@ -2247,6 +2247,9 @@ const Pricing = ({ free }: { free: boolean }) => {
                                     0
                                   )
                                 ).toLocaleString("en-IN")}
+                            <span className="text-xs text-opacity-75">
+                              (Price excluding GST)
+                            </span>
                           </span>
                           <div className="md:hidden">
                             <Button>

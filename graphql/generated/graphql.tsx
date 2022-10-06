@@ -837,11 +837,6 @@ export type ResetPasswordQueryVariables = Exact<{
 
 export type ResetPasswordQuery = { __typename?: 'Query', resetPassword: boolean };
 
-export type GetGstStatusQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetGstStatusQuery = { __typename?: 'Query', getGstStatus: boolean };
-
 export const UserServicesFragmentDoc = gql`
     fragment userServices on UserServices {
   _id
@@ -1735,35 +1730,3 @@ export function useResetPasswordLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type ResetPasswordQueryHookResult = ReturnType<typeof useResetPasswordQuery>;
 export type ResetPasswordLazyQueryHookResult = ReturnType<typeof useResetPasswordLazyQuery>;
 export type ResetPasswordQueryResult = Apollo.QueryResult<ResetPasswordQuery, ResetPasswordQueryVariables>;
-export const GetGstStatusDocument = gql`
-    query GetGstStatus {
-  getGstStatus
-}
-    `;
-
-/**
- * __useGetGstStatusQuery__
- *
- * To run a query within a React component, call `useGetGstStatusQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetGstStatusQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetGstStatusQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetGstStatusQuery(baseOptions?: Apollo.QueryHookOptions<GetGstStatusQuery, GetGstStatusQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetGstStatusQuery, GetGstStatusQueryVariables>(GetGstStatusDocument, options);
-      }
-export function useGetGstStatusLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetGstStatusQuery, GetGstStatusQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetGstStatusQuery, GetGstStatusQueryVariables>(GetGstStatusDocument, options);
-        }
-export type GetGstStatusQueryHookResult = ReturnType<typeof useGetGstStatusQuery>;
-export type GetGstStatusLazyQueryHookResult = ReturnType<typeof useGetGstStatusLazyQuery>;
-export type GetGstStatusQueryResult = Apollo.QueryResult<GetGstStatusQuery, GetGstStatusQueryVariables>;

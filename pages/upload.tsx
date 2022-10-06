@@ -196,6 +196,8 @@ function Upload() {
   const urlEl = useRef<HTMLInputElement>(null);
 
   // For upload percentage
+  const [zipsNumber, setZipsNumber] = useState<undefined | number>();
+  const [totalZips, setTotalZips] = useState<undefined | number>();
   const [zippingPercentage, setZippingPercentage] = useState<number>(0);
   const [finalPercentage, setFinalPercentage] = useState<number>();
   const [refFilesZipPercentage, setRefFilesZipPercentage] = useState<number>(0);
@@ -499,7 +501,11 @@ function Upload() {
 
         setLoading(true);
 
+        setTotalZips(divided.length);
+
+        let zipsNum = 1;
         for (const element of divided) {
+          setZipsNumber(zipsNum);
           const d = element;
           let zinit = new JSZip();
           let folder = zinit.folder("files");
@@ -511,6 +517,7 @@ function Upload() {
               setZippingPercentage((prev) => Math.round(uc.percent));
             });
             allZips.push(z);
+            zipsNum += 1;
           }
         }
 
@@ -1025,6 +1032,9 @@ function Upload() {
                 </>
               ) : (
                 <>
+                  {totalZips && totalZips > 0 && (
+                    <span className="block mt-2 mb-1">{`Number of zips ${zipsNumber} / ${totalZips}`}</span>
+                  )}
                   {loading && zippingPercentage && !finalPercentage ? (
                     <span className="block mt-2">{`Zipping your files ${zippingPercentage}% completed`}</span>
                   ) : loading &&
